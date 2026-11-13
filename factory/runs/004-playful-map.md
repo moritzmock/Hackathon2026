@@ -40,7 +40,9 @@ Look and feel only: no data, score or model changes.
 4. **Bouncy interactions:** buildings pop up in a wave from the centre when
    the first-load clouds part. A challenge building squashes and stretches
    when selected and swells a little on hover. The camera glide was already
-   eased, so it is unchanged.
+   eased, so it is unchanged. The focus blur on an open building fades out
+   about 1.5 s after you zoom well away from it (beyond 4× its focus range)
+   and comes back when you zoom in again (within 3×); the panel stays open.
 5. **Charm:** the smoke, balloon and birds above. The "heating mood" of the
    challenge buildings is being built by the other session (windows glow while
    the heating runs), so it is not repeated here.
