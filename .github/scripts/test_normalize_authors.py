@@ -93,6 +93,15 @@ class NormalizeAuthorsTests(unittest.TestCase):
         self.assertIn("already", result.stdout)
         self.assertEqual(self.git("rev-parse", "main", cwd=self.remote), expected)
 
+    def test_detached_actions_checkout_does_not_need_a_local_branch(self):
+        expected = self.commit()
+        self.push()
+        self.git("checkout", "--detach", expected)
+        self.git("branch", "-D", "main")
+        self.normalize(expected)
+        self.assert_normalized(self.remote)
+        self.assertEqual(self.git("rev-parse", "HEAD"), expected)
+
     def test_stale_event_preserves_newer_remote_commit(self):
         stale = self.commit()
         self.push()

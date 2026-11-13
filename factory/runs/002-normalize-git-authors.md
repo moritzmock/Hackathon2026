@@ -35,11 +35,27 @@ this change.
 
 ## Status
 
-in progress: plan recorded; writing the failing integration checks.
+in progress: tests and implementation complete; reviewing and validating
+before the live GitHub exercise.
 
 ## Result
 
-Not yet implemented.
+- Tests first: the six initial integration scenarios failed because the
+  normalization script did not yet exist; committed as a78c7e7.
+- After implementation: all seven scenarios pass, including a detached
+  checkout with no local branch, as used by GitHub Actions.
+- Workflow syntax: actionlint passes.
+- Product verification: npm run build passes using the existing Node 24
+  installation (Vite 6.4.6); no application source files changed.
+- Structure/security review: rewriting stays in one focused script and a
+  disposable clone; no new abstraction or broader refactor is warranted.
+  Branch/commit inputs are validated and passed as argument arrays, tokens
+  remain in checkout authentication, and force-with-lease guards the write.
+  No actionable findings in the changed boundary.
+- Documentation checker attempt: the available npm software-factory 0.2.4
+  CLI has no check-docs command, including under Node 24. Full factory docs
+  validation is unverified; a direct check verified all 20 local links in
+  the changed documentation pages.
 
 ## Later
 

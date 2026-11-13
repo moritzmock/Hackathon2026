@@ -27,6 +27,9 @@ stay the source for what they cover. They are listed here, each with the
 question it answers; a page in this knowledge base links to them and adds
 only what they do not say.
 
+- [Automatic Git author normalization](../.github/AUTHOR-NORMALIZATION.md):
+  the branch rewrite policy, checks, and how collaborators resync.
+
 ## Reading order for a new task
 
 1. This index, then the [feature](reference/features/index.md) the task touches.

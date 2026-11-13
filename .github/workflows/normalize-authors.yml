@@ -1,0 +1,47 @@
+name: Normalize Git authors
+
+on:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: normalize-authors-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  normalize:
+    if: github.event_name != 'push' || github.event.deleted == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the pushed commit and complete history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Install the pinned rewrite tool
+        shell: bash
+        run: |
+          python3 -m venv "$RUNNER_TEMP/author-tools"
+          "$RUNNER_TEMP/author-tools/bin/python" -m pip install \
+            --disable-pip-version-check --only-binary=:all: --require-hashes \
+            -r .github/scripts/author-requirements.txt
+          echo "$RUNNER_TEMP/author-tools/bin" >> "$GITHUB_PATH"
+
+      - name: Test history preservation and concurrent pushes
+        run: python .github/scripts/test_normalize_authors.py -v
+
+      - name: Normalize authors and committers
+        env:
+          BRANCH_REF: ${{ github.ref }}
+          EXPECTED_SHA: ${{ github.sha }}
+        run: |
+          python .github/scripts/normalize_authors.py \
+            --branch "$BRANCH_REF" --expected-sha "$EXPECTED_SHA"
