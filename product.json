@@ -1,0 +1,23 @@
+{
+  "id": "world",
+  "name": "Bolzano world",
+  "kind": "react-web-app",
+  "code": ".",
+  "about": "The 3D city of Bolzano with the three challenge buildings, charts of their bills against the simulation, and what-if sliders that run the real model in the browser.",
+  "users": [
+    {
+      "who": "the hackathon team",
+      "does": "see how far the simulation is from the bills and try parameters"
+    },
+    {
+      "who": "the jury and visitors",
+      "does": "explore the city and the result at the end"
+    }
+  ],
+  "commands": {
+    "verify": "npm run build",
+    "start": "npm run dev"
+  },
+  "dependsOn": [],
+  "copyEnv": {}
+}

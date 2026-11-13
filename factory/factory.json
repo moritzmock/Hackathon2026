@@ -1,0 +1,14 @@
+{
+  "name": "Hackathon2026 Bolzano",
+  "about": "A 3D Bolzano world for the INTEGRATES calibration challenge: the three challenge buildings, their heating bills and the simulation, tuned live in the browser.",
+  "tracker": "none",
+  "extensions": [],
+  "without": [],
+  "kits": [
+    "react-web-app"
+  ],
+  "core": "0.9.1",
+  "products": [
+    "."
+  ]
+}

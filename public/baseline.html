@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Baseline vs Bills</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f4f2eb;
+      --surface: #fcfcfb;
+      --ink: #202d2b;
+      --muted: #58635e;
+      --line: #d5d8ce;
+      --grid: #e6e7e0;
+      --accent: #ba420f;
+      --measured: #2a78d6;
+      --baseline: #eb6834;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        color-scheme: dark;
+        --paper: #141615;
+        --surface: #1a1a19;
+        --ink: #f0efec;
+        --muted: #c3c2b7;
+        --line: #34383a;
+        --grid: #2a2d2c;
+        --accent: #e0703f;
+        --measured: #3987e5;
+        --baseline: #d95926;
+      }
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --paper: #141615; --surface: #1a1a19; --ink: #f0efec; --muted: #c3c2b7;
+      --line: #34383a; --grid: #2a2d2c; --accent: #e0703f;
+      --measured: #3987e5; --baseline: #d95926;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--paper); color: var(--ink);
+      font-family: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+      -webkit-font-smoothing: antialiased; line-height: 1.5;
+    }
+    .wrap { max-width: 68rem; margin: 0 auto; padding: 2rem 16px 4rem; }
+    .label { font-family: "SFMono-Regular", Consolas, monospace; font-size: .6875rem;
+             letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    h1 { font-size: clamp(1.75rem, 4vw, 2.75rem); letter-spacing: -.04em; margin: .25rem 0 .5rem; line-height: 1.1; }
+    .lede { color: var(--muted); max-width: 42rem; margin: 0 0 2rem; }
+    .legend { display: flex; gap: 1.25rem; margin-bottom: 1rem; font-size: .875rem; color: var(--muted); }
+    .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: .4rem; vertical-align: -1px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); gap: 1rem; }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 1rem 1rem .5rem; }
+    .card h2 { font-size: 1rem; margin: 0; letter-spacing: -.01em; }
+    .card .sub { font-size: .8125rem; color: var(--muted); margin: 0 0 .75rem; min-height: 3em; }
+    .stats { display: flex; gap: 1.5rem; margin-bottom: .5rem; }
+    .stat b { display: block; font-size: 1.5rem; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+    .stat span { font-size: .75rem; color: var(--muted); }
+    svg { display: block; width: 100%; height: auto; overflow: visible; }
+    svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
+    .bar { cursor: default; }
+    .bar:hover { opacity: .8; }
+    #tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--paper);
+           font-size: .8125rem; padding: .4rem .6rem; border-radius: 6px; opacity: 0; transition: opacity .1s;
+           font-variant-numeric: tabular-nums; z-index: 10; }
+    details { margin-top: 2rem; }
+    summary { cursor: pointer; color: var(--muted); font-size: .875rem; }
+    table { border-collapse: collapse; width: 100%; margin-top: .75rem; font-size: .8125rem; font-variant-numeric: tabular-nums; }
+    th, td { text-align: right; padding: .35rem .5rem; border-bottom: 1px solid var(--line); }
+    th:first-child, td:first-child { text-align: left; }
+    .table-scroll { overflow-x: auto; }
+    .note { font-size: .8125rem; color: var(--muted); margin-top: 1.5rem; max-width: 46rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="label">INTEGRATES calibration challenge · Bolzano</div>
+    <h1>The baseline model overheats every building</h1>
+    <p class="lede">Measured heating bills compared with the uncalibrated baseline simulation for the scored months
+      (February and March, 2018 and 2019). Calibration has to close this gap.</p>
+
+    <div class="legend">
+      <span><i style="background:var(--measured)"></i>Measured (heating-only bills)</span>
+      <span><i style="background:var(--baseline)"></i>Baseline simulation</span>
+    </div>
+
+    <div class="grid" id="panels"></div>
+
+    <details>
+      <summary>Show data table</summary>
+      <div class="table-scroll"><table id="table"></table></div>
+    </details>
+
+    <p class="note">Bills are the heating-only gas readings (Smc) converted at 9.59 kWh/Smc, the challenge's own factor.
+      WAPE = Σ|simulated − measured| / Σ measured over the four scored months. Score = max(0, 100 − WAPE%).
+      Each panel has its own y-axis because the buildings differ roughly 10× in size.</p>
+  </div>
+  <div id="tip"></div>
+
+  <script src="data.js"></script>
+  <script>
+    const { records, buildings } = window.CHALLENGE_DATA;
+    const MONTH = { 2: "Feb", 3: "Mar" };
+    const fmt = n => Math.round(n).toLocaleString("en-US");
+    const fmtK = n => n >= 1e3 ? (n / 1e3).toFixed(0) + "k" : String(n);
+    const tip = document.getElementById("tip");
+    const NS = "http://www.w3.org/2000/svg";
+    const el = (tag, attrs, parent) => {
+      const e = document.createElementNS(NS, tag);
+      for (const k in attrs) e.setAttribute(k, attrs[k]);
+      parent && parent.appendChild(e);
+      return e;
+    };
+    // Rect with 4px rounded top, square at baseline
+    const barPath = (x, y, w, h, r = 4) => {
+      r = Math.min(r, h, w / 2);
+      return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+    };
+    const niceStep = v => {
+      const p = Math.pow(10, Math.floor(Math.log10(v)));
+      return [1, 2, 2.5, 5, 10].map(s => s * p).find(s => s >= v);
+    };
+
+    const ids = [...new Set(records.map(r => r.building))];
+    const panels = document.getElementById("panels");
+
+    ids.forEach(id => {
+      const rows = records.filter(r => r.building === id).sort((a, b) => a.year - b.year || a.month - b.month);
+      const m = rows.reduce((s, r) => s + r.measured_kwh, 0);
+      const err = rows.reduce((s, r) => s + Math.abs(r.baseline_kwh - r.measured_kwh), 0);
+      const wape = 100 * err / m;
+      const score = Math.max(0, 100 - wape);
+      const f = buildings[id] || {};
+
+      const card = document.createElement("section");
+      card.className = "card";
+      card.innerHTML = `
+        <h2>${id.replace("_", " ")}</h2>
+        <p class="sub">${f.building_typology ?? ""} · built ${f.construction_year ?? "?"} · ${fmt(f.conditioned_floor_area_m2 ?? 0)} m² heated</p>
+        <div class="stats">
+          <div class="stat"><b>${wape.toFixed(0)}%</b><span>baseline WAPE</span></div>
+          <div class="stat"><b>${score.toFixed(0)}</b><span>baseline score / 100</span></div>
+        </div>`;
+      panels.appendChild(card);
+
+      const W = 320, H = 210, ml = 36, mr = 4, mt = 20, mb = 34;
+      const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img",
+        "aria-label": `${id}: measured vs baseline monthly heating energy` }, card);
+      const dataMax = Math.max(...rows.flatMap(r => [r.measured_kwh, r.baseline_kwh]));
+      const step = niceStep(dataMax / 4), ticks = Math.ceil(dataMax / step), yMax = step * ticks;
+      const y = v => mt + (H - mt - mb) * (1 - v / yMax);
+      for (let i = 0; i <= ticks; i++) {
+        const v = step * i, yy = y(v);
+        el("line", { x1: ml, x2: W - mr, y1: yy, y2: yy, stroke: "var(--grid)", "stroke-width": i ? 1 : 1.5 }, svg);
+        el("text", { x: ml - 6, y: yy + 4, "text-anchor": "end" }, svg).textContent = fmtK(v);
+      }
+      el("text", { x: ml - 6, y: 8, "text-anchor": "end" }, svg).textContent = "kWh";
+
+      const gw = (W - ml - mr) / rows.length, bw = Math.min(22, gw * 0.3), gap = 2;
+      rows.forEach((r, i) => {
+        const cx = ml + gw * (i + 0.5);
+        [["measured_kwh", "var(--measured)", "Measured", cx - bw - gap / 2],
+         ["baseline_kwh", "var(--baseline)", "Baseline", cx + gap / 2]].forEach(([k, c, name, x]) => {
+          const yy = y(r[k]);
+          const p = el("path", { d: barPath(x, yy, bw, y(0) - yy), fill: c, class: "bar" }, svg);
+          // Larger invisible hit target
+          const hit = el("rect", { x: x - 2, y: mt, width: bw + 4, height: y(0) - mt, fill: "transparent" }, svg);
+          const show = e => {
+            const ratio = r.baseline_kwh / r.measured_kwh;
+            tip.innerHTML = `<b>${MONTH[r.month]} ${r.year}</b> · ${name}<br>${fmt(r[k])} kWh` +
+              (k === "baseline_kwh" ? `<br>${ratio.toFixed(2)}× measured` : "");
+            tip.style.opacity = 1;
+            tip.style.left = Math.min(e.clientX + 12, innerWidth - 180) + "px";
+            tip.style.top = (e.clientY - 12) + "px";
+            p.style.opacity = .8;
+          };
+          hit.addEventListener("mousemove", show);
+          hit.addEventListener("mouseleave", () => { tip.style.opacity = 0; p.style.opacity = ""; });
+        });
+        el("text", { x: cx, y: H - mb + 16, "text-anchor": "middle" }, svg).textContent = MONTH[r.month];
+        if (r.month === 2) {
+          el("text", { x: cx + gw / 2, y: H - mb + 30, "text-anchor": "middle",
+            style: "fill:var(--ink);font-weight:600" }, svg).textContent = r.year;
+        }
+      });
+    });
+
+    // Table view
+    const t = document.getElementById("table");
+    t.innerHTML = "<tr><th>Building</th><th>Month</th><th>Measured kWh</th><th>Baseline kWh</th><th>Baseline / measured</th></tr>" +
+      records.map(r => `<tr><td>${r.building}</td><td>${MONTH[r.month]} ${r.year}</td><td>${fmt(r.measured_kwh)}</td>` +
+        `<td>${fmt(r.baseline_kwh)}</td><td>${(r.baseline_kwh / r.measured_kwh).toFixed(2)}×</td></tr>`).join("");
+  </script>
+</body>
+</html>

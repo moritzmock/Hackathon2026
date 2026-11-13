@@ -1,0 +1,368 @@
+{
+ "integrates_commit": "705bc1198668cc812b6ae73691fb2561ed09bfa3",
+ "parameters": [
+  {
+   "name": "weekday_heating_hours",
+   "lower": 4.0,
+   "upper": 12.0,
+   "default": 8.0,
+   "unit": "h/day",
+   "description": "Active occupied-setpoint duration on weekdays"
+  },
+  {
+   "name": "non_workday_heating_hours",
+   "lower": 0.0,
+   "upper": 4.0,
+   "default": 2.0,
+   "unit": "h/day",
+   "description": "Active occupied-setpoint duration on weekends and public holidays"
+  },
+  {
+   "name": "weekday_start_hour",
+   "lower": 5.0,
+   "upper": 9.0,
+   "default": 7.0,
+   "unit": "hour",
+   "description": "Start of active weekday heating"
+  },
+  {
+   "name": "occupied_heating_setpoint_c",
+   "lower": 18.5,
+   "upper": 21.5,
+   "default": 20.0,
+   "unit": "degC",
+   "description": "Maintained setpoint during active occupied hours"
+  },
+  {
+   "name": "night_setback_temperature_c",
+   "lower": 12.0,
+   "upper": 18.0,
+   "default": 15.0,
+   "unit": "degC",
+   "description": "Maintained setpoint outside active occupied hours; its energy is counted"
+  },
+  {
+   "name": "outdoor_shutdown_temperature_c",
+   "lower": 12.0,
+   "upper": 18.0,
+   "default": 15.0,
+   "unit": "degC",
+   "description": "24-hour mean outdoor threshold switching active heating to setback"
+  },
+  {
+   "name": "normally_heated_area_fraction",
+   "lower": 0.6,
+   "upper": 1.0,
+   "default": 0.8,
+   "unit": "fraction",
+   "description": "Conditioned area following the normal rather than reduced regime"
+  },
+  {
+   "name": "reduced_area_setpoint_c",
+   "lower": 12.0,
+   "upper": 17.0,
+   "default": 15.0,
+   "unit": "degC",
+   "description": "Active setpoint for wings/floors following the reduced regime"
+  },
+  {
+   "name": "reduced_area_schedule_fraction",
+   "lower": 0.25,
+   "upper": 0.75,
+   "default": 0.5,
+   "unit": "fraction",
+   "description": "Reduced-regime active hours as a fraction of normal active hours"
+  },
+  {
+   "name": "air_exchange_multiplier",
+   "lower": 0.7,
+   "upper": 1.3,
+   "default": 1.0,
+   "unit": "multiplier",
+   "description": "Multiplier applied to audited/default infiltration and ventilation"
+  },
+  {
+   "name": "opaque_envelope_u_value_multiplier",
+   "lower": 0.9,
+   "upper": 1.1,
+   "default": 1.0,
+   "unit": "multiplier",
+   "description": "Common multiplier on audited wall, roof, and floor U-values"
+  },
+  {
+   "name": "window_u_value_multiplier",
+   "lower": 0.9,
+   "upper": 1.1,
+   "default": 1.0,
+   "unit": "multiplier",
+   "description": "Multiplier on the audited window U-value"
+  }
+ ],
+ "buildings": [
+  {
+   "id": "building_01",
+   "facts": {
+    "building_use": "office",
+    "building_typology": "administrative office",
+    "construction_year": 1999,
+    "gross_floor_area_m2": 1909.84,
+    "conditioned_floor_area_m2": 1706.1,
+    "heated_volume_m3": 7115.73,
+    "floors_above_ground": 6,
+    "floors_below_ground": 2,
+    "total_height_m": 18.2,
+    "footprint_area_m2": 524.4210082543586,
+    "wall_u_value_w_m2k": 0.78,
+    "roof_u_value_w_m2k": 1.08,
+    "floor_u_value_w_m2k": 0.96,
+    "window_u_value_w_m2k": 2.51,
+    "heating_system_efficiency": 0.88,
+    "heat_generator_type": "gas boiler",
+    "facade_n_wwr": 0.2975116765252262,
+    "facade_e_wwr": 0.08,
+    "facade_s_wwr": 0.2975116765252262,
+    "facade_w_wwr": 0.2445832080002306
+   },
+   "height": 18.2,
+   "base": 47.0,
+   "centroid": [
+    -987.1,
+    -69.4
+   ],
+   "rings": [
+    [
+     -1003.9,
+     -74.9,
+     -1002.0,
+     -59.1,
+     -970.3,
+     -63.3,
+     -972.8,
+     -80.1,
+     -1003.9,
+     -74.9
+    ]
+   ],
+   "records": [
+    {
+     "year": 2018,
+     "month": 2,
+     "measured_kwh": 29073.68333333333,
+     "baseline_kwh": 47804.18319216772
+    },
+    {
+     "year": 2018,
+     "month": 3,
+     "measured_kwh": 23089.52333333333,
+     "baseline_kwh": 40176.020107397984
+    },
+    {
+     "year": 2019,
+     "month": 2,
+     "measured_kwh": 27945.26,
+     "baseline_kwh": 41281.11740281351
+    },
+    {
+     "year": 2019,
+     "month": 3,
+     "measured_kwh": 18537.47,
+     "baseline_kwh": 29790.563618783322
+    }
+   ]
+  },
+  {
+   "id": "building_02",
+   "facts": {
+    "building_use": "school",
+    "building_typology": "secondary school",
+    "construction_year": 1929,
+    "gross_floor_area_m2": 6090.6,
+    "conditioned_floor_area_m2": 4883.2,
+    "heated_volume_m3": 28934.9,
+    "floors_above_ground": 3,
+    "floors_below_ground": 2,
+    "total_height_m": 19.5,
+    "footprint_area_m2": 1463.312579268114,
+    "wall_u_value_w_m2k": 0.73,
+    "roof_u_value_w_m2k": 0.17,
+    "floor_u_value_w_m2k": 1.33,
+    "window_u_value_w_m2k": 1.84,
+    "heating_system_efficiency": 0.925,
+    "heat_generator_type": "gas boiler",
+    "facade_n_wwr": 0.2874284204828099,
+    "facade_e_wwr": 0.2755873676722149,
+    "facade_s_wwr": 0.2755873676722149,
+    "facade_w_wwr": 0.26374631486162
+   },
+   "height": 19.5,
+   "base": 45.9,
+   "centroid": [
+    -816.4,
+    -231.0
+   ],
+   "rings": [
+    [
+     -839.7,
+     -252.7,
+     -825.3,
+     -200.2,
+     -819.4,
+     -197.8,
+     -791.3,
+     -212.7,
+     -794.8,
+     -218.8,
+     -792.8,
+     -219.6,
+     -796.3,
+     -226.2,
+     -802.2,
+     -222.7,
+     -801.4,
+     -220.6,
+     -816.2,
+     -212.9,
+     -824.8,
+     -242.1,
+     -810.4,
+     -245.9,
+     -807.4,
+     -234.3,
+     -795.6,
+     -237.4,
+     -802.0,
+     -261.1,
+     -827.1,
+     -253.9,
+     -827.7,
+     -256.2,
+     -839.7,
+     -252.7
+    ]
+   ],
+   "records": [
+    {
+     "year": 2018,
+     "month": 2,
+     "measured_kwh": 83695.12666666668,
+     "baseline_kwh": 197504.58881290868
+    },
+    {
+     "year": 2018,
+     "month": 3,
+     "measured_kwh": 70345.84666666666,
+     "baseline_kwh": 186232.2652142726
+    },
+    {
+     "year": 2019,
+     "month": 2,
+     "measured_kwh": 76528.2,
+     "baseline_kwh": 179190.36884590908
+    },
+    {
+     "year": 2019,
+     "month": 3,
+     "measured_kwh": 56485.1,
+     "baseline_kwh": 154911.912285092
+    }
+   ]
+  },
+  {
+   "id": "building_03",
+   "facts": {
+    "building_use": "office",
+    "building_typology": "administrative office complex",
+    "construction_year": 2003,
+    "gross_floor_area_m2": 18273,
+    "conditioned_floor_area_m2": 17252,
+    "heated_volume_m3": 63738.99,
+    "floors_above_ground": 5,
+    "floors_below_ground": 4,
+    "total_height_m": 22.3,
+    "footprint_area_m2": 2601.854851357643,
+    "wall_u_value_w_m2k": 0.35,
+    "roof_u_value_w_m2k": 0.4,
+    "floor_u_value_w_m2k": 0.58,
+    "window_u_value_w_m2k": 2.72,
+    "heating_system_efficiency": null,
+    "heat_generator_type": "gas boiler",
+    "facade_n_wwr": 0.5395606081285957,
+    "facade_e_wwr": 0.5395606081285957,
+    "facade_s_wwr": 0.4337403496341026,
+    "facade_w_wwr": 0.5768899176134928
+   },
+   "height": 22.3,
+   "base": 40.3,
+   "centroid": [
+    797.2,
+    -56.4
+   ],
+   "rings": [
+    [
+     770.9,
+     -85.0,
+     779.6,
+     -8.4,
+     779.7,
+     -8.4,
+     832.3,
+     -47.0,
+     813.4,
+     -90.9,
+     811.2,
+     -97.8,
+     770.9,
+     -85.0
+    ],
+    [
+     795.3,
+     -75.4,
+     794.2,
+     -61.6,
+     815.4,
+     -57.0,
+     806.1,
+     -77.6,
+     795.3,
+     -75.4
+    ],
+    [
+     794.0,
+     -53.2,
+     793.5,
+     -43.1,
+     813.1,
+     -48.2,
+     794.0,
+     -53.2
+    ]
+   ],
+   "records": [
+    {
+     "year": 2018,
+     "month": 2,
+     "measured_kwh": 141951.18,
+     "baseline_kwh": 284823.4676501169
+    },
+    {
+     "year": 2018,
+     "month": 3,
+     "measured_kwh": 106333.92,
+     "baseline_kwh": 262571.0710685818
+    },
+    {
+     "year": 2019,
+     "month": 2,
+     "measured_kwh": 121013.01333333332,
+     "baseline_kwh": 256530.50346329363
+    },
+    {
+     "year": 2019,
+     "month": 3,
+     "measured_kwh": 61535.833333333336,
+     "baseline_kwh": 213120.14170633187
+    }
+   ]
+  }
+ ]
+}

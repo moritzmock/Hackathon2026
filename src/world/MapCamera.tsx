@@ -1,0 +1,104 @@
+// Map-style camera: left-drag pans over the ground, right-drag (or ctrl-drag) rotates
+// and tilts, the wheel zooms toward the ground point under the cursor. Selecting a
+// building flies to it.
+import { CameraControls } from "@react-three/drei";
+import { useThree } from "@react-three/fiber";
+import CameraControlsImpl from "camera-controls";
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { buildingsById } from "../data/challenge";
+import { useStore } from "../store";
+import { EDGE } from "./edgeFade";
+import { focusCenter } from "./focus";
+
+const ACTION = CameraControlsImpl.ACTION;
+const MIN_DISTANCE = 35;
+const MAX_DISTANCE = 9000;
+const ZOOM_PER_PIXEL = 0.0035; // wheel sensitivity: one mouse notch ≈ 30% closer
+const C = focusCenter;
+const HOME = { pos: new THREE.Vector3(C.x + 250, C.y + 1700, C.z + 3200), target: new THREE.Vector3(C.x + 200, C.y, C.z - 250) };
+
+export function MapCamera() {
+  const ref = useRef<CameraControls>(null);
+  const selected = useStore((s) => s.selected);
+  const placed = useRef(false);
+  const { gl, camera, scene } = useThree();
+
+  // Wheel zoom toward the cursor: move camera and target toward the ground point P
+  // under the cursor by the same factor, so P stays under the cursor.
+  useEffect(() => {
+    const el = gl.domElement;
+    // Listen on the canvas wrapper so scrolling over the HTML pins zooms too.
+    const area = el.parentElement ?? el;
+    const ray = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    const pos = new THREE.Vector3();
+    const target = new THREE.Vector3();
+    const onWheel = (e: WheelEvent) => {
+      const c = ref.current;
+      const terrain = scene.getObjectByName("terrain");
+      if (!c) return;
+      e.preventDefault();
+      // Lines/pages → pixels; trackpad pinch arrives as ctrl+wheel with small deltas.
+      const delta = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1) * (e.ctrlKey ? 4 : 1);
+      c.getPosition(pos, true); // end values, so fast scrolling accumulates smoothly
+      c.getTarget(target, true);
+      const distance = pos.distanceTo(target);
+      let k = Math.exp(delta * ZOOM_PER_PIXEL);
+      k = THREE.MathUtils.clamp(k, MIN_DISTANCE / distance, MAX_DISTANCE / distance);
+      if (Math.abs(k - 1) < 1e-4) return;
+
+      const r = el.getBoundingClientRect();
+      ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      ray.setFromCamera(ndc, camera);
+      const hit = terrain ? ray.intersectObject(terrain, false)[0] : undefined;
+      const p = hit ? hit.point : target;
+      pos.sub(p).multiplyScalar(k).add(p);
+      target.sub(p).multiplyScalar(k).add(p);
+      c.setLookAt(pos.x, pos.y, pos.z, target.x, target.y, target.z, true);
+    };
+    area.addEventListener("wheel", onWheel, { passive: false });
+    return () => area.removeEventListener("wheel", onWheel);
+  }, [gl, camera, scene]);
+
+  // Fly to the selected building (or back home).
+  useEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    if (import.meta.env.DEV) (window as unknown as { __controls: unknown }).__controls = c; // debugging aid
+    // Keep the look-at point inside the faded map circle.
+    const b = EDGE.start;
+    c.setBoundary(new THREE.Box3(new THREE.Vector3(C.x - b, -200, C.z - b), new THREE.Vector3(C.x + b, 3000, C.z + b)));
+    const building = selected ? buildingsById[selected] : undefined;
+    if (!building) {
+      c.setLookAt(HOME.pos.x, HOME.pos.y, HOME.pos.z, HOME.target.x, HOME.target.y, HOME.target.z, placed.current);
+      placed.current = true;
+      return;
+    }
+    const { centroid: [x, y], base, height, facts } = building;
+    const r = Math.max(260, Math.sqrt(facts.footprint_area_m2 as number) * 8);
+    const target = new THREE.Vector3(x, base + height * 0.4, -y);
+    const pos = new THREE.Vector3(x + r * 0.8, base + height + r * 0.75, -y + r);
+    // Slide the view sideways so the building sits left of the detail panel.
+    const right = new THREE.Vector3().subVectors(target, pos).cross(camera.up).normalize().multiplyScalar(r * 0.32);
+    pos.add(right);
+    target.add(right);
+    c.setLookAt(pos.x, pos.y, pos.z, target.x, target.y, target.z, true);
+  }, [selected, camera]);
+
+  return (
+    <CameraControls
+      ref={ref}
+      makeDefault
+      mouseButtons={{ left: ACTION.TRUCK, middle: ACTION.DOLLY, right: ACTION.ROTATE, wheel: ACTION.NONE }}
+      touches={{ one: ACTION.TOUCH_TRUCK, two: ACTION.TOUCH_DOLLY_ROTATE, three: ACTION.TOUCH_ROTATE }}
+      truckSpeed={2}
+      minDistance={MIN_DISTANCE}
+      maxDistance={MAX_DISTANCE}
+      minPolarAngle={0.15}
+      maxPolarAngle={Math.PI * 0.42}
+      smoothTime={0.3}
+      draggingSmoothTime={0.08}
+    />
+  );
+}

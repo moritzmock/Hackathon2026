@@ -1,0 +1,3 @@
+[submodule "vendor/integrates"]
+	path = vendor/integrates
+	url = https://github.com/moritzmock/integrates.git
