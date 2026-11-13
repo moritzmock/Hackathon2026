@@ -73,14 +73,20 @@ before and after.
 
 ## Status
 
-in progress. On branch `playful-map-on-main`, replayed on top of the current
-`main` (main's history had been rewritten). Type check and build pass. A
-throwaway preview with the other sessions' uncommitted weather, season and
-building-look work on top also runs; its four clashes are resolved by keeping
-both sides (recorded in a message to `hackathon2026-f1`). The owner chose to
-wait until that work is committed to `main`, then bring this branch in.
+done. On `main` (pushed from branch `playful-map-on-main`), together with the
+other sessions' weather, season and building-look work, which they committed
+with the overlaps combined as planned (roof snow with the pop-in, weather
+lighting with the sky dome, building looks with the bounce).
 
 ## Result
+
+- `npm run build` passes on `main` as pushed.
+- Checked in the browser (screenshots): the scene draws, things move, the
+  city pops in, the combined weather version runs without shader errors, and
+  the focus blur lets go about 1.5 s after zooming away (seen in the console
+  during a test run; the temporary log was removed).
+- Not covered: no automated test of the scene (WebGL), as for the rest of the
+  map; a smoke test is still on the blueprint's Open list.
 
 ## Later
 
