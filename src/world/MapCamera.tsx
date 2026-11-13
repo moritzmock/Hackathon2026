@@ -85,6 +85,7 @@ export function MapCamera() {
     c.setBoundary(new THREE.Box3(new THREE.Vector3(C.x - b, -200, C.z - b), new THREE.Vector3(C.x + b, 3000, C.z + b)));
     const building = selected ? buildingsById[selected] : undefined;
     if (!building) {
+      if (useStore.getState().keepView) return; // let go by zooming away: stay put
       if (!revealed) {
         // Under the first-load clouds: wait higher up, then glide down when they part.
         c.setLookAt(FAR.x, FAR.y, FAR.z, HOME.target.x, HOME.target.y, HOME.target.z, false);
