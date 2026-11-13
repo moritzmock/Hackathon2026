@@ -10,6 +10,7 @@ import { DevProbe } from "./DevProbe";
 import { Effects } from "./Effects";
 import { MapCamera } from "./MapCamera";
 import { Roads } from "./Roads";
+import { StaticShadows } from "./StaticShadows";
 import { RoofUnits } from "./RoofUnits";
 import { focusCenter } from "./focus";
 import { Targets } from "./Targets";
@@ -74,6 +75,7 @@ export function Scene() {
           <Targets />
         </group>
         {layers.pins && <BuildingPins />}
+        <StaticShadows version={JSON.stringify(layers)} />
       </Suspense>
       {layers.miniature && <Effects />}
     </>

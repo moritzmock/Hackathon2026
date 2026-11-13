@@ -24,9 +24,12 @@ function Target({ b }: { b: ChallengeBuilding }) {
   const { select, hover } = useStore.getState();
   useCursor(hovered);
   // Ease colour toward its state each frame.
-  useFrame((_, dt) => {
+  useFrame(({ invalidate }, dt) => {
     const goal = selected ? COLORS.selected : hovered ? COLORS.hover : COLORS.idle;
+    if (material.color.equals(goal)) return;
     material.color.lerp(goal, 1 - Math.exp(-dt * 10));
+    if (Math.abs(material.color.r - goal.r) + Math.abs(material.color.g - goal.g) + Math.abs(material.color.b - goal.b) < 0.003) material.color.copy(goal);
+    invalidate(); // keep rendering until the colour has settled (frameloop is "demand")
   });
   return (
     <mesh
