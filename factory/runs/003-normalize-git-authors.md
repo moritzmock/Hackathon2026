@@ -1,4 +1,4 @@
-# 002 Normalize Git authors on push
+# 003 Normalize Git authors on push
 
 ## Request
 
@@ -35,8 +35,9 @@ this change.
 
 ## Status
 
-in progress: tests and implementation complete; reviewing and validating
-before the live GitHub exercise.
+done: implemented, published and verified on GitHub, including an actual
+history rewrite and successful Vercel deployment. Full factory docs-checker
+validation remains unavailable as described below.
 
 ## Result
 
@@ -56,7 +57,37 @@ before the live GitHub exercise.
   CLI has no check-docs command, including under Node 24. Full factory docs
   validation is unverified; a direct check verified all 20 local links in
   the changed documentation pages.
+- Published implementation: 9a1a63b. The workflow's initial main run passes
+  and leaves already-correct history alone:
+  https://github.com/moritzmock/Hackathon2026/actions/runs/43522964349.
+- Live rewrite: pushed a temporary verification branch with a deliberately
+  different author. The Action rewrites all 24 reachable commits, verifies
+  every file tree/date/message/merge, and publishes through the built-in
+  token. GitHub recognizes both identities as moritzmock:
+  https://github.com/moritzmock/Hackathon2026/actions/runs/43523005992.
+- The rewritten commit is 572ac7ffac47c7850e34b2fcc742b60238b699a9.
+  Vercel reports Deployment has completed:
+  https://vercel.com/moritzmocks-projects/hackathon2026/2pPYs7xQqGeXjA4EGDyAPHD9xG7M.
+- No recursive push workflow is created for the rewritten commit. The
+  temporary verification branch is removed after verification.
+- An independent real push to main is also normalized automatically:
+  https://github.com/moritzmock/Hackathon2026/actions/runs/43523314468.
+  All 25 commits become the owner's identity at f904bec; Vercel reports a
+  completed deployment. Incoming app changes are preserved while rebasing
+  the final verification notes. This run is numbered 003 because a
+  concurrently published app-branding run occupies 002.
+- To use it: push a branch containing the workflow, then inspect Normalize
+  Git authors in GitHub Actions. The current source identity is configured
+  locally to Moritz Mock <momock@unibz.it> to avoid unnecessary rewrites.
+- No application UI or simulation changes; a browser/model rerun is not
+  relevant to this repository-maintenance change.
 
 ## Later
 
-None.
+- Factory core suggestion: make the documentation checker available through
+  a pinned, unambiguous CLI matched to the installed core version; record
+  unavailable checks explicitly instead of resolving an unrelated npm CLI.
+- Factory core suggestion: Git history automation should preserve checkout
+  authentication, verify commit contents/topology, and use explicit leases
+  when replacing branch refs. Use the built-in token when recursive push
+  workflows are unwanted, and verify third-party deployment separately.

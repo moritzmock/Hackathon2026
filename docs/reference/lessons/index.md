@@ -6,4 +6,7 @@
 
 One page per kind of product, one bullet per lesson: what to do or avoid, and
 the run that taught it. A lesson true for any company is also suggested to the
-core, written without this company's details. None yet.
+core, written without this company's details.
+
+- [React web app lessons](react-web-app.md): repository automation and
+  documentation tooling.
