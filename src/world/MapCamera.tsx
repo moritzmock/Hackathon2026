@@ -18,11 +18,12 @@ const MAX_DISTANCE = 9000;
 const ZOOM_PER_PIXEL = 0.0035; // wheel sensitivity: one mouse notch ≈ 30% closer
 const C = focusCenter;
 const HOME = { pos: new THREE.Vector3(C.x + 250, C.y + 1700, C.z + 3200), target: new THREE.Vector3(C.x + 200, C.y, C.z - 250) };
+const FAR = HOME.target.clone().add(HOME.pos.clone().sub(HOME.target).multiplyScalar(1.8));
 
 export function MapCamera() {
   const ref = useRef<CameraControls>(null);
   const selected = useStore((s) => s.selected);
-  const placed = useRef(false);
+  const revealed = useStore((s) => s.revealed);
   const { gl, camera, scene, invalidate } = useThree();
 
   // Wheel zoom toward the cursor: move camera and target toward the ground point P
@@ -104,8 +105,13 @@ export function MapCamera() {
     c.setBoundary(new THREE.Box3(new THREE.Vector3(C.x - b, -200, C.z - b), new THREE.Vector3(C.x + b, 3000, C.z + b)));
     const building = selected ? buildingsById[selected] : undefined;
     if (!building) {
-      c.setLookAt(HOME.pos.x, HOME.pos.y, HOME.pos.z, HOME.target.x, HOME.target.y, HOME.target.z, placed.current);
-      placed.current = true;
+      if (!revealed) {
+        // Under the first-load clouds: wait higher up, then glide down when they part.
+        c.setLookAt(FAR.x, FAR.y, FAR.z, HOME.target.x, HOME.target.y, HOME.target.z, false);
+        return;
+      }
+      c.setLookAt(HOME.pos.x, HOME.pos.y, HOME.pos.z, HOME.target.x, HOME.target.y, HOME.target.z, true);
+      invalidate();
       return;
     }
     const { centroid: [x, y], base, height, facts } = building;
@@ -117,7 +123,8 @@ export function MapCamera() {
     pos.add(right);
     target.add(right);
     c.setLookAt(pos.x, pos.y, pos.z, target.x, target.y, target.z, true);
-  }, [selected, camera]);
+    invalidate();
+  }, [selected, camera, revealed, invalidate]);
 
   return (
     <CameraControls

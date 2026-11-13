@@ -45,15 +45,16 @@ interface State {
   /** Model setup: how many of SETUP_STEPS have started (0–4). */
   setupStep: number;
   modelReady: boolean;
+  /** Set when the model setup failed. */
+  modelError: string | undefined;
   /** When the model became ready (ms, performance.now()). */
   readyAt: number | undefined;
   /** Seconds the last warm run took, to estimate the next one. */
   lastWarmSeconds: number | undefined;
   layers: Layers;
-  /** Building list filter (sidebar search). */
-  query: string;
   layersOpen: boolean;
-  sidebarCollapsed: boolean;
+  /** False until the first-load clouds have parted. */
+  revealed: boolean;
   /** Map zoom relative to the overview, in % (shown in the zoom control). */
   zoomPct: number;
   select: (id: string | null) => void;
@@ -63,9 +64,7 @@ interface State {
   resetParams: (id: string) => void;
   run: (id: string) => Promise<void>;
   toggleLayer: (layer: keyof Layers) => void;
-  setQuery: (query: string) => void;
   setLayersOpen: (open: boolean) => void;
-  toggleSidebar: () => void;
 }
 
 export const useStore = create<State>((set, get) => ({
@@ -76,12 +75,12 @@ export const useStore = create<State>((set, get) => ({
   modelStatus: "Model not loaded",
   setupStep: 0,
   modelReady: false,
+  modelError: undefined,
   readyAt: undefined,
   lastWarmSeconds: undefined,
   layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true },
-  query: "",
   layersOpen: false,
-  sidebarCollapsed: false,
+  revealed: false,
   zoomPct: 100,
   select: (selected) => set({ selected }),
   hover: (hovered) => set({ hovered }),
@@ -113,15 +112,14 @@ export const useStore = create<State>((set, get) => ({
     }
   },
   toggleLayer: (layer) => set((s) => ({ layers: { ...s.layers, [layer]: !s.layers[layer] } })),
-  setQuery: (query) => set({ query }),
   setLayersOpen: (layersOpen) => set({ layersOpen }),
-  toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }));
 
 onModelStatus((modelStatus) =>
   useStore.setState((s) => ({
     modelStatus,
     modelReady: s.modelReady || modelStatus.startsWith("Model ready"),
+    modelError: modelStatus.startsWith("Model error") ? modelStatus.slice("Model error: ".length) : s.modelError,
     readyAt: s.readyAt ?? (modelStatus.startsWith("Model ready") ? performance.now() : undefined),
     setupStep: Math.max(s.setupStep, SETUP_STEPS.indexOf(modelStatus) + 1),
   })),

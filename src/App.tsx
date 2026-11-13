@@ -4,15 +4,14 @@ import { useState } from "react";
 import { BuildingList } from "./panels/BuildingList";
 import { DetailPanel } from "./panels/DetailPanel";
 import { LayersControl } from "./panels/LayersControl";
+import { LoadingScreen } from "./panels/LoadingScreen";
 import { MapControls } from "./panels/MapControls";
-import { Sidebar } from "./panels/Sidebar";
 import { Scene } from "./world/Scene";
 
 export function App() {
   const [dpr, setDpr] = useState(1.5);
   return (
     <div className="app">
-      <Sidebar />
       <div className="workspace">
         <BuildingList />
         <main className="stage">
@@ -30,6 +29,7 @@ export function App() {
           <LayersControl />
           <MapControls />
           <DetailPanel />
+          <LoadingScreen />
         </main>
       </div>
     </div>

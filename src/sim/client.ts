@@ -15,7 +15,7 @@ interface Slot { worker: Worker; busy: boolean }
 let slots: Slot[] = [];
 let nextId = 1;
 const pending = new Map<number, Pending>();
-const queue: { msg: ToWorker; p: Pending }[] = [];
+const queue: { msg: Extract<ToWorker, { type: "run" }>; p: Pending }[] = [];
 let statusListener: (s: string) => void = () => {};
 
 export function onModelStatus(fn: (s: string) => void) {
@@ -31,6 +31,7 @@ function ensurePool() {
       const m = e.data;
       if (m.type === "status") statusListener(m.message);
       else if (m.type === "ready") statusListener(`Model ready (integrates@${m.commit.slice(0, 7)})`);
+      else if (m.type === "error" && m.id === null) statusListener(`Model error: ${m.message}`);
       else {
         const p = m.id !== null ? pending.get(m.id) : undefined;
         if (m.id !== null) pending.delete(m.id);
@@ -60,6 +61,16 @@ function runYear(buildingId: string, params: Record<string, number>, year: numbe
     queue.push({ msg: { type: "run", id: nextId++, buildingId, params, year }, p: { resolve, reject } });
     pump();
   });
+}
+
+let warmedUp = false;
+
+/** Start the one-time setup in every worker now, so the first run doesn't wait for it. */
+export function warmUp() {
+  if (warmedUp) return;
+  warmedUp = true;
+  ensurePool();
+  for (const slot of slots) slot.worker.postMessage({ type: "warmup" } satisfies ToWorker);
 }
 
 /** Simulate one building for all weather years; params may be partial (rest = organizer defaults). */

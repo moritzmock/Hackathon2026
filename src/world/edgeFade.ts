@@ -1,9 +1,26 @@
-// Fades geometry into the sky toward the edge of the map, in a soft circle around
+// Fades geometry into clouds toward the edge of the map, in a ragged circle around
 // the challenge area, so the square terrain tile never shows a hard border.
 import * as THREE from "three";
 import { focusCenter } from "./focus";
 
 export const EDGE = { start: 4200, end: 7300 };
+
+const CLOUD_SCALE = 900; // metres per noise cell
+const CLOUD_WOBBLE = 1800; // how far the cloud border reaches in and out, metres
+
+// Value noise + fBm, small enough to inline into three's shaders.
+const CLOUD_NOISE = `
+float cloudHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float cloudNoise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(cloudHash(i), cloudHash(i + vec2(1, 0)), u.x), mix(cloudHash(i + vec2(0, 1)), cloudHash(i + vec2(1, 1)), u.x), u.y);
+}
+float cloudFbm(vec2 p) {
+  float v = 0.0, a = 0.5;
+  for (int k = 0; k < 4; k++) { v += a * cloudNoise(p); p = p * 2.03 + 17.0; a *= 0.5; }
+  return v;
+}`;
 
 export function withEdgeFade<M extends THREE.Material>(material: M): M {
   const previous = material.onBeforeCompile.bind(material);
@@ -14,13 +31,22 @@ export function withEdgeFade<M extends THREE.Material>(material: M): M {
       .replace("#include <common>", "#include <common>\nvarying vec2 vEdgeXZ;")
       .replace("#include <begin_vertex>", "#include <begin_vertex>\nvEdgeXZ = (modelMatrix * vec4(transformed, 1.0)).xz;");
     shader.fragmentShader = shader.fragmentShader
-      .replace("#include <common>", "#include <common>\nvarying vec2 vEdgeXZ;\nuniform vec4 uEdge;")
+      .replace("#include <common>", `#include <common>\nvarying vec2 vEdgeXZ;\nuniform vec4 uEdge;\n${CLOUD_NOISE}`)
       .replace(
         "#include <fog_fragment>",
         `#include <fog_fragment>
         #ifdef USE_FOG
-          float edgeFade = smoothstep(uEdge.z, uEdge.w, distance(vEdgeXZ, uEdge.xy));
-          gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, edgeFade);
+          // Cloudy border: the fade distance wobbles with noise, and a puffy white band
+          // sits where the map dissolves, then blends into the sky.
+          vec2 cp = vEdgeXZ / ${CLOUD_SCALE.toFixed(1)};
+          float n = cloudFbm(cp);
+          float d = distance(vEdgeXZ, uEdge.xy) + (n - 0.5) * ${CLOUD_WOBBLE.toFixed(1)};
+          float edgeFade = smoothstep(uEdge.z, uEdge.w, d);
+          float puff = smoothstep(0.35, 0.75, cloudFbm(cp * 2.7 + 7.0));
+          vec3 cloud = mix(fogColor * 0.97, vec3(1.0), 0.55 + 0.45 * puff);
+          float band = sin(3.14159 * clamp(edgeFade * 1.25, 0.0, 1.0));
+          vec3 edgeColor = mix(fogColor, cloud, band);
+          gl_FragColor.rgb = mix(gl_FragColor.rgb, edgeColor, smoothstep(0.0, 0.55, edgeFade));
         #endif`,
       );
   };

@@ -34,6 +34,14 @@ function boot(): Promise<RunYear> {
 
 ctx.onmessage = async (e: MessageEvent<ToWorker>) => {
   const msg = e.data;
+  if (msg.type === "warmup") {
+    try {
+      await boot();
+    } catch (err) {
+      post({ type: "error", id: null, message: err instanceof Error ? err.message.split("\n").slice(-3).join("\n") : String(err) });
+    }
+    return;
+  }
   try {
     const runYear = await boot();
     const rows = JSON.parse(runYear(msg.buildingId, JSON.stringify(msg.params), msg.year));

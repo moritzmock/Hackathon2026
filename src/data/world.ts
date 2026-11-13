@@ -27,15 +27,21 @@ let promise: Promise<WorldData> | undefined;
 let result: WorldData | undefined;
 let error: unknown;
 
-export function readWorld(): WorldData {
-  if (result) return result;
-  if (error) throw error;
-  promise ??= load().then(
+function start(): Promise<WorldData> {
+  return (promise ??= load().then(
     (r) => (result = r),
     (e) => {
       error = e;
       throw e;
     },
-  );
-  throw promise;
+  ));
+}
+
+/** Resolves when the world files are loaded (used by the loading screen). */
+export const worldLoaded = () => start();
+
+export function readWorld(): WorldData {
+  if (result) return result;
+  if (error) throw error;
+  throw start();
 }

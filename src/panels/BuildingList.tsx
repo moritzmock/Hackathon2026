@@ -6,6 +6,7 @@ import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 import { useStore } from "../store";
 import { buildingName, initials } from "./buildingName";
+import { ModelStatus } from "./ModelStatus";
 
 const ids = challenge.buildings.map((b) => b.id);
 
@@ -15,7 +16,6 @@ const ids = challenge.buildings.map((b) => b.id);
  */
 export function BuildingList() {
   const selected = useStore((s) => s.selected);
-  const query = useStore((s) => s.query.trim().toLowerCase());
   const select = useStore((s) => s.select);
 
   useEffect(() => {
@@ -32,13 +32,6 @@ export function BuildingList() {
     return () => window.removeEventListener("keydown", onKey);
   }, [selected, select]);
 
-  const shown = challenge.buildings.filter((b) => {
-    if (!query) return true;
-    const f = b.facts;
-    return [buildingName(b.id), f.building_typology, f.building_use, f.heat_generator_type, f.construction_year]
-      .some((v) => String(v).toLowerCase().includes(query));
-  });
-
   return (
     <section className="list" aria-label="Challenge buildings">
       <header className="list__head">
@@ -48,9 +41,9 @@ export function BuildingList() {
         </button>
       </header>
       <div className="list__scroll">
-        {shown.map((b) => <BuildingCard key={b.id} b={b} active={b.id === selected} />)}
-        {!shown.length && <p className="list__empty">No building matches “{query}”.</p>}
+        {challenge.buildings.map((b) => <BuildingCard key={b.id} b={b} active={b.id === selected} />)}
       </div>
+      <ModelStatus />
     </section>
   );
 }
