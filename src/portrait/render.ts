@@ -64,9 +64,9 @@ export function renderPortraits(): Record<string, string[]> {
       scene.add(sun);
 
       const cam = new THREE.PerspectiveCamera(FOV, WIDTH / HEIGHT, 1, 5000);
-      const target = new THREE.Vector3(0, height * 0.5, 0);
-      const sphere = Math.hypot(radius * 0.9, height * 0.55);
-      const dist = (sphere / Math.sin(THREE.MathUtils.degToRad(FOV) / 2)) * 0.56; // tight: the building fills the frame
+      const target = new THREE.Vector3(0, height * 0.42, 0);
+      const sphere = Math.hypot(radius * 1.05, height * 0.6);
+      const dist = (sphere / Math.sin(THREE.MathUtils.degToRad(FOV) / 2)) * 0.86; // the whole building with some air around it
       out[b.id] = VIEWS.map(({ az, el }) => {
         cam.position.set(Math.cos(az) * Math.cos(el) * dist, target.y + Math.sin(el) * dist, Math.sin(az) * Math.cos(el) * dist);
         cam.lookAt(target);
