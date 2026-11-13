@@ -5,3 +5,4 @@ dist/
 *.local
 public/py/
 .playwright-mcp/
+*.tsbuildinfo

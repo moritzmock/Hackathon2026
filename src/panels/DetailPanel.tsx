@@ -1,22 +1,27 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { MonthlyBars } from "../charts/MonthlyBars";
+import { CompareLines } from "../charts/CompareLines";
+import { optimisedFor } from "../data/optimised";
 import { buildingsById } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 import { useStore } from "../store";
 import { buildingName, buildingNumber } from "./buildingName";
 import { WhatIf } from "./WhatIf";
+import { RunProgress } from "./RunProgress";
+import { Card } from "@/components/ui/card";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const n = (v: unknown, digits = 0) => (typeof v === "number" ? v.toLocaleString("en-US", { maximumFractionDigits: digits }) : "–");
 
 function Content({ b }: { b: ChallengeBuilding }) {
   const select = useStore((s) => s.select);
   const run = useStore((s) => s.runs[b.id]);
-  const [tuning, setTuning] = useState(false);
-  const rows = run?.status === "done" ? run.rows : undefined;
+  const opt = optimisedFor(b.id);
+  const rows = run?.rows;
   const base = baselineWape(b.records);
   const w = rows ? wape(b.records, simLookup(rows)) : undefined;
+  // Scored here like yours (all four months), not taken from the file.
+  const optScore = opt ? score(wape(b.records, simLookup(opt.rows))) : undefined;
   const f = b.facts;
   return (
     <>
@@ -29,49 +34,26 @@ function Content({ b }: { b: ChallengeBuilding }) {
         <button className="close" onClick={() => select(null)} aria-label="Close">×</button>
       </header>
 
-      <ul className="chips">
-        <li>{n(f.conditioned_floor_area_m2)} m² heated</li>
-        <li>{String(f.floors_above_ground)} floors</li>
-        <li>{n(f.total_height_m, 1)} m tall</li>
-        <li>wall U {n(f.wall_u_value_w_m2k, 2)}</li>
-        <li>window U {n(f.window_u_value_w_m2k, 2)}</li>
-      </ul>
+      <p className="mb-3 text-xs text-muted-foreground">
+        {n(f.conditioned_floor_area_m2)} m² heated · {String(f.floors_above_ground)} floors · {n(f.total_height_m, 1)} m tall
+      </p>
 
-      <div className="kpis">
-        <div>
-          <span>Baseline score</span>
-          <b>{score(base)!.toFixed(0)}</b>
-        </div>
-        <div className={w === undefined ? "kpi--empty" : "kpi--whatif"}>
-          <span>Your score</span>
-          <b>{w === undefined ? "–" : score(w)!.toFixed(0)}</b>
-        </div>
-        <div>
-          <span>{w === undefined ? "Baseline" : "Your"} error</span>
-          <b>{(w ?? base).toFixed(0)}%</b>
-        </div>
+      {/* Scores, chart and progress stay in view while the settings scroll. */}
+      <div className="sticky -top-5 z-10 -mx-5 mb-2 bg-[var(--surface)] px-5 pt-1 pb-2">
+      <div className="mb-3 grid grid-cols-2 gap-2">
+        <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${w === undefined ? "" : "bg-[color-mix(in_srgb,var(--whatif)_12%,var(--paper))]"}`}>
+          <span className="text-[0.7rem] text-muted-foreground">Your settings</span>
+          <b className="text-2xl tabular-nums text-[var(--whatif)]">{score(w ?? base)!.toFixed(0)}<small className="ml-1 text-xs font-normal text-muted-foreground">/ 100</small></b>
+        </Card>
+        <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${opt ? "bg-[color-mix(in_srgb,var(--optimised)_12%,var(--paper))]" : ""}`}>
+          <span className="text-[0.7rem] text-muted-foreground">Optimised</span>
+          <b className={`text-2xl tabular-nums ${opt ? "text-[var(--optimised)]" : "text-[var(--line)]"}`}>{optScore !== undefined ? optScore.toFixed(0) : "–"}<small className="ml-1 text-xs font-normal text-muted-foreground">{opt ? "/ 100" : "no result yet"}</small></b>
+        </Card>
       </div>
-
-      <MonthlyBars records={b.records} sim={rows} />
-
-      <button className="expander" onClick={() => setTuning(!tuning)} aria-expanded={tuning}>
-        <span>Try your own parameters</span>
-        <motion.span animate={{ rotate: tuning ? 45 : 0 }} className="expander__icon">+</motion.span>
-      </button>
-      <AnimatePresence initial={false}>
-        {tuning && (
-          <motion.div
-            key="whatif"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.2, 0.7, 0.2, 1] }}
-            style={{ overflow: "hidden" }}
-          >
-            <WhatIf id={b.id} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"} />
+        <RunProgress id={b.id} />
+      </div>
+      <WhatIf id={b.id} />
     </>
   );
 }
@@ -91,7 +73,9 @@ export function DetailPanel() {
           exit={{ x: 40, opacity: 0 }}
           transition={{ type: "spring", stiffness: 320, damping: 32 }}
         >
-          <Content b={b} />
+          <TooltipProvider delayDuration={150}>
+            <Content b={b} />
+          </TooltipProvider>
         </motion.aside>
       )}
     </AnimatePresence>

@@ -3,7 +3,10 @@
 import type { SimRow } from "../data/types";
 import type { FromWorker, ToWorker } from "./protocol";
 
-const YEARS = [2018, 2019];
+export const YEARS = [2018, 2019];
+
+/** The one-time setup steps a worker reports, in order (see sim.worker.ts and boot.ts). */
+export const SETUP_STEPS = ["Downloading Python runtime", "Loading scientific Python", "Installing building model", "Preparing simulation"];
 const POOL_SIZE = Math.max(1, Math.min(YEARS.length * 2, Math.floor((navigator.hardwareConcurrency || 2) / 2)));
 
 type Pending = { resolve: (rows: SimRow[]) => void; reject: (e: Error) => void };
@@ -60,7 +63,13 @@ function runYear(buildingId: string, params: Record<string, number>, year: numbe
 }
 
 /** Simulate one building for all weather years; params may be partial (rest = organizer defaults). */
-export async function simulate(buildingId: string, params: Record<string, number>): Promise<SimRow[]> {
-  const perYear = await Promise.all(YEARS.map((y) => runYear(buildingId, params, y)));
+export async function simulate(
+  buildingId: string,
+  params: Record<string, number>,
+  onYearDone?: (year: number) => void,
+): Promise<SimRow[]> {
+  const perYear = await Promise.all(
+    YEARS.map((y) => runYear(buildingId, params, y).then((rows) => (onYearDone?.(y), rows))),
+  );
   return perYear.flat().sort((a, b) => a.year - b.year || a.month - b.month);
 }

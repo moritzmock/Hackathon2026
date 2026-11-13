@@ -5,6 +5,9 @@ import { useStore } from "../store";
 import { buildingAnchor } from "../world/focus";
 import { buildingNumber } from "../panels/buildingName";
 
+// Buildings 1 and 2 are ~200 m apart; put 2's label under its pin so it does not cover pin 1.
+const LABEL_BELOW = new Set(["building_02"]);
+
 export function BuildingPins() {
   const selected = useStore((s) => s.selected);
   const hovered = useStore((s) => s.hovered);
@@ -23,7 +26,7 @@ export function BuildingPins() {
               aria-label={`Open ${b.id}`}
             >
               {buildingNumber(b.id)}
-              <span className="pin__label">{String(b.facts.building_typology)}</span>
+              <span className={`pin__label${LABEL_BELOW.has(b.id) ? " pin__label--below" : ""}`}>{String(b.facts.building_typology)}</span>
             </button>
           </Html>
         );

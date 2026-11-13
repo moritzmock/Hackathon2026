@@ -12,6 +12,7 @@
   --measured: #4a78a8;
   --baseline: #df8b3e;
   --whatif: #3f8f6f;
+  --optimised: #7b5cc4;
   --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --shadow: 0 12px 40px rgb(84 62 30 / 0.14), 0 2px 6px rgb(84 62 30 / 0.08);
   --spring: cubic-bezier(0.2, 0.7, 0.2, 1);
@@ -96,6 +97,7 @@ h2, h3 { margin: 0; letter-spacing: -0.02em; }
   padding: 0.2rem 0.55rem; border-radius: 999px;
   opacity: 0; transition: opacity 0.18s, transform 0.18s var(--spring);
 }
+.pin__label--below { bottom: auto; top: calc(100% + 8px); }
 .pin:hover .pin__label, .pin--hover .pin__label { opacity: 1; transform: translate(-50%, 0); }
 
 .badge {
@@ -211,3 +213,25 @@ h2, h3 { margin: 0; letter-spacing: -0.02em; }
   .menu { top: 72px; left: 8px; right: 8px; bottom: 8px; width: auto; }
   .detail { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 62%; }
 }
+
+/* Compare chart and settings panel (run 001) */
+.detail { width: min(440px, calc(100% - 32px)); }
+.legend { flex-wrap: wrap; gap: 0.25rem 0.9rem; }
+.legend span { white-space: nowrap; }
+.legend--off { opacity: 0.45; }
+.line--running { opacity: 0.35; animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: 0.15; } }
+
+/* shadcn tokens mapped to the app's warm palette */
+:root {
+  --background: var(--surface); --foreground: var(--ink);
+  --card: var(--paper); --card-foreground: var(--ink);
+  --popover: var(--ink); --popover-foreground: var(--surface);
+  --primary: var(--ink); --primary-foreground: var(--surface);
+  --secondary: var(--paper); --secondary-foreground: var(--ink);
+  --muted-foreground: var(--muted); --accent-foreground: var(--ink);
+  --border: var(--line); --input: var(--line); --ring: var(--accent-deep);
+}
+[data-slot="slider-track"] { background: var(--line); }
+[data-slot="slider-range"] { background: color-mix(in srgb, var(--whatif) 70%, var(--line)); }
+[data-slot="slider-thumb"] { border-color: var(--whatif); }

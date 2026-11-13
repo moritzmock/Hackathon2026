@@ -98,7 +98,32 @@ months.
 
 ## Status
 
-in progress: planning, step 2 of 4.
+in progress: step 2 (UX/UI) being tried in the main repo; steps 3
+(architecture) and 4 (checks) not yet discussed.
+
+- The prototype moved into the main repo (owner's request), merged by hand
+  into the files the other sessions had changed since the copy. The copy in
+  `../Hackathon2026-prototypes/compare-chart` is no longer used.
+- Added: `src/charts/CompareLines.tsx`, `src/panels/RunProgress.tsx`,
+  `src/data/optimised.{ts,json}`, `scripts/bake_optimised.ts`,
+  `data/submission_result.json`, shadcn/ui (`components.json`,
+  `src/components/ui/`, `src/lib/utils.ts`, `src/index.css`, Tailwind v4 in
+  `vite.config.ts`, `@` alias in `tsconfig.json`).
+- Changed: `src/panels/DetailPanel.tsx`, `src/panels/WhatIf.tsx`,
+  `src/store.ts` (run start time, finished years, setup step, model ready
+  time, last calculation time; the previous line stays during a run),
+  `src/sim/client.ts` (`simulate` reports each finished year),
+  `src/styles.css` (appended), `package.json`.
+- Clearer loading (owner asked): a box under the chart. First time: "Setting
+  up the model", step n of 4 in plain words, a bar and a clock. Then:
+  "Calculating your settings", "0:10 of about 0:45" with a bar, and a tick per
+  winter (2018, 2019) as each finishes. Changed during a run: "that runs
+  next". Afterwards: "Updated in N s". The estimate is the last measured
+  calculation time (45 s until one is measured). Scores, chart and this box
+  stay pinned at the top of the panel while the settings scroll.
+- Checked by hand in the browser at http://127.0.0.1:5182: setup steps,
+  calculating state, the update, the pinned chart. `npx tsc -b` passes. No
+  automatic checks yet (step 4).
 
 ## Result
 
