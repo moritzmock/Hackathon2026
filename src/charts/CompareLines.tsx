@@ -83,7 +83,7 @@ export function CompareLines({
           );
         })}
       </svg>
-      <figcaption className="tip">{tip ?? "Hover a point for values"}</figcaption>
+      {tip && <figcaption className="tip">{tip}</figcaption>}
     </figure>
   );
 }

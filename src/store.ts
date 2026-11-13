@@ -32,7 +32,7 @@ export const LAYER_LABELS: Record<keyof Layers, string> = {
   trees: "Trees",
   cars: "Cars",
   pins: "Pins",
-  miniature: "Miniature effect",
+  miniature: "Tilt-shift blur",
 };
 
 interface State {
@@ -50,8 +50,6 @@ interface State {
   /** Seconds the last warm run took, to estimate the next one. */
   lastWarmSeconds: number | undefined;
   layers: Layers;
-  menuOpen: boolean;
-  setMenu: (open: boolean) => void;
   select: (id: string | null) => void;
   hover: (id: string | null) => void;
   setParam: (id: string, name: string, value: number) => void;
@@ -71,10 +69,8 @@ export const useStore = create<State>((set, get) => ({
   modelReady: false,
   readyAt: undefined,
   lastWarmSeconds: undefined,
-  layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true },
-  menuOpen: false,
-  setMenu: (menuOpen) => set({ menuOpen }),
-  select: (selected) => set(selected ? { selected, menuOpen: false } : { selected }),
+  layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: false },
+  select: (selected) => set({ selected }),
   hover: (hovered) => set({ hovered }),
   setParam: (id, name, value) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], [name]: value } } })),
   setParams: (id, values) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], ...values } } })),

@@ -347,19 +347,19 @@ def centred(p: Polygon) -> Polygon:
 
 # --------------------------------------------------------------------------- ground texture
 
-PALETTE = {  # lush "miniature town" colours
-    "base": (172, 206, 112),       # unmapped land reads as lawn
-    "farmland": (196, 214, 132),
-    "meadow": (162, 204, 100),
-    "vineyard": (178, 206, 110),
-    "forest": (104, 158, 76),
-    "scrub": (140, 184, 92),
-    "rock": (214, 210, 200),
-    "park": (146, 198, 92),
-    "water": (104, 176, 222),
-    "road": (205, 205, 202),
-    "road_major": (190, 190, 188),
-    "rail": (180, 172, 160),
+PALETTE = {  # calm, light map: soft greys and muted greens, white streets
+    "base": (234, 236, 232),
+    "farmland": (228, 233, 220),
+    "meadow": (218, 230, 207),
+    "vineyard": (222, 232, 210),
+    "forest": (201, 220, 190),
+    "scrub": (212, 225, 200),
+    "rock": (232, 232, 230),
+    "park": (208, 226, 196),
+    "water": (150, 190, 216),
+    "road": (255, 255, 255),
+    "road_major": (255, 255, 255),
+    "rail": (214, 214, 212),
 }
 
 

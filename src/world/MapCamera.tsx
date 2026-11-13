@@ -9,7 +9,7 @@ import * as THREE from "three";
 import { buildingsById } from "../data/challenge";
 import { useStore } from "../store";
 import { EDGE } from "./edgeFade";
-import { focusCenter } from "./focus";
+import { buildingAnchor, focusCenter } from "./focus";
 
 const ACTION = CameraControlsImpl.ACTION;
 const MIN_DISTANCE = 35;
@@ -22,21 +22,37 @@ export function MapCamera() {
   const ref = useRef<CameraControls>(null);
   const selected = useStore((s) => s.selected);
   const placed = useRef(false);
-  const { gl, camera, scene } = useThree();
+  const { gl, camera, scene, invalidate } = useThree();
 
   // Wheel zoom toward the cursor: move camera and target toward the ground point P
   // under the cursor by the same factor, so P stays under the cursor.
   useEffect(() => {
     const el = gl.domElement;
-    // Listen on the canvas wrapper so scrolling over the HTML pins zooms too.
-    const area = el.parentElement ?? el;
+    // Listen on the R3F container (canvas wrapper + drei <Html> layer) so scrolling over
+    // the pins zooms too. The side panels live outside it and keep their own scrolling.
+    const area = el.parentElement?.parentElement ?? el;
     const ray = new THREE.Raycaster();
     const ndc = new THREE.Vector2();
     const pos = new THREE.Vector3();
     const target = new THREE.Vector3();
+    const anchor = new THREE.Vector3();
+    // What the cursor points at: a pin's building, else the ground or a challenge building.
+    // (The merged city mesh is skipped: ~1M triangles is too slow to test on every scroll.)
+    const zoomPoint = (e: WheelEvent): THREE.Vector3 | undefined => {
+      const pinId = (e.target as HTMLElement | null)?.closest?.("[data-building]")?.getAttribute("data-building");
+      const pinned = pinId ? buildingsById[pinId] : undefined;
+      if (pinned) return anchor.set(...buildingAnchor(pinned, 14)); // same point the pin sits on
+      const r = el.getBoundingClientRect();
+      ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      ray.setFromCamera(ndc, camera);
+      const surfaces: THREE.Object3D[] = [];
+      scene.traverse((o) => {
+        if (o.visible && (o.name === "terrain" || o.name === "zoomable")) surfaces.push(o);
+      });
+      return ray.intersectObjects(surfaces, false)[0]?.point;
+    };
     const onWheel = (e: WheelEvent) => {
       const c = ref.current;
-      const terrain = scene.getObjectByName("terrain");
       if (!c) return;
       e.preventDefault();
       // Lines/pages → pixels; trackpad pinch arrives as ctrl+wheel with small deltas.
@@ -48,18 +64,15 @@ export function MapCamera() {
       k = THREE.MathUtils.clamp(k, MIN_DISTANCE / distance, MAX_DISTANCE / distance);
       if (Math.abs(k - 1) < 1e-4) return;
 
-      const r = el.getBoundingClientRect();
-      ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-      ray.setFromCamera(ndc, camera);
-      const hit = terrain ? ray.intersectObject(terrain, false)[0] : undefined;
-      const p = hit ? hit.point : target;
+      const p = zoomPoint(e) ?? target;
       pos.sub(p).multiplyScalar(k).add(p);
       target.sub(p).multiplyScalar(k).add(p);
       c.setLookAt(pos.x, pos.y, pos.z, target.x, target.y, target.z, true);
+      invalidate(); // frameloop is "demand": start rendering the transition
     };
     area.addEventListener("wheel", onWheel, { passive: false });
     return () => area.removeEventListener("wheel", onWheel);
-  }, [gl, camera, scene]);
+  }, [gl, camera, scene, invalidate]);
 
   // Fly to the selected building (or back home).
   useEffect(() => {

@@ -71,10 +71,9 @@ export function WhatIf({ id }: { id: string }) {
 
   return (
     <section className="space-y-4 border-t pt-4">
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold">Settings</h3>
+      <div className="flex items-center justify-end gap-2">
         <div className="flex gap-1">
-          <Button size="sm" variant="outline" disabled={!optimised} onClick={() => optimised && setParams(id, optimised.params)}>
+          <Button size="sm" variant="outline" disabled={!optimised} title="Copy the optimised settings (the purple ticks on the sliders)" onClick={() => optimised && setParams(id, optimised.params)}>
             <Sparkles /> Use optimised
           </Button>
           <Button size="sm" variant="ghost" disabled={!changed} onClick={() => resetParams(id)} aria-label="Reset to defaults">
@@ -116,7 +115,6 @@ export function WhatIf({ id }: { id: string }) {
           })}
         </div>
       ))}
-      {optimised && <p className="text-[0.7rem] text-muted-foreground">The purple tick above a slider is the optimised value.</p>}
     </section>
   );
 }

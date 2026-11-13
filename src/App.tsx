@@ -2,8 +2,8 @@ import { PerformanceMonitor } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useState } from "react";
 import { DetailPanel } from "./panels/DetailPanel";
-import { Menu } from "./panels/Menu";
-import { Rail } from "./panels/Rail";
+import { BuildingDock } from "./panels/BuildingDock";
+import { LayersControl } from "./panels/LayersControl";
 import { Scene } from "./world/Scene";
 
 export function App() {
@@ -22,8 +22,8 @@ export function App() {
           <PerformanceMonitor onIncline={() => setDpr(Math.min(1.5, window.devicePixelRatio))} onDecline={() => setDpr(1)} />
           <Scene />
         </Canvas>
-        <Rail />
-        <Menu />
+        <LayersControl />
+        <BuildingDock />
         <DetailPanel />
       </main>
     </div>

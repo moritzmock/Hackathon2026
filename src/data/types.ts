@@ -65,4 +65,6 @@ export interface DetailsData {
   cars: number[];
   /** flat [x, y, z, scale] per bush (decoration). */
   bushes: number[];
+  /** Water surface: flat triangles [x0, y0, z0, x1, y1, z1, x2, y2, z2, …]. */
+  water: number[];
 }

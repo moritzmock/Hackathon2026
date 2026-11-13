@@ -33,6 +33,7 @@ function Target({ b }: { b: ChallengeBuilding }) {
   });
   return (
     <mesh
+      name="zoomable"
       geometry={geometry}
       material={material}
       castShadow

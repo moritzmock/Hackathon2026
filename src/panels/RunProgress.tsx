@@ -84,7 +84,7 @@ export function RunProgress({ id }: { id: string }) {
     return <Box><Line icon={<Check className="size-3.5 text-[var(--whatif)]" />} text="Updated" aside={`in ${Math.round(run.seconds!)} s`} /></Box>;
   }
 
-  return <p className="text-xs text-muted-foreground">Move a setting; the green line updates by itself.</p>;
+  return null;
 }
 
 function Box({ children, tone }: { children: React.ReactNode; tone?: "error" }) {

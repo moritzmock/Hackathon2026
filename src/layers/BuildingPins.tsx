@@ -24,6 +24,7 @@ export function BuildingPins() {
               onPointerEnter={() => hover(b.id)}
               onPointerLeave={() => hover(null)}
               aria-label={`Open ${b.id}`}
+              data-building={b.id} // MapCamera zooms toward this building when scrolling over the pin
             >
               {buildingNumber(b.id)}
               <span className={`pin__label${LABEL_BELOW.has(b.id) ? " pin__label--below" : ""}`}>{String(b.facts.building_typology)}</span>

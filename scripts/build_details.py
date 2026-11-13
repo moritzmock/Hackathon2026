@@ -14,6 +14,7 @@ Output: public/data/details.json
   trees: flat [x, y, z, scale, shape, …]                  shape 0 = round, 1 = cone
   cars:  flat [x, y, z, heading, colour, …]
   bushes: flat [x, y, z, scale, …]                        decoration in yards and parks
+  water: flat triangles [x0, y0, z0, x1, y1, z1, x2, y2, z2, …]  rivers and lakes (real), draped
 Coordinates as in city.json: x east, y north, z metres above terrain minimum.
 
 Run: npm run data   (runs build_world.py, then this)
@@ -25,8 +26,10 @@ import math
 import random
 
 import numpy as np
+import shapely
 from shapely import STRtree
 from shapely.geometry import LineString, Point, Polygon
+from shapely.ops import unary_union
 
 import build_world as world
 
@@ -38,6 +41,10 @@ YARD_RADIUS = 1900
 YARD_TREES_PER_M2 = 1 / 700
 BUSHES_PER_M2 = 1 / 260
 MAX_BUSHES = 26000
+RIVER_HALF_WIDTH = {"river": 12.0, "canal": 4.0, "stream": 2.0}
+WATER_RADIUS = 7400.0   # water surface is built out to where the map fades into the sky
+WATER_SEGMENT = 40.0    # vertex spacing so the water surface follows the terrain
+WATER_MARGIN = 3.0      # keep trees, bushes and cars this far from the water
 SEED = 2026
 
 ROADS = {  # highway → (width m, kind)
@@ -91,8 +98,30 @@ def main() -> None:
                   if near((b[2][0], b[2][1]), centre)]
     blocked = STRtree([p.buffer(1.5) for p in footprints if p.is_valid])
 
+    # Water (real OSM rivers and lakes) blocks trees, bushes and cars, and gets its own surface.
+    water_parts = []
+    for e in context:
+        tags = e.get("tags", {})
+        if world.land_class(tags) == "water":
+            for outer, holes in world.element_polygons(e):
+                poly = Polygon(outer, holes)
+                water_parts.append(poly if poly.is_valid else poly.buffer(0))
+        elif tags.get("waterway") in RIVER_HALF_WIDTH:
+            for line in world.element_lines(e):
+                water_parts.append(LineString(line).buffer(RIVER_HALF_WIDTH[tags["waterway"]]))
+    disk = Point(centre).buffer(WATER_RADIUS, 64)
+    water = unary_union(water_parts).intersection(disk).simplify(1.0)
+    water_keepout = water.buffer(WATER_MARGIN)
+    shapely.prepare(water_keepout)
+
     def free(x, y) -> bool:
-        return len(blocked.query(Point(x, y), predicate="intersects")) == 0
+        p = Point(x, y)
+        return len(blocked.query(p, predicate="intersects")) == 0 and not water_keepout.contains(p)
+
+    flat_water = []
+    for tri in shapely.constrained_delaunay_triangles(shapely.segmentize(water, WATER_SEGMENT)).geoms:
+        for x, y in list(tri.exterior.coords)[:3]:
+            flat_water += [round(x, 1), round(y, 1), round(z_at(x, y), 2)]
 
     # Roads
     roads, car_slots = [], []
@@ -195,8 +224,9 @@ def main() -> None:
         "trees": flat_trees,
         "cars": flat_cars,
         "bushes": flat_bushes,
+        "water": flat_water,
     }, separators=(",", ":")))
-    print(f"details: {len(roads)} roads, {len(trees)} trees ({real} mapped in OSM), {len(flat_cars) // 5} cars, {len(bushes)} bushes")
+    print(f"details: {len(roads)} roads, {len(trees)} trees ({real} mapped in OSM), {len(flat_cars) // 5} cars, {len(bushes)} bushes, {len(flat_water) // 9} water triangles")
 
 
 if __name__ == "__main__":

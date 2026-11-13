@@ -11,8 +11,6 @@ import { RunProgress } from "./RunProgress";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const n = (v: unknown, digits = 0) => (typeof v === "number" ? v.toLocaleString("en-US", { maximumFractionDigits: digits }) : "–");
-
 function Content({ b }: { b: ChallengeBuilding }) {
   const select = useStore((s) => s.select);
   const run = useStore((s) => s.runs[b.id]);
@@ -34,12 +32,8 @@ function Content({ b }: { b: ChallengeBuilding }) {
         <button className="close" onClick={() => select(null)} aria-label="Close">×</button>
       </header>
 
-      <p className="mb-3 text-xs text-muted-foreground">
-        {n(f.conditioned_floor_area_m2)} m² heated · {String(f.floors_above_ground)} floors · {n(f.total_height_m, 1)} m tall
-      </p>
-
       {/* Scores, chart and progress stay in view while the settings scroll. */}
-      <div className="sticky -top-5 z-10 -mx-5 mb-2 bg-[var(--surface)] px-5 pt-1 pb-2">
+      <div className="detail__pinned sticky -top-5 z-10 -mx-5 mb-2 px-5 pt-1 pb-2">
       <div className="mb-3 grid grid-cols-2 gap-2">
         <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${w === undefined ? "" : "bg-[color-mix(in_srgb,var(--whatif)_12%,var(--paper))]"}`}>
           <span className="text-[0.7rem] text-muted-foreground">Your settings</span>
@@ -67,7 +61,7 @@ export function DetailPanel() {
       {b && (
         <motion.aside
           key={b.id}
-          className="detail"
+          className="detail glass"
           initial={{ x: 40, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 40, opacity: 0 }}

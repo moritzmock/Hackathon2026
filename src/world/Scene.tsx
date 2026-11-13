@@ -17,6 +17,7 @@ import { Targets } from "./Targets";
 import { Terrain } from "./Terrain";
 import { theme } from "./theme";
 import { Trees } from "./Trees";
+import { Water } from "./Water";
 
 const SKY = theme.sky;
 const C = focusCenter;
@@ -32,12 +33,12 @@ function Lights() {
   const d = 2200;
   return (
     <>
-      <hemisphereLight args={["#eef4ff", "#b9a98c", 1.0]} />
+      <hemisphereLight args={["#f4f7fb", "#c9ccc6", 1.25]} />
       <directionalLight
         ref={sun}
         position={[C.x - 2700, C.y + 1350, C.z + 1500]}
         color={theme.sun}
-        intensity={3.6}
+        intensity={3.0}
         castShadow
         shadow-mapSize={[3072, 3072]}
         shadow-bias={-0.0004}
@@ -66,6 +67,7 @@ export function Scene() {
       <Suspense fallback={null}>
         <group onPointerMissed={() => select(null)}>
           <Terrain />
+          <Water />
           {layers.city && <City />}
           {layers.city && <RoofUnits />}
           {layers.streets && <Roads />}
@@ -77,7 +79,7 @@ export function Scene() {
         {layers.pins && <BuildingPins />}
         <StaticShadows version={JSON.stringify(layers)} />
       </Suspense>
-      {layers.miniature && <Effects />}
+      <Effects tiltShift={layers.miniature} />
     </>
   );
 }
