@@ -1,57 +1,51 @@
-import { useCursor } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { Edges, useCursor } from "@react-three/drei";
 import { useMemo } from "react";
 import * as THREE from "three";
 import { challenge } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
 import { useStore } from "../store";
-import { createBuildingMaterial } from "./buildingMaterial";
 import { extrude } from "./geometry";
+import { RoofDetails } from "./RoofDetails";
 import { TargetBounce } from "./TargetBounce";
-import { TargetGlow } from "./TargetGlow";
+import { lookFor } from "./targetLooks";
+import { createTargetMaterial } from "./targetMaterial";
 import { theme } from "./theme";
 
 const WHITE = new THREE.Color("#ffffff");
-const COLORS = {
-  idle: new THREE.Color(theme.target),
-  hover: new THREE.Color(theme.targetHover),
-  selected: new THREE.Color(theme.targetSelected),
-};
 
+/** One challenge building, drawn as it really looks, with an orange edge so it stands out. */
 function Target({ b }: { b: ChallengeBuilding }) {
-  const geometry = useMemo(() => extrude([{ rings: b.rings, base: b.base, height: b.height, color: WHITE, roofColor: WHITE, parapet: true }]), [b]);
-  const material = useMemo(() => createBuildingMaterial({ color: theme.target }), []);
+  const look = lookFor(b.id);
+  const geometry = useMemo(
+    () => extrude([{ rings: b.rings, base: b.base, height: b.height, color: WHITE, roofColor: WHITE, parapet: !look.sloped, sloped: look.sloped }]),
+    [b, look],
+  );
+  const material = useMemo(() => createTargetMaterial(b, look), [b, look]);
   const selected = useStore((s) => s.selected === b.id);
   const hovered = useStore((s) => s.hovered === b.id);
   const { select, hover } = useStore.getState();
   useCursor(hovered);
-  // Ease colour toward its state each frame.
-  useFrame(({ invalidate }, dt) => {
-    const goal = selected ? COLORS.selected : hovered ? COLORS.hover : COLORS.idle;
-    if (material.color.equals(goal)) return;
-    material.color.lerp(goal, 1 - Math.exp(-dt * 10));
-    if (Math.abs(material.color.r - goal.r) + Math.abs(material.color.g - goal.g) + Math.abs(material.color.b - goal.b) < 0.003) material.color.copy(goal);
-    invalidate(); // keep rendering until the colour has settled (frameloop is "demand")
-  });
   return (
     <group>
-    <TargetGlow b={b} strength={selected ? 1.6 : hovered ? 1.3 : 1} />
-    <mesh
-      name="zoomable"
-      geometry={geometry}
-      material={material}
-      castShadow
-      receiveShadow
-      onClick={(e) => {
-        e.stopPropagation();
-        select(b.id);
-      }}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        hover(b.id);
-      }}
-      onPointerOut={() => hover(null)}
-    />
+      <mesh
+        name="zoomable"
+        geometry={geometry}
+        material={material}
+        castShadow
+        receiveShadow
+        onClick={(e) => {
+          e.stopPropagation();
+          select(b.id);
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          hover(b.id);
+        }}
+        onPointerOut={() => hover(null)}
+      >
+        <Edges threshold={30} lineWidth={selected ? 4 : hovered ? 2.5 : 1.5} color={theme.target} />
+      </mesh>
+      <RoofDetails b={b} look={look} />
     </group>
   );
 }

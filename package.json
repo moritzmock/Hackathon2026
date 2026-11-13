@@ -8,10 +8,11 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "typecheck": "tsc",
-    "data": "uv run --no-project --python 3.11 --with openpyxl --with shapely --with pillow --with numpy --with pandas sh -c \"python scripts/build_world.py && python scripts/build_details.py\"",
+    "data": "uv run --no-project --python 3.11 --with openpyxl --with shapely --with pillow --with numpy --with pandas sh -c \"python scripts/build_world.py && python scripts/build_details.py && python scripts/build_weather.py\"",
     "model": "uv run --no-project python scripts/sync_model.py",
     "test:model": "node scripts/test_model.ts",
-    "pipeline": "npm run model && npm run data && npm run test:model"
+    "pipeline": "npm run model && npm run data && npm run test:model",
+    "test": "node --test src/**/*.test.ts"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

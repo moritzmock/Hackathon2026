@@ -26,8 +26,6 @@ export const theme = {
   basket: "#9a6c47",
   // the three challenge buildings: orange accent, matching the interface
   target: "#ff7a33",
-  targetHover: "#ff8c4d",
-  targetSelected: "#ff6a1f",
   road: "#9a9ea5",
   sidewalk: "#ddd8ce",
   kerb: "#ece8e0",

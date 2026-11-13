@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { readWorld } from "../data/world";
 import { createBuildingMaterial } from "./buildingMaterial";
 import { addGroundAttribute, withPop } from "./cityPop";
+import { withRoofSnow } from "./season";
 import { extrude, jitter } from "./geometry";
 import { theme } from "./theme";
 
@@ -39,6 +40,6 @@ export function City() {
     addGroundAttribute(g, heights, city.terrain);
     return g;
   }, [city, heights]);
-  const material = useMemo(() => withPop(createBuildingMaterial({ vertexColors: true }, { groundAttribute: true })), []);
+  const material = useMemo(() => withPop(withRoofSnow(createBuildingMaterial({ vertexColors: true }, { groundAttribute: true }), "city-buildings")), []);
   return <mesh geometry={geometry} material={material} castShadow receiveShadow />;
 }

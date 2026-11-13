@@ -16,6 +16,8 @@ Adds to the React web app kit's rules what is true only for this project.
 - **Data is baked, not fetched live.** The city, terrain and building shapes
   come from `npm run data` as static files; the app does not call
   OpenStreetMap or terrain services at runtime.
+  One exception: the map's "now" weather comes live from the Open Data Hub
+  ([decision 0004](../../decisions/0004-live-weather-for-the-map.md)).
 - **Charts and panels sit on top of the scene** as normal React (HTML) or as
   drei `Html` anchored to a building, so they stay readable and testable.
 - **Simulation off the main thread.** The model runs only in the Web Workers

@@ -20,11 +20,17 @@ export function CompareLines({
   yours,
   optimised,
   running,
+  focus,
+  onPickMonth,
 }: {
   records: MonthlyRecord[];
   yours: SimRow[] | undefined; // undefined: organiser defaults (the baseline)
   optimised: SimRow[] | undefined;
   running: boolean;
+  /** The month the map shows, highlighted on the chart. */
+  focus?: { year: number; month: number } | null;
+  /** Clicking a month's column; clicking the focused month again clears it. */
+  onPickMonth?: (m: { year: number; month: number } | null) => void;
 }) {
   const [tip, setTip] = useState<string | null>(null);
   const at = (rows: SimRow[] | undefined, r: MonthlyRecord) => rows?.find((s) => s.year === r.year && s.month === r.month)?.kwh;
@@ -61,6 +67,17 @@ export function CompareLines({
           </g>
         ))}
         <text x={ml - 6} y={10} textAnchor="end">kWh</text>
+        {records.map((r, i) => {
+          const half = (W - ml - mr) / (records.length - 1) / 2;
+          const on = focus?.year === r.year && focus?.month === r.month;
+          return (
+            <rect key={`col${i}`} className={on ? "chart__col is-on" : "chart__col"}
+              x={x(i) - half} y={mt - 8} width={half * 2} height={H - mt - mb + 30} rx={6}
+              onClick={() => onPickMonth?.(on ? null : { year: r.year, month: r.month })}>
+              <title>{on ? "Back to the weather now" : `Show ${MONTHS[r.month]} ${r.year}'s weather on the map`}</title>
+            </rect>
+          );
+        })}
         {records.map((r, i) => (
           <text key={i} x={x(i)} y={H - mb + 16} textAnchor="middle">
             {MONTHS[r.month]} {r.year}
