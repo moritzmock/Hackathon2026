@@ -21,7 +21,7 @@ export function Effects({ tiltShift }: { tiltShift: boolean }) {
     const b = selected ? buildingsById[selected] : undefined;
     if (!b) return undefined;
     const size = Math.sqrt(b.facts.footprint_area_m2 as number);
-    return { target: new THREE.Vector3(b.centroid[0], b.base + b.height * 0.5, -b.centroid[1]), range: size * 1.4 + b.height };
+    return { target: new THREE.Vector3(b.centroid[0], b.base + b.height * 0.5, -b.centroid[1]), range: size * 2.6 + b.height * 2 };
   }, [selected]);
 
   useFrame(() => {
@@ -38,7 +38,7 @@ export function Effects({ tiltShift }: { tiltShift: boolean }) {
     return (
       <EffectComposer multisampling={0}>
         {ao}
-        <DepthOfField target={focus.target} worldFocusRange={focus.range} bokehScale={3.2} resolutionScale={0.5} />
+        <DepthOfField target={focus.target} worldFocusRange={focus.range} bokehScale={1.6} resolutionScale={0.5} />
       </EffectComposer>
     );
   }
