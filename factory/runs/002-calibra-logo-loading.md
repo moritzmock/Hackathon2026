@@ -80,9 +80,22 @@ the tab icon (`public/favicon.svg`). Colours come from the brand tokens that
 another session added to `styles.css` (`--brand-violet`, `--brand-orange`).
 Checked: type check passed; screenshot of the loading screen.
 
+### Follow-up: the Calibra rebrand
+
+The owner turned down the building mark and the two-lines mark, picked a Sora
+wordmark (the i's dot is an orange brand tile that settles while loading) and
+the icon "C on an ink tile", and asked to rebrand the whole app. Done: violet
+replaced by ink, orange and a teal for the optimised result; Sora for the name
+and headings, Inter for text (both bundled with `@fontsource`; Inter was
+declared before but never loaded); new tab icon. Recorded in
+[decision 0005](../../docs/decisions/0005-calibra-brand.md). Checked: type
+check passed; screenshots of the loading screen and of the app with a
+building open.
+
 ## Later
 
-- The name "Calibra" is only on the loading screen and the tab so far; the
-  building list header and the README still say "Bolzano".
+- The name "Calibra" is on the loading screen and the tab; the building list
+  header and the README still say "Bolzano". The building photo backgrounds
+  keep a faint lilac tint.
 - The logo is only an SVG in code; there is no exported PNG/SVG kit for
   slides yet.

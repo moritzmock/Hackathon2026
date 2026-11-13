@@ -1,35 +1,50 @@
-// The Calibra logo, "digital twin": a slate-grey building with its simulated twin drawn as an
-// orange outline. Before calibration the simulation overestimates energy use, so while
-// something loads the twin starts too tall, overshoots and settles onto the real building.
-// Shapes and colours follow the INTEGRATES brand (tiles with one large rounded corner).
+// The Calibra brand: a Sora wordmark whose "i" has an orange tile for a dot, and an icon
+// with a C on a near-black tile and the orange tile in its opening. The orange tile is the
+// simulation: while something loads it drops in from too high (before calibration the
+// model overestimates), overshoots and settles into place.
 
-/** The building with the curved roof corner (a 48-unit grid, base at the bottom). */
-const BUILDING = "M12 12 H26 A10 10 0 0 1 36 22 V44 H12 Z";
-const WINDOW_ROWS = [20, 28, 36];
-const WINDOW_COLUMNS = [16.5, 26.5];
+/** Brand tile: a rounded square with its top-right corner sharp (48-unit grid). */
+const TILE = "M15 2 H44 Q46 2 46 4 V33 A13 13 0 0 1 33 46 H15 A13 13 0 0 1 2 33 V15 A13 13 0 0 1 15 2 Z";
+/** The C: an arc open on the right, ends at ±50°. */
+const C_ARC = "M29.07 15.57 A11 11 0 1 0 29.07 32.43";
+/** The small orange tile that completes the C. */
+const PIECE = "M30.4 21 H35.5 Q36 21 36 21.5 V24.6 A2.4 2.4 0 0 1 33.6 27 H32.4 A2.4 2.4 0 0 1 30 24.6 V23.4 A2.4 2.4 0 0 1 32.4 21 Z";
 
-/** The mark alone. `spinning` makes the twin settle onto the building, over and over. */
-export function CalibraMark({ size = 40, spinning = false }: { size?: number; spinning?: boolean }) {
+/** The square icon. `spinning` makes the orange piece settle into the C, over and over. */
+export function CalibraIcon({ size = 40, spinning = false }: { size?: number; spinning?: boolean }) {
   return (
-    <svg className={`calibra-mark${spinning ? " is-spinning" : ""}`} width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
-      <path d={BUILDING} fill="#4b4f58" />
-      {WINDOW_ROWS.flatMap((y) =>
-        WINDOW_COLUMNS.map((x) => <rect key={`${x}-${y}`} x={x} y={y} width="5" height="5" fill="var(--paper)" />),
-      )}
-      <g className="calibra-mark__twin">
-        <path d={BUILDING} fill="none" stroke="var(--brand-orange)" strokeWidth="2.6" strokeLinejoin="round" />
+    <svg className={`calibra-icon${spinning ? " is-spinning" : ""}`} width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
+      <path d={TILE} fill="var(--ink)" />
+      <path d={C_ARC} fill="none" stroke="var(--surface)" strokeWidth="7" />
+      <g className="calibra-icon__piece">
+        <path d={PIECE} fill="var(--accent)" />
       </g>
     </svg>
   );
 }
 
-/** The mark with the name next to it. */
+/** The name, set in Sora, with the orange tile as the dot of the i. */
+export function CalibraWordmark({ spinning = false }: { spinning?: boolean }) {
+  return (
+    <span className={`calibra-wordmark${spinning ? " is-spinning" : ""}`} aria-label="Calibra">
+      <span aria-hidden="true">
+        Cal
+        <span className="calibra-wordmark__i">
+          ı<span className="calibra-wordmark__dot" />
+        </span>
+        bra
+      </span>
+    </span>
+  );
+}
+
+/** Icon, name and tagline together, as in the loading screen. */
 export function CalibraLogo({ spinning = false }: { spinning?: boolean }) {
   return (
     <span className="calibra-logo">
-      <CalibraMark size={44} spinning={spinning} />
+      <CalibraIcon size={46} spinning={spinning} />
       <span>
-        <span className="calibra-logo__name">Calibra</span>
+        <CalibraWordmark spinning={spinning} />
         <span className="calibra-logo__tag">Bolzano energy twin</span>
       </span>
     </span>

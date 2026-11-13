@@ -9,7 +9,7 @@ import { worldLoaded } from "../data/world";
 import { warmUp } from "../sim/client";
 import { renderPortraits } from "../portrait/render";
 import { useStore } from "../store";
-import { CalibraLogo, CalibraMark } from "./CalibraLogo";
+import { CalibraIcon, CalibraLogo } from "./CalibraLogo";
 
 // Steps in order; weight = share of the progress bar, tau = typical seconds (first visit).
 const STEPS = [
@@ -152,7 +152,7 @@ export function LoadingScreen() {
                   <li key={s.label} className={`is-${state}`}>
                     <span className="loading__icon">
                       {state === "done" ? <Check size={12} strokeWidth={3} />
-                        : state === "active" ? <CalibraMark size={18} spinning />
+                        : state === "active" ? <CalibraIcon size={18} spinning />
                         : state === "error" ? <TriangleAlert size={12} />
                         : null}
                     </span>
