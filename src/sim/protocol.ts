@@ -7,4 +7,5 @@ export type FromWorker =
   | { type: "status"; message: string }
   | { type: "ready"; commit: string }
   | { type: "result"; id: number; rows: { year: number; month: number; kwh: number }[] }
-  | { type: "error"; id: number | null; message: string };
+  /** `message` is short (for the UI); `detail` is a full debug report (traceback, stage, log, environment). */
+  | { type: "error"; id: number | null; message: string; detail?: string };

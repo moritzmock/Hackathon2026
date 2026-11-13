@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { challenge, defaultParams } from "./data/challenge";
 import type { SimRow } from "./data/types";
-import { onModelStatus, SETUP_STEPS, simulate } from "./sim/client";
+import { onModelErrorDetail, onModelStatus, SETUP_STEPS, simulate } from "./sim/client";
 
 export interface Run {
   status: "running" | "done" | "error";
@@ -47,6 +47,10 @@ interface State {
   modelReady: boolean;
   /** Set when the model setup failed. */
   modelError: string | undefined;
+  /** Full debug report for a failed model setup (shown under "Details" on the loading screen). */
+  modelErrorDetail: string | undefined;
+  /** Every model status with its time since page load, for error reports. */
+  modelLog: string[];
   /** When the model became ready (ms, performance.now()). */
   readyAt: number | undefined;
   /** Seconds the last warm run took, to estimate the next one. */
@@ -78,6 +82,8 @@ export const useStore = create<State>((set, get) => ({
   setupStep: 0,
   modelReady: false,
   modelError: undefined,
+  modelErrorDetail: undefined,
+  modelLog: [],
   readyAt: undefined,
   lastWarmSeconds: undefined,
   layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true },
@@ -125,5 +131,8 @@ onModelStatus((modelStatus) =>
     modelError: modelStatus.startsWith("Model error") ? modelStatus.slice("Model error: ".length) : s.modelError,
     readyAt: s.readyAt ?? (modelStatus.startsWith("Model ready") ? performance.now() : undefined),
     setupStep: Math.max(s.setupStep, SETUP_STEPS.indexOf(modelStatus) + 1),
+    modelLog: [...s.modelLog, `${(performance.now() / 1000).toFixed(2).padStart(7)} s  ${modelStatus}`],
   })),
 );
+
+onModelErrorDetail((modelErrorDetail) => useStore.setState({ modelErrorDetail }));
