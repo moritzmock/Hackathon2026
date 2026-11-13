@@ -50,6 +50,12 @@ interface State {
   /** Seconds the last warm run took, to estimate the next one. */
   lastWarmSeconds: number | undefined;
   layers: Layers;
+  /** Building list filter (sidebar search). */
+  query: string;
+  layersOpen: boolean;
+  sidebarCollapsed: boolean;
+  /** Map zoom relative to the overview, in % (shown in the zoom control). */
+  zoomPct: number;
   select: (id: string | null) => void;
   hover: (id: string | null) => void;
   setParam: (id: string, name: string, value: number) => void;
@@ -57,6 +63,9 @@ interface State {
   resetParams: (id: string) => void;
   run: (id: string) => Promise<void>;
   toggleLayer: (layer: keyof Layers) => void;
+  setQuery: (query: string) => void;
+  setLayersOpen: (open: boolean) => void;
+  toggleSidebar: () => void;
 }
 
 export const useStore = create<State>((set, get) => ({
@@ -70,6 +79,10 @@ export const useStore = create<State>((set, get) => ({
   readyAt: undefined,
   lastWarmSeconds: undefined,
   layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true },
+  query: "",
+  layersOpen: false,
+  sidebarCollapsed: false,
+  zoomPct: 100,
   select: (selected) => set({ selected }),
   hover: (hovered) => set({ hovered }),
   setParam: (id, name, value) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], [name]: value } } })),
@@ -100,6 +113,9 @@ export const useStore = create<State>((set, get) => ({
     }
   },
   toggleLayer: (layer) => set((s) => ({ layers: { ...s.layers, [layer]: !s.layers[layer] } })),
+  setQuery: (query) => set({ query }),
+  setLayersOpen: (layersOpen) => set({ layersOpen }),
+  toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }));
 
 onModelStatus((modelStatus) =>

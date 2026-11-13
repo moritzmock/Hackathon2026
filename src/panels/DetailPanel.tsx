@@ -1,15 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
 import { CompareLines } from "../charts/CompareLines";
 import { optimisedFor } from "../data/optimised";
 import { buildingsById } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 import { useStore } from "../store";
-import { buildingName } from "./buildingName";
+import { buildingName, initials } from "./buildingName";
 import { WhatIf } from "./WhatIf";
 import { RunProgress } from "./RunProgress";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
+
 
 function Content({ b }: { b: ChallengeBuilding }) {
   const select = useStore((s) => s.select);
@@ -24,11 +26,13 @@ function Content({ b }: { b: ChallengeBuilding }) {
   return (
     <>
       <header className="detail__head">
+        <span className="detail__avatar" aria-hidden="true">{initials(buildingName(b.id))}</span>
         <div>
           <h2>{buildingName(b.id)}</h2>
           <p className="muted small">{String(f.building_typology)} · built {String(f.construction_year)}</p>
         </div>
-        <button className="close" onClick={() => select(null)} aria-label="Close">×</button>
+        <kbd className="kbd">esc</kbd>
+        <button className="icon-btn" onClick={() => select(null)} aria-label="Close"><X size={16} /></button>
       </header>
 
       {/* Scores, chart and progress stay in view while the settings scroll. */}
@@ -60,10 +64,10 @@ export function DetailPanel() {
       {b && (
         <motion.aside
           key={b.id}
-          className="detail glass"
-          initial={{ x: 40, opacity: 0 }}
+          className="detail"
+          initial={{ x: 24, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          exit={{ x: 40, opacity: 0 }}
+          exit={{ x: 24, opacity: 0 }}
           transition={{ type: "spring", stiffness: 320, damping: 32 }}
         >
           <TooltipProvider delayDuration={150}>
