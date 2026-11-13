@@ -19,6 +19,7 @@ import json
 import re
 import subprocess
 import sys
+import tempfile
 import urllib.request
 from pathlib import Path
 
@@ -62,6 +63,18 @@ def fetch_wheel(name: str, version: str) -> Path:
     return path
 
 
+def publish_file(path: Path, data: bytes) -> None:
+    # A running dev server must see either the old complete file or the new
+    # complete file, never an empty or partly written ZIP/Python wheel.
+    with tempfile.NamedTemporaryFile(dir=path.parent, delete=False) as staged:
+        staged.write(data)
+        staged_path = Path(staged.name)
+    try:
+        staged_path.replace(path)
+    finally:
+        staged_path.unlink(missing_ok=True)
+
+
 def main() -> None:
     if not (UPSTREAM / ".git").exists():
         sys.exit("vendor/integrates missing. Run: git submodule update --init")
@@ -70,21 +83,18 @@ def main() -> None:
     if dirty:
         print("note: vendor/integrates has local edits in src/ or data/; they are ignored (using committed files)")
 
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "integrates.zip").write_bytes(
-        git("archive", "--format=zip", commit, "src/integrates_hackathon", "data")
-    )
-
-    wheel_dir = OUT / "wheels"
-    wheel_dir.mkdir(exist_ok=True)
-    for stale in wheel_dir.glob("*.whl"):
-        stale.unlink()
+    archive = git("archive", "--format=zip", commit, "src/integrates_hackathon", "data")
+    # Deployment requirement: finish downloads before replacing served assets.
+    # Deleting wheels first leaves HTML fallbacks in a running browser when
+    # a download fails, which micropip reports as BadZipFile.
+    downloaded = []
     wheels = []
     for name, version in pinned_versions().items():
         src = fetch_wheel(name, version)
-        (wheel_dir / src.name).write_bytes(src.read_bytes())
+        data = src.read_bytes()
+        downloaded.append((src.name, data))
         wheels.append({"name": name, "version": version, "file": src.name,
-                       "sha256": hashlib.sha256(src.read_bytes()).hexdigest()})
+                       "sha256": hashlib.sha256(data).hexdigest()})
 
     manifest = {
         "integrates_commit": commit,
@@ -94,7 +104,17 @@ def main() -> None:
                              "requests", "tzdata", "six", "micropip"],
         "wheels": wheels,
     }
-    (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1) + "\n")
+    OUT.mkdir(parents=True, exist_ok=True)
+    wheel_dir = OUT / "wheels"
+    wheel_dir.mkdir(exist_ok=True)
+    for filename, data in downloaded:
+        publish_file(wheel_dir / filename, data)
+    publish_file(OUT / "integrates.zip", archive)
+    # Publish the manifest last: every file it names is already complete.
+    publish_file(OUT / "manifest.json", (json.dumps(manifest, indent=1) + "\n").encode())
+    for stale in wheel_dir.glob("*.whl"):
+        if stale.name not in {filename for filename, _ in downloaded}:
+            stale.unlink()
     print(f"packaged integrates@{commit[:7]} + {len(wheels)} wheels -> {OUT.relative_to(ROOT)}")
 
 

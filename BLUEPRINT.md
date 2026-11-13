@@ -52,12 +52,17 @@ Ask before changing any of these.
 - **Attribution:** OpenStreetMap and terrain sources are credited in the
   footer, as their licences require.
 - **Static:** the whole app builds to static files (GitHub Pages or similar).
+- **Deployments include the model:** keep the production build's model
+  packaging and asset checks. Generated Python assets are ignored by Git;
+  a clean deployment must generate them and verify the files in its output.
 - **`/baseline.html` keeps working.**
 
 ## Checks
 
-- `npm run build`: type check and production build. Until the app has
-  tests, this is the product's `verify`.
+- `npm run build`: package the pinned model, type check, build the static
+  site and verify the shipped Python assets. This is the product's `verify`.
+- `npm run test:deployment`: asset-check regressions for missing or damaged
+  model files and a mismatched Python runtime.
 - `npm run test:model`: the in-browser model against the official baseline;
   run it after any change to `src/sim/`, `scripts/sync_model.py` or the
   submodule pin.

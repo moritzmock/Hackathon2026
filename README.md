@@ -9,11 +9,39 @@ Static site: Vite + React + TypeScript + react-three-fiber. The model
 ## Quick start
 
 ```bash
+nvm use                          # Node 24 (see .nvmrc)
 git submodule update --init      # vendor/integrates, pinned
 npm install
 npm run pipeline                 # package model, build world data, parity test
 npm run dev
 ```
+
+Install Node 24 with `nvm install` if needed. The city-data pipeline needs
+`uv`; packaging the browser model only needs Python 3 and Git.
+
+## Deploy on Vercel
+
+Import this Git repository in Vercel with the repository root as the Root
+Directory. The tracked `vercel.json` selects Vite, installs with `npm ci`,
+builds with `npm run build`, and serves `dist/`. Node 24 is declared in
+`package.json`.
+
+Each production build first runs `npm run model`, generating the model
+manifest, archive and Python wheels in `public/py/`. Vite copies them to
+`dist/py/`; the post-build check rejects missing files, runtime-version
+mismatches or damaged wheels. These generated files stay ignored by Git.
+The build needs Python 3, Git, and network access to PyPI.
+
+Vercel supports the public HTTPS submodule in `.gitmodules`. For a local
+build from a fresh clone, initialize it with `git submodule update --init`
+before running `npm run build`. Do not move the model pin when deploying.
+
+After committing and pushing this configuration, deploy the new commit.
+Check that `/py/manifest.json` returns JSON, then open the app and run a
+simulation. No environment variables or Python server are required.
+
+Check the asset guard with `npm run test:deployment` and model parity with
+`npm run test:model`.
 
 ## Pipeline
 

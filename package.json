@@ -3,13 +3,21 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "//": "Deployment requirement: keep prebuild and postbuild. Vercel starts without the gitignored public/py files; prebuild generates them and postbuild verifies dist/py to prevent model-loading 404s.",
   "scripts": {
     "dev": "vite",
+    "prebuild": "npm run model",
     "build": "tsc && vite build",
+    "postbuild": "npm run check:model-assets",
     "preview": "vite preview",
     "typecheck": "tsc",
     "data": "uv run --no-project --python 3.11 --with openpyxl --with shapely --with pillow --with numpy --with pandas sh -c \"python scripts/build_world.py && python scripts/build_details.py\"",
-    "model": "uv run --no-project python scripts/sync_model.py",
+    "model": "python3 scripts/sync_model.py",
+    "check:model-assets": "node scripts/check_model_assets.mjs",
+    "test:deployment": "node --test scripts/test_model_assets.mjs && python3 -m unittest discover -s scripts -p test_sync_model.py -v",
     "test:model": "node scripts/test_model.ts",
     "pipeline": "npm run model && npm run data && npm run test:model"
   },

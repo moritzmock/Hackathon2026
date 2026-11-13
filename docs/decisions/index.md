@@ -11,3 +11,4 @@ one choice each, with the options considered and the reasons.
 - [0001: Use the model read-only, through a pinned submodule](0001-model-read-only-via-submodule.md)
 - [0002: Run the model in the browser with Pyodide](0002-model-in-the-browser-with-pyodide.md)
 - [0003: Normalize branch history authors after each push](0003-normalize-git-authors.md)
+- [0004: Package the browser model during production builds](0004-package-model-during-build.md)

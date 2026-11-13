@@ -13,3 +13,9 @@
   as passed. In [run 003](../../../factory/runs/003-normalize-git-authors.md),
   the npm package resolved by the documented command has no check-docs
   subcommand; direct local-link validation covers only part of the check.
+- Generated runtime assets need a production build step and an output
+  check. A local build can hide missing assets because ignored files still
+  exist locally. Never delete served assets before replacement downloads
+  finish: Vite can return its HTML page for a missing wheel and Python
+  reports BadZipFile. See [run 004](../../../factory/runs/004-deployment-model-assets.md)
+  and the [deployment instructions](../../../README.md#deploy-on-vercel).
