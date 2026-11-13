@@ -65,6 +65,21 @@ reached `main` through another session's commits (1ba5321, 4bece4d), since
 those files were shared. This run's own commit holds the favicon, the title
 and this record.
 
+### Follow-up: the logo, "Digital twin"
+
+The first mark (a "C" dial with a needle) read like a euro sign once simplified.
+We went through several rounds of options on a review page (minimal, detailed,
+in the INTEGRATES style, then about buildings), using the colours and tile
+shapes of integratesproject.eu and the challenge slides (the simulation
+overestimates the bills before calibration). The person chose **Digital
+twin**: a slate-grey building with windows (first violet, changed at the person's request) and its simulated twin as an orange
+outline. While loading, the twin starts 45% too tall, overshoots and settles
+onto the building, which is the calibration story in one motion. It is the
+loading spinner (large in the header, small next to the step in progress) and
+the tab icon (`public/favicon.svg`). Colours come from the brand tokens that
+another session added to `styles.css` (`--brand-violet`, `--brand-orange`).
+Checked: type check passed; screenshot of the loading screen.
+
 ## Later
 
 - The name "Calibra" is only on the loading screen and the tab so far; the

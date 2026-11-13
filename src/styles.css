@@ -327,25 +327,24 @@ kbd, .kbd {
   35%, 75% { transform: scaleY(1); }
   100% { transform: scaleY(0.25); }
 }
-/* Calibra logo: a "C" gauge whose needle swings and settles on the target */
+/* Calibra logo: the orange simulated twin starts too tall and settles onto the grey building */
 .calibra-logo { display: flex; align-items: center; gap: 12px; color: var(--ink); }
-.calibra-logo__name { display: block; font-size: 1.375rem; font-weight: 650; letter-spacing: -0.03em; line-height: 1.1; }
+.calibra-logo__name { display: block; font-size: 1.375rem; font-weight: 650; letter-spacing: -0.03em; line-height: 1.1; color: var(--brand-violet); }
 .calibra-logo__tag { display: block; font-weight: 400; font-size: 0.6875rem; color: var(--muted); letter-spacing: 0.02em; }
 .calibra-mark { display: block; flex: none; overflow: visible; }
-.calibra-mark__needle { transform-origin: 24px 24px; }
-.calibra-mark.is-spinning .calibra-mark__needle { animation: calibra-settle 2.6s cubic-bezier(0.4, 0, 0.3, 1) infinite; }
+.calibra-mark__twin { transform-origin: 24px 44px; }
+.calibra-mark.is-spinning .calibra-mark__twin { animation: calibra-settle 2.8s cubic-bezier(0.4, 0, 0.3, 1) infinite; }
 @keyframes calibra-settle {
-  0% { transform: rotate(-150deg); }
-  22% { transform: rotate(48deg); }
-  38% { transform: rotate(-26deg); }
-  52% { transform: rotate(13deg); }
-  64% { transform: rotate(-6deg); }
-  74%, 100% { transform: rotate(0deg); }
+  0% { transform: scaleY(1.45); }
+  22% { transform: scaleY(0.93); }
+  38% { transform: scaleY(1.04); }
+  52% { transform: scaleY(0.985); }
+  64% { transform: scaleY(1.005); }
+  74%, 100% { transform: scaleY(1); }
 }
-.loading__icon .calibra-mark { color: var(--ink); }
 
 @media (prefers-reduced-motion: reduce) {
-  .skyline span, .loading__bar i, .puff span, .calibra-mark__needle { animation: none !important; }
+  .skyline span, .loading__bar i, .puff span, .calibra-mark__twin { animation: none !important; }
 }
 
 
