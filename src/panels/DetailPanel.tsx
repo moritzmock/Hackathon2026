@@ -21,8 +21,6 @@ function Content({ b }: { b: ChallengeBuilding }) {
   const rows = run?.rows;
   const base = baselineWape(b.records);
   const w = rows ? wape(b.records, simLookup(rows)) : undefined;
-  // Scored here like yours (all four months), not taken from the file.
-  const optScore = opt ? score(wape(b.records, simLookup(opt.rows))) : undefined;
   const weatherFocus = useWeather((s) => s.focus);
   const setWeatherFocus = useWeather((s) => s.setFocus);
   const f = b.facts;
@@ -39,14 +37,10 @@ function Content({ b }: { b: ChallengeBuilding }) {
 
       {/* Scores, chart and progress stay in view while the settings scroll. */}
       <div className="detail__pinned sticky -top-5 z-10 -mx-5 mb-2 px-5 pt-1 pb-2">
-      <div className="mb-3 grid grid-cols-2 gap-2">
+      <div className="mb-3 grid gap-2">
         <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${w === undefined ? "" : "bg-[color-mix(in_srgb,var(--whatif)_12%,var(--paper))]"}`}>
           <span className="text-[0.7rem] text-muted-foreground">Your settings</span>
           <b className="text-2xl tabular-nums text-[var(--whatif)]">{score(w ?? base)!.toFixed(0)}<small className="ml-1 text-xs font-normal text-muted-foreground">/ 100</small></b>
-        </Card>
-        <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${opt ? "bg-[color-mix(in_srgb,var(--optimised)_12%,var(--paper))]" : ""}`}>
-          <span className="text-[0.7rem] text-muted-foreground">Optimised</span>
-          <b className={`text-2xl tabular-nums ${opt ? "text-[var(--optimised)]" : "text-[var(--line)]"}`}>{optScore !== undefined ? optScore.toFixed(0) : "–"}<small className="ml-1 text-xs font-normal text-muted-foreground">{opt ? "/ 100" : "no result yet"}</small></b>
         </Card>
       </div>
       <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"} focus={weatherFocus} onPickMonth={setWeatherFocus} />
