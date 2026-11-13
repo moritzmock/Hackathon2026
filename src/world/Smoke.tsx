@@ -60,9 +60,12 @@ export function Smoke() {
   const q = useMemo(() => new THREE.Quaternion(), []);
   const p = useMemo(() => new THREE.Vector3(), []);
   const s = useMemo(() => new THREE.Vector3(), []);
-  useFrame(({ camera }) => {
+  const material = useRef<THREE.MeshStandardMaterial>(null);
+  useFrame(({ camera, scene }) => {
     const mesh = ref.current;
     if (!mesh) return;
+    const sky = scene.fog?.color; // glow only as much as the sky is bright
+    if (sky && material.current) material.current.emissiveIntensity = 0.25 * sky.getHSL({ h: 0, s: 0, l: 0 }).l;
     mesh.visible = camera.position.distanceTo(new THREE.Vector3(C.x, C.y, C.z)) < 3200;
     if (!mesh.visible) return;
     const t = motionTime.value;
@@ -80,7 +83,7 @@ export function Smoke() {
   });
   return (
     <instancedMesh ref={ref} args={[puffGeo, undefined, chimneys.length * PUFFS]} frustumCulled={false} userData={{ noSnapshot: true }}>
-      <meshStandardMaterial color={theme.smoke} emissive={theme.smoke} emissiveIntensity={0.25} roughness={1} flatShading />
+      <meshStandardMaterial ref={material} color={theme.smoke} emissive={theme.smoke} emissiveIntensity={0.25} roughness={1} flatShading />
     </instancedMesh>
   );
 }

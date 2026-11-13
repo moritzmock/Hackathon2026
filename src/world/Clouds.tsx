@@ -45,7 +45,10 @@ export function Clouds() {
     [material],
   );
   const group = useRef<THREE.Group>(null);
-  useFrame(({ camera, controls }) => {
+  useFrame(({ camera, controls, scene }) => {
+    // Glow only as much as the sky is bright, so clouds darken at dusk and night.
+    const sky = scene.fog?.color;
+    if (sky) material.emissiveIntensity = 0.35 * sky.getHSL({ h: 0, s: 0, l: 0 }).l;
     const distance = (controls as unknown as { distance?: number } | null)?.distance ?? camera.position.distanceTo(new THREE.Vector3(C.x, C.y, C.z));
     material.opacity = 0.92 * THREE.MathUtils.smoothstep(distance, NEAR_FADE[0], NEAR_FADE[1]);
     group.current!.visible = material.opacity > 0.01;
