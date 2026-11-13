@@ -33,12 +33,12 @@ function Lights() {
   const d = 2200;
   return (
     <>
-      <hemisphereLight args={["#f4f7fb", "#c9ccc6", 1.25]} />
+      <hemisphereLight args={["#eef4ff", "#b9a98c", 1.0]} />
       <directionalLight
         ref={sun}
         position={[C.x - 2700, C.y + 1350, C.z + 1500]}
         color={theme.sun}
-        intensity={3.0}
+        intensity={3.6}
         castShadow
         shadow-mapSize={[3072, 3072]}
         shadow-bias={-0.0004}

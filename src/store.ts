@@ -32,7 +32,7 @@ export const LAYER_LABELS: Record<keyof Layers, string> = {
   trees: "Trees",
   cars: "Cars",
   pins: "Pins",
-  miniature: "Tilt-shift blur",
+  miniature: "Miniature effect",
 };
 
 interface State {
@@ -69,7 +69,7 @@ export const useStore = create<State>((set, get) => ({
   modelReady: false,
   readyAt: undefined,
   lastWarmSeconds: undefined,
-  layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: false },
+  layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true },
   select: (selected) => set({ selected }),
   hover: (hovered) => set({ hovered }),
   setParam: (id, name, value) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], [name]: value } } })),

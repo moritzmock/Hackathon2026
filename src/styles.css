@@ -35,7 +35,7 @@ h2, h3 { margin: 0; letter-spacing: -0.02em; }
 
 /* Full-screen map; controls float on top */
 .frame { height: 100%; }
-.stage { position: relative; height: 100%; overflow: hidden; background: #eef0f2; }
+.stage { position: relative; height: 100%; overflow: hidden; background: #e9eef0; }
 .stage canvas { display: block; cursor: grab; }
 .stage canvas:active { cursor: grabbing; }
 

@@ -19,7 +19,7 @@ export function Effects({ tiltShift }: { tiltShift: boolean }) {
     const t = THREE.MathUtils.smoothstep(d, 250, 3500);
     blur.value = THREE.MathUtils.lerp(0.02, 0.13, t);
   });
-  const ao = <N8AO aoRadius={10} distanceFalloff={1.2} intensity={2.0} color="#20242a" quality="medium" halfRes />;
+  const ao = <N8AO aoRadius={10} distanceFalloff={1.2} intensity={2.4} color="#3d3426" quality="medium" halfRes />;
   // EffectComposer wants effect elements as direct children, so render one composer per variant.
   return tiltShift ? (
     <EffectComposer multisampling={0}>

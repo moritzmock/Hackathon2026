@@ -6,3 +6,4 @@ dist/
 public/py/
 .playwright-mcp/
 *.tsbuildinfo
+__pycache__/
