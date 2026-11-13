@@ -42,8 +42,8 @@ Look and feel only: no data, score or model changes.
    when selected and swells a little on hover. The camera glide was already
    eased, so it is unchanged. Zoom well away from an open building (beyond 4× its
    focus range) and after about 1.5 s it is let go: selection, detail panel and
-   focus blur end, and the camera stays where you put it (closing the panel by
-   hand still flies back to the overview).
+   focus blur end, and the map glides back to the city overview, as when the
+   panel is closed by hand (the owner's choice over leaving the camera put).
 5. **Charm:** the smoke, balloon and birds above. The "heating mood" of the
    challenge buildings is being built by the other session (windows glow while
    the heating runs), so it is not repeated here.

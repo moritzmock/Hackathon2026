@@ -8,9 +8,9 @@ const OUT = 4; // zoomed out: farther than this many times the building's focus 
 const AFTER = 1.5; // seconds zoomed out before the building is let go
 
 /**
- * Zoom well away from the open building and, after a moment, it is let go: the
- * selection, the detail panel and the focus blur end, and the camera stays where
- * you put it (instead of flying back to the overview as closing the panel does).
+ * Zoom well away from the open building and, after a moment, it is let go, just as
+ * if the panel were closed: the selection, the detail panel and the focus blur end,
+ * and the map glides back out to the city overview.
  */
 export function LetGoWhenZoomedOut() {
   const selected = useStore((s) => s.selected);
@@ -23,7 +23,7 @@ export function LetGoWhenZoomedOut() {
     if (!b) return;
     const { target, range } = buildingFocus(b);
     zoomedOutFor.current = camera.position.distanceTo(target) > OUT * range ? zoomedOutFor.current + dt : 0;
-    if (zoomedOutFor.current > AFTER) useStore.getState().letGo();
+    if (zoomedOutFor.current > AFTER) useStore.getState().select(null);
     else if (zoomedOutFor.current > 0) invalidate(); // keep counting while the map is still (frameloop "demand")
   });
   return null;
