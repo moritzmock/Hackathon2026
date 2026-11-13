@@ -12,6 +12,7 @@ import { DevProbe } from "./DevProbe";
 import { Effects } from "./Effects";
 import { MapCamera } from "./MapCamera";
 import { Roads } from "./Roads";
+import { Snapshots } from "./Snapshots";
 import { StaticShadows } from "./StaticShadows";
 import { RoofUnits } from "./RoofUnits";
 import { focusCenter } from "./focus";
@@ -80,6 +81,7 @@ export function Scene() {
         </group>
         {layers.pins && (PIN_STYLE === "scene" ? <BuildingLabels3D /> : <BuildingPins />)}
         <StaticShadows version={JSON.stringify(layers)} />
+        <Snapshots />
       </Suspense>
       <Effects tiltShift={layers.miniature} />
     </>

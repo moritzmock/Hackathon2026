@@ -13,6 +13,7 @@ export function App() {
   return (
     <div className="app">
       <div className="workspace">
+        <BuildingList />
         <main className="stage">
           <Canvas
             shadows
@@ -25,12 +26,11 @@ export function App() {
             <PerformanceMonitor onIncline={() => setDpr(Math.min(1.5, window.devicePixelRatio))} onDecline={() => setDpr(1)} />
             <Scene />
           </Canvas>
-          <BuildingList />
           <LayersControl />
           <MapControls />
           <DetailPanel />
-          <LoadingScreen />
         </main>
+        <LoadingScreen />
       </div>
     </div>
   );

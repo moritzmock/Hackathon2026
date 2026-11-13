@@ -3,11 +3,12 @@
 // ready (or you skip ahead once the map is there), the clouds part to the sides and
 // the camera glides in. The model status under the building list keeps showing progress.
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Loader2, TriangleAlert } from "lucide-react";
+import { Check, TriangleAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { worldLoaded } from "../data/world";
 import { warmUp } from "../sim/client";
 import { useStore } from "../store";
+import { CalibraLogo, CalibraMark } from "./CalibraLogo";
 
 // Steps in order; weight = share of the progress bar, tau = typical seconds (first visit).
 const STEPS = [
@@ -21,7 +22,10 @@ const STEPS = [
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
 export function LoadingScreen() {
-  const [mapReady, setMapReady] = useState(false);
+  const [filesReady, setFilesReady] = useState(false);
+  const snapshotsTaken = useStore((s) => !!s.snapshots);
+  // The map counts as ready once it is built and the sidebar photos are taken.
+  const mapReady = filesReady && snapshotsTaken;
   const [dismissed, setDismissed] = useState(false);
   const setupStep = useStore((s) => s.setupStep);
   const modelReady = useStore((s) => s.modelReady);
@@ -38,8 +42,7 @@ export function LoadingScreen() {
       .then(() => {
         if (!alive) return;
         warmUp();
-        // Give the GPU a moment to build the city before the clouds may part.
-        setTimeout(() => alive && setMapReady(true), 700);
+        setFilesReady(true);
       });
     return () => {
       alive = false;
@@ -47,7 +50,7 @@ export function LoadingScreen() {
   }, []);
 
   // Index of the step in progress: 0 = map, 1–4 = model setup steps, 5 = done.
-  const current = modelReady ? STEPS.length : !mapReady ? 0 : Math.max(1, setupStep);
+  const current = !mapReady ? 0 : modelReady ? STEPS.length : Math.max(1, setupStep);
   useEffect(() => {
     stepStart.current = performance.now();
   }, [current]);
@@ -55,10 +58,10 @@ export function LoadingScreen() {
   // When the model is ready, show the finished list for a moment, then fade out.
   const [finished, setFinished] = useState(false);
   useEffect(() => {
-    if (!modelReady) return;
+    if (!modelReady || !mapReady) return;
     const t = setTimeout(() => setFinished(true), 900);
     return () => clearTimeout(t);
-  }, [modelReady]);
+  }, [modelReady, mapReady]);
 
   const open = !dismissed && !finished && !(modelError && dismissed);
   // Tell the camera to glide in as the clouds part.
@@ -108,8 +111,9 @@ export function LoadingScreen() {
             exit={{ y: -16, opacity: 0, transition: { duration: 0.35 } }}
             transition={{ type: "spring", stiffness: 260, damping: 28 }}
           >
-            <Skyline />
-            <h1>Bolzano Energy twin</h1>
+            <h1 className="loading__title">
+              <CalibraLogo spinning={!modelReady && !modelError} />
+            </h1>
             <p className="loading__lead">Lifting the clouds: loading the map and the building energy model. Everything runs in your browser.</p>
 
             <div className="loading__bar" aria-hidden="true">
@@ -127,7 +131,7 @@ export function LoadingScreen() {
                   <li key={s.label} className={`is-${state}`}>
                     <span className="loading__icon">
                       {state === "done" ? <Check size={12} strokeWidth={3} />
-                        : state === "active" ? <Loader2 size={13} className="animate-spin" />
+                        : state === "active" ? <CalibraMark size={18} spinning />
                         : state === "error" ? <TriangleAlert size={12} />
                         : null}
                     </span>
@@ -165,14 +169,3 @@ const PUFFS = (() => {
   return out;
 })();
 
-/** Three little buildings growing in turn, with the orange one in the middle. */
-function Skyline() {
-  return (
-    <div className="skyline" aria-hidden="true">
-      <span style={{ height: 26, animationDelay: "0s" }} />
-      <span className="is-target" style={{ height: 40, animationDelay: "0.15s" }} />
-      <span style={{ height: 32, animationDelay: "0.3s" }} />
-      <i />
-    </div>
-  );
-}

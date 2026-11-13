@@ -55,6 +55,8 @@ interface State {
   layersOpen: boolean;
   /** False until the first-load clouds have parted. */
   revealed: boolean;
+  /** Photos of each challenge building taken from the 3D scene (data URLs). */
+  snapshots: Record<string, string[]> | undefined;
   /** Map zoom relative to the overview, in % (shown in the zoom control). */
   zoomPct: number;
   select: (id: string | null) => void;
@@ -81,6 +83,7 @@ export const useStore = create<State>((set, get) => ({
   layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true },
   layersOpen: false,
   revealed: false,
+  snapshots: undefined,
   zoomPct: 100,
   select: (selected) => set({ selected }),
   hover: (hovered) => set({ hovered }),

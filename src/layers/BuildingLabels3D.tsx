@@ -70,7 +70,7 @@ function Label3D({ b }: { b: ChallengeBuilding }) {
     onPointerOut: () => hover(null),
   };
   return (
-    <group ref={group} position={anchor}>
+    <group ref={group} position={anchor} userData={{ noSnapshot: true }}>
       <mesh geometry={dotGeo} material={accent} {...events} />
       <mesh geometry={stemGeo} material={accent} scale={[1, showName ? STEM : STEM * 0.6, 1]} />
       {showName && (

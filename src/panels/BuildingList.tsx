@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
-import { useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
 import { challenge } from "../data/challenge";
 import { optimisedFor } from "../data/optimised";
 import type { ChallengeBuilding } from "../data/types";
@@ -12,9 +12,9 @@ import { ModelStatus } from "./ModelStatus";
 const ids = challenge.buildings.map((b) => b.id);
 
 /**
- * Small panel floating on the map's top-left: one row per building. Click a row to
- * fly to the building and open its details; ← / → step through, Esc goes back.
- * Hidden while the first-load clouds cover the map.
+ * Listing-style sidebar (think holiday rentals): a photo card per building, taken
+ * from the 3D scene. Click a card to fly there and open its details; ← / → step
+ * through, Esc goes back. Slides in after the first-load clouds have parted.
  */
 export function BuildingList() {
   const selected = useStore((s) => s.selected);
@@ -25,8 +25,8 @@ export function BuildingList() {
     const onKey = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement)?.closest?.("input, textarea, [role=slider]")) return;
       const index = selected ? ids.indexOf(selected) : -1;
-      if (e.key === "ArrowRight" || e.key === "ArrowDown") select(ids[(index + 1) % ids.length]);
-      else if (e.key === "ArrowLeft" || e.key === "ArrowUp") select(ids[(index - 1 + ids.length) % ids.length]);
+      if (e.key === "ArrowDown") select(ids[(index + 1) % ids.length]);
+      else if (e.key === "ArrowUp") select(ids[(index - 1 + ids.length) % ids.length]);
       else if (e.key === "Escape") select(null);
       else return;
       e.preventDefault();
@@ -36,63 +36,106 @@ export function BuildingList() {
   }, [selected, select]);
 
   return (
-    <AnimatePresence>
-      {revealed && (
-        <motion.section
-          className="list"
-          aria-label="Challenge buildings"
-          initial={{ opacity: 0, x: -16 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ type: "spring", stiffness: 260, damping: 30, delay: 0.6 }}
-        >
-          <header className="list__head">
-            <h2>Buildings</h2>
-            <span title="Score = 100 − error against the heating bills">score</span>
-          </header>
-          <ul className="list__rows">
-            {challenge.buildings.map((b) => <Row key={b.id} b={b} active={b.id === selected} />)}
-          </ul>
-          <ModelStatus />
-        </motion.section>
-      )}
-    </AnimatePresence>
+    <aside className="list" aria-label="Challenge buildings">
+      <AnimatePresence>
+        {revealed && (
+          <motion.div
+            className="list__inner"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ type: "spring", stiffness: 240, damping: 30, delay: 0.5 }}
+          >
+            <header className="list__head">
+              <h2>3 buildings in Bolzano</h2>
+              <p>Real heating bills, simulated in your browser</p>
+            </header>
+            <div className="list__scroll">
+              {challenge.buildings.map((b, i) => (
+                <motion.div
+                  key={b.id}
+                  initial={{ opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 + i * 0.08, type: "spring", stiffness: 260, damping: 28 }}
+                >
+                  <Stay b={b} active={b.id === selected} />
+                </motion.div>
+              ))}
+            </div>
+            <ModelStatus />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </aside>
   );
 }
 
-function Row({ b, active }: { b: ChallengeBuilding; active: boolean }) {
+function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
   const run = useStore((s) => s.runs[b.id]);
   const hovered = useStore((s) => s.hovered === b.id);
+  const photos = useStore((s) => s.snapshots?.[b.id]);
   const { select, hover } = useStore.getState();
+  const [photo, setPhoto] = useState(0);
   const opt = optimisedFor(b.id);
   const w = run?.rows ? wape(b.records, simLookup(run.rows)) : undefined;
   const yours = score(w ?? baselineWape(b.records))!;
   const best = opt ? score(wape(b.records, simLookup(opt.rows))) : undefined;
   const f = b.facts;
-  const state = run?.status === "running" ? "running" : run?.status === "error" ? "error" : w !== undefined ? "tuned" : "baseline";
+  const tag = run?.status === "running" ? "Simulating…" : run?.status === "error" ? "Model error" : w !== undefined ? "Your settings" : "Untuned model";
+  const n = photos?.length ?? 0;
+  const flip = (d: number) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setPhoto((p) => (p + d + n) % n);
+  };
 
   return (
-    <li>
-      <button
-        className={`row${active ? " is-active" : ""}${hovered ? " is-hover" : ""}`}
-        onClick={() => select(active ? null : b.id)}
-        onPointerEnter={() => hover(b.id)}
-        onPointerLeave={() => hover(null)}
-        aria-current={active}
-      >
-        <span className={`row__dot row__dot--${state}`} title={state} />
-        <span className="row__text">
-          <b>{buildingName(b.id)}</b>
-          <span>Built {String(f.construction_year)} · {String(f.floors_above_ground)} floors</span>
+    <article
+      className={`stay${active ? " is-active" : ""}${hovered ? " is-hover" : ""}`}
+      onClick={() => select(active ? null : b.id)}
+      onPointerEnter={() => hover(b.id)}
+      onPointerLeave={() => hover(null)}
+      aria-current={active}
+    >
+      <div className="stay__photo">
+        {photos ? (
+          <div className="stay__track" style={{ transform: `translateX(-${photo * 100}%)` }}>
+            {photos.map((src, i) => <img key={i} src={src} alt="" draggable={false} />)}
+          </div>
+        ) : (
+          <div className="stay__placeholder" />
+        )}
+        <span className="stay__tag">{tag}</span>
+        {n > 1 && (
+          <>
+            <button className="stay__nav stay__nav--prev" onClick={flip(-1)} aria-label="Previous photo"><ChevronLeft size={14} /></button>
+            <button className="stay__nav stay__nav--next" onClick={flip(1)} aria-label="Next photo"><ChevronRight size={14} /></button>
+            <span className="stay__dots" aria-hidden="true">
+              {photos!.map((_, i) => <i key={i} className={i === photo ? "is-on" : ""} />)}
+            </span>
+          </>
+        )}
+      </div>
+
+      <div className="stay__title">
+        <b>{buildingName(b.id)} · {String(f.construction_year)}</b>
+        <span className="stay__rating" title="Score: 100 − error against the heating bills">
+          <Gauge /> {yours.toFixed(0)}
         </span>
-        <span className="row__score" title={`Your score ${yours.toFixed(0)}${best !== undefined ? ` · optimised ${best.toFixed(0)}` : ""}`}>
-          <b>{yours.toFixed(0)}</b>
-          <i className="row__bar">
-            <i style={{ width: `${yours}%` }} />
-            {best !== undefined && <em style={{ left: `${best}%` }} />}
-          </i>
-        </span>
-        <ChevronRight size={14} className="row__chev" />
-      </button>
-    </li>
+      </div>
+      <p className="stay__line">{String(f.floors_above_ground)} floors · {Math.round(f.gross_floor_area_m2 as number).toLocaleString("en-US")} m² · {String(f.heat_generator_type)}</p>
+      <p className="stay__price">
+        <b>{yours.toFixed(0)}</b> / 100 score
+        {best !== undefined && <span> · optimised <u>{best.toFixed(0)}</u></span>}
+      </p>
+    </article>
+  );
+}
+
+/** Tiny gauge glyph for the score (like the star next to a rating). */
+function Gauge() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M3 15a9 9 0 0 1 18 0" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      <path d="M12 15l4.5-5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
   );
 }
