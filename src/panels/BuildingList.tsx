@@ -47,7 +47,7 @@ export function BuildingList() {
           >
             <header className="list__head">
               <h2>3 buildings in Bolzano</h2>
-              <p>Real heating bills, simulated in your browser</p>
+              <p>Real bills, simulated in your browser</p>
             </header>
             <div className="list__scroll">
               {challenge.buildings.map((b, i) => (
@@ -106,8 +106,8 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
         <span className="stay__tag">{tag}</span>
         {n > 1 && (
           <>
-            <button className="stay__nav stay__nav--prev" onClick={flip(-1)} aria-label="Previous photo"><ChevronLeft size={14} /></button>
-            <button className="stay__nav stay__nav--next" onClick={flip(1)} aria-label="Next photo"><ChevronRight size={14} /></button>
+            <button className="stay__nav stay__nav--prev" onClick={flip(-1)} aria-label="Previous photo"><ChevronLeft size={12} /></button>
+            <button className="stay__nav stay__nav--next" onClick={flip(1)} aria-label="Next photo"><ChevronRight size={12} /></button>
             <span className="stay__dots" aria-hidden="true">
               {photos!.map((_, i) => <i key={i} className={i === photo ? "is-on" : ""} />)}
             </span>
