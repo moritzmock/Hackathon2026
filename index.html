@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Hackathon 2026 is under construction. Something good is taking shape. Check back soon.">
+    <meta name="theme-color" content="#f4f2eb">
+    <title>Under construction · Hackathon 2026</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --paper: #f4f2eb;
+        --ink: #202d2b;
+        --muted: #58635e;
+        --accent: #ba420f;
+        --line: #d5d8ce;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: "Avenir Next", Avenir, "Trebuchet MS", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      header, footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-inline: clamp(1.5rem, 6vw, 6rem);
+      }
+
+      header {
+        padding-block: 1.75rem;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .brand { font-weight: 750; letter-spacing: -.04em; font-size: 1.125rem; }
+      .brand span { color: var(--accent); }
+
+      .label, footer {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        font-size: .6875rem;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+      }
+
+      .header-note { color: var(--muted); }
+
+      main {
+        flex: 1;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        padding: 4rem 1.5rem;
+        text-align: center;
+      }
+
+      .construction-mark {
+        display: grid;
+        place-items: center;
+        width: 5rem;
+        height: 5rem;
+        margin-bottom: 2rem;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+      }
+
+      .cone {
+        position: relative;
+        width: 2.25rem;
+        height: 2.25rem;
+        background: linear-gradient(to bottom, var(--accent) 42%, var(--paper) 42% 58%, var(--accent) 58%);
+        clip-path: polygon(44% 0, 56% 0, 94% 88%, 100% 88%, 100% 100%, 0 100%, 0 88%, 6% 88%);
+      }
+
+      .eyebrow { margin: 0 0 1.25rem; color: var(--accent); }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(3.5rem, 9vw, 7.5rem);
+        font-weight: 650;
+        letter-spacing: -.065em;
+        line-height: .98;
+      }
+
+      h1 span {
+        display: block;
+        color: var(--accent);
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+        font-weight: 400;
+        font-style: italic;
+        letter-spacing: -.055em;
+      }
+
+      .description {
+        max-width: 26rem;
+        margin: 1.75rem 0 2rem;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: .625rem;
+        margin: 0;
+        padding: .75rem 1rem;
+        border: 1px solid var(--line);
+        border-radius: 2rem;
+      }
+
+      .status::before {
+        content: "";
+        width: .375rem;
+        height: .375rem;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      footer {
+        padding-block: 1.5rem;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      footer p { margin: 0; }
+
+      @media (max-width: 480px) {
+        .header-note { display: none; }
+        main { padding-block: 3rem; }
+        footer { align-items: flex-start; flex-direction: column; gap: .375rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">hackathon<span> / 2026</span></div>
+      <span class="label header-note">A work in progress</span>
+    </header>
+
+    <main>
+      <div class="construction-mark" aria-hidden="true"><div class="cone"></div></div>
+      <p class="label eyebrow">Under construction</p>
+      <h1>Good things<br>take <span>building.</span></h1>
+      <p class="description">We’re putting the pieces together.<br>Our new home will be ready soon. Stay curious.</p>
+      <p class="label status">In the making</p>
+    </main>
+
+    <footer>
+      <p>Hackathon 2026</p>
+      <p>A little patience. A lot of possibility.</p>
+    </footer>
+  </body>
+</html>
