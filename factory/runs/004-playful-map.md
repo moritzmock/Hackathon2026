@@ -71,10 +71,12 @@ before and after.
 
 ## Status
 
-in progress. Built in the worktree `../Hackathon2026-playful` (branch
-`playful-map`); `npm run build` passes; the scene draws, moves and pops in
-(screenshots). Waiting for the owner's reaction to the colours, then merge on
-top of the other session's weather work once it is committed.
+in progress. On branch `playful-map-on-main`, replayed on top of the current
+`main` (main's history had been rewritten). Type check and build pass. A
+throwaway preview with the other sessions' uncommitted weather, season and
+building-look work on top also runs; its four clashes are resolved by keeping
+both sides (recorded in a message to `hackathon2026-f1`). The owner chose to
+wait until that work is committed to `main`, then bring this branch in.
 
 ## Result
 
