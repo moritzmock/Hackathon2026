@@ -1,5 +1,6 @@
 // World colours in one place: a warm, lush miniature town with yellow accents.
 export const theme = {
+  ink: "#15181c",
   water: "#3f93cf",
   sky: "#e9eef0",
   sun: "#ffe0b5",

@@ -1,7 +1,9 @@
 import { useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
+import { BuildingLabels3D } from "../layers/BuildingLabels3D";
 import { BuildingPins } from "../layers/BuildingPins";
+import { PIN_STYLE } from "../layers/pinStyle";
 import { useStore } from "../store";
 import { Bushes } from "./Bushes";
 import { Cars } from "./Cars";
@@ -76,7 +78,7 @@ export function Scene() {
           {layers.cars && <Cars />}
           <Targets />
         </group>
-        {layers.pins && <BuildingPins />}
+        {layers.pins && (PIN_STYLE === "scene" ? <BuildingLabels3D /> : <BuildingPins />)}
         <StaticShadows version={JSON.stringify(layers)} />
       </Suspense>
       <Effects tiltShift={layers.miniature} />
