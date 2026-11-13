@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import { readWorld } from "../data/world";
 import { createBuildingMaterial } from "./buildingMaterial";
+import { addGroundAttribute, withPop } from "./cityPop";
 import { extrude, jitter } from "./geometry";
 import { theme } from "./theme";
 
@@ -15,10 +16,10 @@ const pick = <T,>(list: T[], u: number) => list[Math.floor(u * list.length) % li
 
 /** All OpenStreetMap context buildings as one merged mesh (one draw call). */
 export function City() {
-  const { city } = readWorld();
+  const { city, heights } = readWorld();
   const geometry = useMemo(() => {
     const pitched = new Map(city.roofs.map(([i, ...g]) => [i, g]));
-    return extrude(
+    const g = extrude(
       city.buildings.map(([height, base, ...rings], i) => {
         const u = jitter(i + 7919);
         const roof = pitched.get(i);
@@ -35,7 +36,9 @@ export function City() {
         };
       }),
     );
-  }, [city]);
-  const material = useMemo(() => createBuildingMaterial({ vertexColors: true }), []);
+    addGroundAttribute(g, heights, city.terrain);
+    return g;
+  }, [city, heights]);
+  const material = useMemo(() => withPop(createBuildingMaterial({ vertexColors: true }, { groundAttribute: true })), []);
   return <mesh geometry={geometry} material={material} castShadow receiveShadow />;
 }

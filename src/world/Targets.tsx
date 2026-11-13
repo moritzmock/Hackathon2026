@@ -7,6 +7,7 @@ import type { ChallengeBuilding } from "../data/types";
 import { useStore } from "../store";
 import { createBuildingMaterial } from "./buildingMaterial";
 import { extrude } from "./geometry";
+import { TargetBounce } from "./TargetBounce";
 import { TargetGlow } from "./TargetGlow";
 import { theme } from "./theme";
 
@@ -59,7 +60,9 @@ export function Targets() {
   return (
     <group>
       {challenge.buildings.map((b) => (
-        <Target key={b.id} b={b} />
+        <TargetBounce key={b.id} b={b}>
+          <Target b={b} />
+        </TargetBounce>
       ))}
     </group>
   );
