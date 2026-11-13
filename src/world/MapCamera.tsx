@@ -115,7 +115,8 @@ export function MapCamera() {
       return;
     }
     const { centroid: [x, y], base, height, facts } = building;
-    const r = Math.max(260, Math.sqrt(facts.footprint_area_m2 as number) * 8);
+    // Close up: the building fills a good part of the view (camera ends up ~1.5 r away).
+    const r = Math.max(55, Math.sqrt(facts.footprint_area_m2 as number) * 1.6 + height * 1.5);
     const target = new THREE.Vector3(x, base + height * 0.4, -y);
     const pos = new THREE.Vector3(x + r * 0.8, base + height + r * 0.75, -y + r);
     // Slide the view sideways so the building sits left of the detail panel.

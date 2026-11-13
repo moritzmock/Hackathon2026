@@ -7,6 +7,7 @@ import { Check, TriangleAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { worldLoaded } from "../data/world";
 import { warmUp } from "../sim/client";
+import { renderPortraits } from "../portrait/render";
 import { useStore } from "../store";
 import { CalibraLogo, CalibraMark } from "./CalibraLogo";
 
@@ -24,8 +25,15 @@ const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60))
 export function LoadingScreen() {
   const [filesReady, setFilesReady] = useState(false);
   const snapshotsTaken = useStore((s) => !!s.snapshots);
-  // The map counts as ready once it is built and the sidebar photos are taken.
-  const mapReady = filesReady && snapshotsTaken;
+  // The map counts as ready once its files are in and the sidebar portraits are rendered.
+  // Safety net: if the photos never arrive, don't hold the map back for more than a few seconds.
+  const [photoWaitOver, setPhotoWaitOver] = useState(false);
+  useEffect(() => {
+    if (!filesReady) return;
+    const t = setTimeout(() => setPhotoWaitOver(true), 6000);
+    return () => clearTimeout(t);
+  }, [filesReady]);
+  const mapReady = filesReady && (snapshotsTaken || photoWaitOver);
   const [dismissed, setDismissed] = useState(false);
   const setupStep = useStore((s) => s.setupStep);
   const modelReady = useStore((s) => s.modelReady);
@@ -33,6 +41,19 @@ export function LoadingScreen() {
   const [now, setNow] = useState(() => performance.now());
   const t0 = useRef(performance.now());
   const stepStart = useRef(performance.now());
+
+  // Studio portraits of the buildings for the sidebar (quick, independent of the map).
+  useEffect(() => {
+    const t = setTimeout(() => {
+      try {
+        useStore.setState({ snapshots: renderPortraits() });
+      } catch (err) {
+        console.warn("Building portraits could not be rendered", err);
+        useStore.setState({ snapshots: {} });
+      }
+    }, 120); // after the loading card has painted
+    return () => clearTimeout(t);
+  }, []);
 
   // Map first, then the model (so the two downloads don't compete).
   useEffect(() => {
@@ -144,9 +165,12 @@ export function LoadingScreen() {
 
             {modelError && <p className="loading__error">The model could not be loaded: {modelError}</p>}
 
-            <button className="loading__skip" disabled={!mapReady} onClick={() => setDismissed(true)}>
-              {modelError ? "Continue to the map" : mapReady ? "Explore the map while it loads" : "Loading the map…"}
-            </button>
+            {/* Only offered when the model fails; otherwise the clouds part on their own. */}
+            {modelError && (
+              <button className="loading__skip" disabled={!mapReady} onClick={() => setDismissed(true)}>
+                {mapReady ? "Continue to the map" : "Loading the map…"}
+              </button>
+            )}
           </motion.div>
         </motion.div>
       )}
