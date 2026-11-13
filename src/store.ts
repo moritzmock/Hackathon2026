@@ -66,8 +66,6 @@ interface State {
   revealed: boolean;
   /** Photos of each challenge building taken from the 3D scene (data URLs). */
   snapshots: Record<string, string[]> | undefined;
-  /** Map zoom relative to the overview, in % (shown in the zoom control). */
-  zoomPct: number;
   select: (id: string | null) => void;
   hover: (id: string | null) => void;
   setParam: (id: string, name: string, value: number) => void;
@@ -95,7 +93,6 @@ export const useStore = create<State>((set, get) => ({
   layersOpen: false,
   revealed: false,
   snapshots: undefined,
-  zoomPct: 100,
   select: (selected) => set({ selected }),
   hover: (hovered) => set({ hovered }),
   setParam: (id, name, value) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], [name]: value } } })),

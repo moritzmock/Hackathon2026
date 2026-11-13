@@ -116,8 +116,7 @@ kbd, .kbd {
 .stage canvas { display: block; cursor: grab; }
 .stage canvas:active { cursor: grabbing; }
 
-.mapctl { position: absolute; right: 12px; bottom: 12px; display: flex; gap: 8px; z-index: 20; }
-.mapctl__group, .mapctl__single {
+.mapctl__single {
   display: flex; align-items: center; height: 32px; background: var(--surface);
   border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow-sm);
 }
@@ -125,12 +124,6 @@ kbd, .kbd {
 .mapctl__btn:hover { color: var(--ink); background: var(--paper); }
 .mapctl__btn.mapctl__single { width: 32px; height: 32px; background: var(--surface); }
 .mapctl__btn.mapctl__single:hover { background: var(--paper); }
-.mapctl__group .mapctl__btn:first-child { border-radius: 7px 0 0 7px; }
-.mapctl__group .mapctl__btn:last-child { border-radius: 0 7px 7px 0; }
-.mapctl__value {
-  min-width: 52px; text-align: center; font-size: 0.75rem; font-variant-numeric: tabular-nums; align-self: stretch;
-  display: grid; place-items: center; border-inline: 1px solid var(--line);
-}
 
 .layers { position: absolute; top: 12px; left: 12px; z-index: 22; }
 .layers__panel {
