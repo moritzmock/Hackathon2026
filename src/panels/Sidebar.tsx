@@ -41,12 +41,12 @@ export function Sidebar() {
           <span>Energy twin</span>
         </span>
         <button className="icon-btn side__collapse" onClick={toggleSidebar} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
-          <PanelLeft size={16} />
+          <PanelLeft size={15} />
         </button>
       </header>
 
       <label className="side__search">
-        <Search size={15} />
+        <Search size={14} />
         <input ref={search} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search" aria-label="Search buildings" />
         <kbd>⌘K</kbd>
       </label>
@@ -54,7 +54,7 @@ export function Sidebar() {
       <nav className="side__nav">
         {nav.map(({ label, icon: Icon, active, count, onClick }) => (
           <button key={label} className={`side__link${active ? " is-active" : ""}`} onClick={onClick} title={label} aria-current={active}>
-            <Icon size={17} />
+            <Icon size={15} />
             <span>{label}</span>
             {count !== undefined && <em>{count}</em>}
           </button>
@@ -76,7 +76,7 @@ function ModelCard() {
   return (
     <section className="side__card">
       <div className="side__card-head">
-        <b><Cpu size={14} /> Energy model</b>
+        <b><Cpu size={13} /> Model</b>
         <span>{label}</span>
       </div>
       <div className="side__bar"><i style={{ width: `${Math.max(pct, 4)}%` }} /></div>
