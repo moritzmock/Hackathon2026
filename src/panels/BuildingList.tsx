@@ -2,7 +2,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { challenge } from "../data/challenge";
-import { optimisedFor } from "../data/optimised";
 import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 import { useStore } from "../store";
@@ -75,10 +74,8 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
   const photos = useStore((s) => s.snapshots?.[b.id]);
   const { select, hover } = useStore.getState();
   const [photo, setPhoto] = useState(0);
-  const opt = optimisedFor(b.id);
   const w = run?.rows ? wape(b.records, simLookup(run.rows)) : undefined;
   const yours = score(w ?? baselineWape(b.records))!;
-  const best = opt ? score(wape(b.records, simLookup(opt.rows))) : undefined;
   const f = b.facts;
   const tag = run?.status === "running" ? "Simulating…" : run?.status === "error" ? "Model error" : w !== undefined ? "Your settings" : "Untuned model";
   const n = photos?.length ?? 0;
@@ -124,7 +121,6 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
       <p className="stay__line">{String(f.floors_above_ground)} floors · {Math.round(f.gross_floor_area_m2 as number).toLocaleString("en-US")} m² · {String(f.heat_generator_type)}</p>
       <p className="stay__price">
         <b>{yours.toFixed(0)}</b> / 100 score
-        {best !== undefined && <span> · optimised <u>{best.toFixed(0)}</u></span>}
       </p>
     </article>
   );
