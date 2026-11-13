@@ -7,6 +7,7 @@ import type { ChallengeBuilding } from "../data/types";
 import { useStore } from "../store";
 import { createBuildingMaterial } from "./buildingMaterial";
 import { extrude } from "./geometry";
+import { TargetGlow } from "./TargetGlow";
 import { theme } from "./theme";
 
 const WHITE = new THREE.Color("#ffffff");
@@ -32,6 +33,8 @@ function Target({ b }: { b: ChallengeBuilding }) {
     invalidate(); // keep rendering until the colour has settled (frameloop is "demand")
   });
   return (
+    <group>
+    <TargetGlow b={b} strength={selected ? 1.6 : hovered ? 1.3 : 1} />
     <mesh
       name="zoomable"
       geometry={geometry}
@@ -48,6 +51,7 @@ function Target({ b }: { b: ChallengeBuilding }) {
       }}
       onPointerOut={() => hover(null)}
     />
+    </group>
   );
 }
 

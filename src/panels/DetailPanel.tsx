@@ -5,7 +5,7 @@ import { buildingsById } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 import { useStore } from "../store";
-import { buildingName, buildingNumber } from "./buildingName";
+import { buildingName } from "./buildingName";
 import { WhatIf } from "./WhatIf";
 import { RunProgress } from "./RunProgress";
 import { Card } from "@/components/ui/card";
@@ -24,7 +24,6 @@ function Content({ b }: { b: ChallengeBuilding }) {
   return (
     <>
       <header className="detail__head">
-        <span className="badge badge--lg">{buildingNumber(b.id)}</span>
         <div>
           <h2>{buildingName(b.id)}</h2>
           <p className="muted small">{String(f.building_typology)} · built {String(f.construction_year)}</p>

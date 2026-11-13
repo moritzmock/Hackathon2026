@@ -41,7 +41,7 @@ export function MapCamera() {
     const zoomPoint = (e: WheelEvent): THREE.Vector3 | undefined => {
       const pinId = (e.target as HTMLElement | null)?.closest?.("[data-building]")?.getAttribute("data-building");
       const pinned = pinId ? buildingsById[pinId] : undefined;
-      if (pinned) return anchor.set(...buildingAnchor(pinned, 14)); // same point the pin sits on
+      if (pinned) return anchor.set(...buildingAnchor(pinned, 0.5)); // the roof point the pin is attached to
       const r = el.getBoundingClientRect();
       ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
       ray.setFromCamera(ndc, camera);

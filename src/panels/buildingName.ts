@@ -1,3 +1,14 @@
-/** "building_02" → 2 (the pin number) and "Building 2" (display name). */
-export const buildingNumber = (id: string) => Number(id.split("_")[1]);
-export const buildingName = (id: string) => `Building ${buildingNumber(id)}`;
+import { buildingsById } from "../data/challenge";
+
+// Short display names from the building type (the buildings stay anonymous).
+const SHORT: Record<string, string> = {
+  "administrative office": "Office",
+  "secondary school": "School",
+  "administrative office complex": "Office complex",
+};
+
+/** "building_02" → "School". */
+export function buildingName(id: string): string {
+  const type = String(buildingsById[id]?.facts.building_typology ?? id);
+  return SHORT[type] ?? type.charAt(0).toUpperCase() + type.slice(1);
+}

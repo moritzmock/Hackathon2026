@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { challenge } from "../data/challenge";
 import { baselineWape } from "../metrics";
 import { useStore } from "../store";
-import { buildingName, buildingNumber } from "./buildingName";
+import { buildingName } from "./buildingName";
 
 const ids = challenge.buildings.map((b) => b.id);
 
@@ -51,12 +51,13 @@ export function BuildingDock() {
             aria-current={active}
           >
             {active && <motion.span layoutId="dock-active" className="dock__glow" transition={{ type: "spring", stiffness: 420, damping: 36 }} />}
-            <span className="badge">{buildingNumber(b.id)}</span>
+            <span className="dock__dot" aria-hidden="true" />
             <span className="dock__text">
               <b>{buildingName(b.id)}</b>
-              <span>{String(b.facts.building_typology)}</span>
+              <span title="How far the untuned model is from the bills (baseline WAPE)">
+                built {String(b.facts.construction_year)} · model +{baselineWape(b.records).toFixed(0)}%
+              </span>
             </span>
-            <span className="dock__wape" title="Baseline model error (WAPE)">+{baselineWape(b.records).toFixed(0)}%</span>
           </button>
         );
       })}
