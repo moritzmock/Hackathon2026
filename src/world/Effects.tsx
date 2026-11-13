@@ -31,7 +31,7 @@ export function Effects({ tiltShift }: { tiltShift: boolean }) {
     const d = controls?.distance;
     if (!blur || d === undefined) return;
     const t = THREE.MathUtils.smoothstep(d, 250, 3500);
-    blur.value = THREE.MathUtils.lerp(0.015, 0.09, t); // light: the details should read
+    blur.value = THREE.MathUtils.lerp(0.005, 0.035, t); // a hint of miniature: the map should stay crisp
   });
 
   const ao = <N8AO aoRadius={10} distanceFalloff={1.2} intensity={2.2} color="#3a3530" quality="medium" halfRes />;
@@ -53,7 +53,7 @@ export function Effects({ tiltShift }: { tiltShift: boolean }) {
       {ao}
       {pop}
       {punch}
-      <TiltShift2 ref={tilt as never} blur={0.08} taper={0.65} />
+      <TiltShift2 ref={tilt as never} blur={0.03} taper={0.65} />
     </EffectComposer>
   ) : (
     <EffectComposer multisampling={0}>
