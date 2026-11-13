@@ -2,12 +2,13 @@ import { Check, Loader2, TriangleAlert } from "lucide-react";
 import { SETUP_STEPS } from "../sim/client";
 import { useStore } from "../store";
 
-/** One line under the building list: is the in-browser energy model ready? */
+/** One line under the building list while the in-browser model loads (or if it failed). */
 export function ModelStatus() {
   const ready = useStore((s) => s.modelReady);
   const step = useStore((s) => s.setupStep);
   const status = useStore((s) => s.modelStatus);
   const error = useStore((s) => s.modelError);
+  if (ready && !error) return null; // nothing to say once it works
   const pct = ready ? 100 : (step / (SETUP_STEPS.length + 1)) * 100;
   return (
     <footer className={`mstatus${ready ? " is-ready" : ""}${error ? " is-error" : ""}`} title={error ?? undefined}>
