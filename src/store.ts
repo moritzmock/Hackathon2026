@@ -42,6 +42,8 @@ export const LAYER_LABELS: Record<keyof Layers, string> = {
 
 interface State {
   selected: string | null;
+  /** True when the selection was let go by zooming away: the camera stays where it is. */
+  keepView: boolean;
   hovered: string | null;
   /** What-if parameters per building (always complete). */
   params: Record<string, Record<string, number>>;
@@ -67,6 +69,8 @@ interface State {
   /** Photos of each challenge building taken from the 3D scene (data URLs). */
   snapshots: Record<string, string[]> | undefined;
   select: (id: string | null) => void;
+  /** Close the open building but leave the camera where it is. */
+  letGo: () => void;
   hover: (id: string | null) => void;
   setParam: (id: string, name: string, value: number) => void;
   setParams: (id: string, values: Record<string, number>) => void;
@@ -78,6 +82,7 @@ interface State {
 
 export const useStore = create<State>((set, get) => ({
   selected: null,
+  keepView: false,
   hovered: null,
   params: Object.fromEntries(challenge.buildings.map((b) => [b.id, defaultParams()])),
   runs: {},
@@ -93,7 +98,8 @@ export const useStore = create<State>((set, get) => ({
   layersOpen: false,
   revealed: false,
   snapshots: undefined,
-  select: (selected) => set({ selected }),
+  select: (selected) => set({ selected, keepView: false }),
+  letGo: () => set({ selected: null, keepView: true }),
   hover: (hovered) => set({ hovered }),
   setParam: (id, name, value) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], [name]: value } } })),
   setParams: (id, values) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], ...values } } })),

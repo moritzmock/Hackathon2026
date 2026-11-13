@@ -11,6 +11,7 @@ import { City } from "./City";
 import { Clouds } from "./Clouds";
 import { DevProbe } from "./DevProbe";
 import { Effects } from "./Effects";
+import { LetGoWhenZoomedOut } from "./LetGoWhenZoomedOut";
 import { MapCamera } from "./MapCamera";
 import { PopIn } from "./PopIn";
 import { Roads } from "./Roads";
@@ -41,6 +42,7 @@ export function Scene() {
       <WeatherLights />
       <Precipitation />
       <MapCamera />
+      <LetGoWhenZoomedOut />
       <Ticker />
       <PopIn />
       {import.meta.env.DEV && <DevProbe />}
