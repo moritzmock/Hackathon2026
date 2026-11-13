@@ -18,6 +18,8 @@ export interface Extrusion {
   chimney?: THREE.Color;
   /** Low rim around a flat roof. */
   parapet?: boolean;
+  /** Roof sloping up from every outer wall: `inset` metres in, `rise` metres up, flat on top. */
+  sloped?: { inset: number; rise: number };
 }
 
 const SKIRT = 3; // walls extend below the base so sloped ground never shows a gap
@@ -162,6 +164,32 @@ function addPitched(buf: Buffers, item: Extrusion, top: number) {
   }
 }
 
+/** Ring without the very short edges (small notches), so an inset of it stays clean. */
+function dropShortEdges(ring: THREE.Vector2[], min: number): THREE.Vector2[] {
+  const out = [ring[0]];
+  for (let i = 1; i < ring.length; i++) if (ring[i].distanceTo(out[out.length - 1]) >= min) out.push(ring[i]);
+  if (out.length > 3 && out[out.length - 1].distanceTo(out[0]) < min) out.pop();
+  return out;
+}
+
+/** Roof sloping up from the outer walls to a flat top, like a hipped roof on any footprint. */
+function addSloped(buf: Buffers, outer: THREE.Vector2[], top: number, sloped: { inset: number; rise: number }, color: THREE.Color) {
+  const eave = dropShortEdges(outer, 3);
+  const ridge = insetRing(eave, sloped.inset);
+  const high = top + sloped.rise;
+  for (let i = 0; i < eave.length; i++) {
+    const j = (i + 1) % eave.length;
+    const a = V(eave[i].x, top, -eave[i].y);
+    const b = V(eave[j].x, top, -eave[j].y);
+    const c = V(ridge[j].x, high, -ridge[j].y);
+    const d = V(ridge[i].x, high, -ridge[i].y);
+    const below = V((a.x + b.x) / 2, top - 100, (a.z + b.z) / 2);
+    tri(buf, [a, b, c], color, below);
+    tri(buf, [a, c, d], color, below);
+  }
+  for (const [i0, i1, i2] of THREE.ShapeUtils.triangulateShape(ridge, [])) flatTri(buf, ridge[i0], ridge[i1], ridge[i2], high, color);
+}
+
 export function extrude(items: Extrusion[]): THREE.BufferGeometry {
   const buf: Buffers = { pos: [], nrm: [], col: [] };
 
@@ -185,8 +213,10 @@ export function extrude(items: Extrusion[]): THREE.BufferGeometry {
       continue;
     }
 
+    if (item.sloped) addSloped(buf, outer, top, item.sloped, item.roofColor);
+
     let roofY = top;
-    if (item.parapet) {
+    if (item.parapet && !item.sloped) {
       roofY = top - PARAPET_HEIGHT;
       const inner = rings.map((r) => insetRing(r, PARAPET_WIDTH));
       const innerWall = item.color.clone().multiplyScalar(0.9);

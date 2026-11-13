@@ -5,7 +5,7 @@ import { BuildingList } from "./panels/BuildingList";
 import { DetailPanel } from "./panels/DetailPanel";
 import { LayersControl } from "./panels/LayersControl";
 import { LoadingScreen } from "./panels/LoadingScreen";
-import { MapControls } from "./panels/MapControls";
+import { WeatherChip } from "./weather/WeatherChip";
 import { Scene } from "./world/Scene";
 
 export function App() {
@@ -27,7 +27,7 @@ export function App() {
             <Scene />
           </Canvas>
           <LayersControl />
-          <MapControls />
+          <WeatherChip />
           <DetailPanel />
         </main>
         <LoadingScreen />

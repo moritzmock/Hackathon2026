@@ -6,11 +6,12 @@ import { buildingsById } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 import { useStore } from "../store";
-import { buildingName, initials } from "./buildingName";
+import { buildingName } from "./buildingName";
 import { WhatIf } from "./WhatIf";
 import { RunProgress } from "./RunProgress";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useWeather } from "../weather/focus";
 
 
 function Content({ b }: { b: ChallengeBuilding }) {
@@ -22,11 +23,12 @@ function Content({ b }: { b: ChallengeBuilding }) {
   const w = rows ? wape(b.records, simLookup(rows)) : undefined;
   // Scored here like yours (all four months), not taken from the file.
   const optScore = opt ? score(wape(b.records, simLookup(opt.rows))) : undefined;
+  const weatherFocus = useWeather((s) => s.focus);
+  const setWeatherFocus = useWeather((s) => s.setFocus);
   const f = b.facts;
   return (
     <>
       <header className="detail__head">
-        <span className="detail__avatar" aria-hidden="true">{initials(buildingName(b.id))}</span>
         <div>
           <h2>{buildingName(b.id)}</h2>
           <p className="muted small">{String(f.building_typology)} · built {String(f.construction_year)}</p>
@@ -47,7 +49,7 @@ function Content({ b }: { b: ChallengeBuilding }) {
           <b className={`text-2xl tabular-nums ${opt ? "text-[var(--optimised)]" : "text-[var(--line)]"}`}>{optScore !== undefined ? optScore.toFixed(0) : "–"}<small className="ml-1 text-xs font-normal text-muted-foreground">{opt ? "/ 100" : "no result yet"}</small></b>
         </Card>
       </div>
-      <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"} />
+      <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"} focus={weatherFocus} onPickMonth={setWeatherFocus} />
         <RunProgress id={b.id} />
       </div>
       <WhatIf id={b.id} />

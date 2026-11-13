@@ -2,10 +2,11 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import { readWorld } from "../data/world";
 import { ScatterMesh, type Instance } from "./ScatterMesh";
+import { withSway } from "./sway";
 import { theme } from "./theme";
 
 const bushGeo = new THREE.IcosahedronGeometry(1, 0);
-const bushMaterial = new THREE.MeshStandardMaterial({ roughness: 0.95, flatShading: true });
+const bushMaterial = withSway(new THREE.MeshStandardMaterial({ roughness: 0.95, flatShading: true }), "bush", -1, 1, 0.06);
 
 /** Low rounded shrubs in yards and parks (decoration); only drawn near the camera. */
 export function Bushes() {

@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import { readWorld } from "../data/world";
 import { withEdgeFade } from "./edgeFade";
+import { withSeason } from "./season";
 
 export function Terrain() {
   const { city, heights, groundUrl } = readWorld();
@@ -20,7 +21,7 @@ export function Terrain() {
     return g;
   }, [city, heights]);
 
-  const material = useMemo(() => withEdgeFade(new THREE.MeshStandardMaterial({ map, roughness: 1, metalness: 0 })), [map]);
+  const material = useMemo(() => withEdgeFade(withSeason(new THREE.MeshStandardMaterial({ map, roughness: 1, metalness: 0 }))), [map]);
 
   return <mesh name="terrain" geometry={geometry} material={material} receiveShadow />;
 }

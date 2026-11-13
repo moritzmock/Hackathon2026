@@ -1,36 +1,50 @@
-// The Calibra logo: a gauge shaped like a "C" with an orange needle. While something
-// loads, the needle swings and settles on the mark, like an instrument being calibrated:
-// the simulation swinging in on the real bills.
+// The Calibra brand: a Sora wordmark whose "i" has an orange tile for a dot, and an icon
+// with a C on a near-black tile and the orange tile in its opening. The orange tile is the
+// simulation: while something loads it drops in from too high (before calibration the
+// model overestimates), overshoots and settles into place.
 
-/** The gauge mark alone. `spinning` makes the needle swing and settle, over and over. */
-export function CalibraMark({ size = 40, spinning = false }: { size?: number; spinning?: boolean }) {
+/** Brand tile: a rounded square with its top-right corner sharp (48-unit grid). */
+const TILE = "M15 2 H44 Q46 2 46 4 V33 A13 13 0 0 1 33 46 H15 A13 13 0 0 1 2 33 V15 A13 13 0 0 1 15 2 Z";
+/** The C: an arc open on the right, ends at ±50°. */
+const C_ARC = "M29.07 15.57 A11 11 0 1 0 29.07 32.43";
+/** The small orange tile that completes the C. */
+const PIECE = "M30.4 21 H35.5 Q36 21 36 21.5 V24.6 A2.4 2.4 0 0 1 33.6 27 H32.4 A2.4 2.4 0 0 1 30 24.6 V23.4 A2.4 2.4 0 0 1 32.4 21 Z";
+
+/** The square icon. `spinning` makes the orange piece settle into the C, over and over. */
+export function CalibraIcon({ size = 40, spinning = false }: { size?: number; spinning?: boolean }) {
   return (
-    <svg className={`calibra-mark${spinning ? " is-spinning" : ""}`} width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
-      {/* The "C": a gauge open on the right, where the target is. */}
-      <path d="M36.73 11.27 A18 18 0 1 0 36.73 36.73" fill="none" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
-      {/* Ticks on the dial. */}
-      <g stroke="currentColor" strokeWidth="2" strokeLinecap="round" opacity="0.35">
-        <line x1="15.5" y1="15.5" x2="17.6" y2="17.6" />
-        <line x1="11" y1="24" x2="14" y2="24" />
-        <line x1="15.5" y1="32.5" x2="17.6" y2="30.4" />
+    <svg className={`calibra-icon${spinning ? " is-spinning" : ""}`} width={size} height={size} viewBox="0 0 48 48" aria-hidden="true">
+      <path d={TILE} fill="var(--ink)" />
+      <path d={C_ARC} fill="none" stroke="var(--surface)" strokeWidth="7" />
+      <g className="calibra-icon__piece">
+        <path d={PIECE} fill="var(--accent)" />
       </g>
-      {/* The target: where the needle should land. */}
-      <circle cx="42" cy="24" r="2.6" fill="var(--accent)" />
-      <g className="calibra-mark__needle">
-        <line x1="24" y1="24" x2="37" y2="24" stroke="var(--accent)" strokeWidth="3.4" strokeLinecap="round" />
-      </g>
-      <circle cx="24" cy="24" r="3.6" fill="currentColor" />
     </svg>
   );
 }
 
-/** The mark with the name next to it. */
+/** The name, set in Sora, with the orange tile as the dot of the i. */
+export function CalibraWordmark({ spinning = false }: { spinning?: boolean }) {
+  return (
+    <span className={`calibra-wordmark${spinning ? " is-spinning" : ""}`} aria-label="Calibra">
+      <span aria-hidden="true">
+        Cal
+        <span className="calibra-wordmark__i">
+          ı<span className="calibra-wordmark__dot" />
+        </span>
+        bra
+      </span>
+    </span>
+  );
+}
+
+/** Icon, name and tagline together, as in the loading screen. */
 export function CalibraLogo({ spinning = false }: { spinning?: boolean }) {
   return (
     <span className="calibra-logo">
-      <CalibraMark size={44} spinning={spinning} />
+      <CalibraIcon size={46} spinning={spinning} />
       <span>
-        <span className="calibra-logo__name">Calibra</span>
+        <CalibraWordmark spinning={spinning} />
         <span className="calibra-logo__tag">Bolzano energy twin</span>
       </span>
     </span>

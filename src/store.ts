@@ -3,6 +3,9 @@ import { challenge, defaultParams } from "./data/challenge";
 import type { SimRow } from "./data/types";
 import { onModelErrorDetail, onModelStatus, SETUP_STEPS, simulate } from "./sim/client";
 
+// People who ask their system for less motion start with the moving things off.
+const prefersReducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export interface Run {
   status: "running" | "done" | "error";
   params: Record<string, number>;
@@ -24,6 +27,7 @@ export interface Layers {
   cars: boolean;
   pins: boolean;
   miniature: boolean;
+  motion: boolean;
 }
 
 export const LAYER_LABELS: Record<keyof Layers, string> = {
@@ -33,6 +37,7 @@ export const LAYER_LABELS: Record<keyof Layers, string> = {
   cars: "Cars",
   pins: "Pins",
   miniature: "Miniature effect",
+  motion: "Moving things",
 };
 
 interface State {
@@ -61,8 +66,6 @@ interface State {
   revealed: boolean;
   /** Photos of each challenge building taken from the 3D scene (data URLs). */
   snapshots: Record<string, string[]> | undefined;
-  /** Map zoom relative to the overview, in % (shown in the zoom control). */
-  zoomPct: number;
   select: (id: string | null) => void;
   hover: (id: string | null) => void;
   setParam: (id: string, name: string, value: number) => void;
@@ -86,11 +89,10 @@ export const useStore = create<State>((set, get) => ({
   modelLog: [],
   readyAt: undefined,
   lastWarmSeconds: undefined,
-  layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true },
+  layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true, motion: !prefersReducedMotion() },
   layersOpen: false,
   revealed: false,
   snapshots: undefined,
-  zoomPct: 100,
   select: (selected) => set({ selected }),
   hover: (hovered) => set({ hovered }),
   setParam: (id, name, value) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], [name]: value } } })),

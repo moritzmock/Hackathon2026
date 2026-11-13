@@ -2,13 +2,17 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import { readWorld } from "../data/world";
 import { ScatterMesh, type Instance } from "./ScatterMesh";
+import { withSway } from "./sway";
 import { theme } from "./theme";
 
 // Low-poly shapes: these are drawn tens of thousands of times.
 const crownGeo = new THREE.IcosahedronGeometry(1, 1);
 const coneGeo = new THREE.ConeGeometry(1, 1, 7).translate(0, 0.5, 0);
 const trunkGeo = new THREE.CylinderGeometry(0.16, 0.24, 1, 5, 1, true).translate(0, 0.5, 0);
-const leafMaterial = new THREE.MeshStandardMaterial({ roughness: 0.95 });
+// Round crowns (y −1…1) and cones (y 0…1) lean in the wind; the cone is tall, so it
+// moves less per unit.
+const crownMaterial = withSway(new THREE.MeshStandardMaterial({ roughness: 0.95 }), "crown", -1.2, 1, 0.12);
+const coneMaterial = withSway(new THREE.MeshStandardMaterial({ roughness: 0.95 }), "cone", 0, 1, 0.05);
 const trunkMaterial = new THREE.MeshStandardMaterial({ color: theme.trunk, roughness: 1 });
 
 /** Lollipop and cone trees, chunked for culling. */
@@ -38,8 +42,8 @@ export function Trees() {
 
   return (
     <group>
-      <ScatterMesh geometry={crownGeo} material={leafMaterial} instances={crowns} castShadow />
-      <ScatterMesh geometry={coneGeo} material={leafMaterial} instances={cones} castShadow />
+      <ScatterMesh geometry={crownGeo} material={crownMaterial} instances={crowns} castShadow />
+      <ScatterMesh geometry={coneGeo} material={coneMaterial} instances={cones} castShadow />
       <ScatterMesh geometry={trunkGeo} material={trunkMaterial} instances={trunks} maxDistance={1800} />
     </group>
   );

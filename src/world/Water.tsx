@@ -2,11 +2,12 @@ import { useMemo } from "react";
 import * as THREE from "three";
 import { readWorld } from "../data/world";
 import { withEdgeFade } from "./edgeFade";
+import { motionTime } from "./motion";
 import { theme } from "./theme";
 
 const LIFT = 0.6; // metres above the terrain
 
-/** Rivers and lakes as a glossy surface with faint static ripples. */
+/** Rivers and lakes as a glossy surface with gently moving ripples. */
 export function Water() {
   const { details } = readWorld();
   const geometry = useMemo(() => {
@@ -42,22 +43,27 @@ export function Water() {
       polygonOffsetUnits: -3,
     });
     m.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = motionTime;
       shader.vertexShader = shader.vertexShader
         .replace("#include <common>", "#include <common>\nvarying vec2 vWaterXZ;")
         .replace("#include <begin_vertex>", "#include <begin_vertex>\nvWaterXZ = (modelMatrix * vec4(transformed, 1.0)).xz;");
       shader.fragmentShader = shader.fragmentShader
-        .replace("#include <common>", "#include <common>\nvarying vec2 vWaterXZ;")
+        .replace("#include <common>", "#include <common>\nvarying vec2 vWaterXZ;\nuniform float uTime;")
         .replace(
           "#include <normal_fragment_maps>",
           `#include <normal_fragment_maps>
-          // Faint ripples: tilt the normal with a few crossing sine waves (static, so no animation cost).
+          // Ripples: tilt the normal with a few crossing sine waves that drift with the time.
           vec2 p = vWaterXZ * 0.35;
-          float rx = sin(p.x * 1.3 + sin(p.y * 0.7)) + 0.5 * sin(p.x * 2.9 - p.y * 1.7);
-          float rz = sin(p.y * 1.1 + sin(p.x * 0.9)) + 0.5 * sin(p.y * 3.1 + p.x * 1.3);
-          normal = normalize(normal + vec3(rx, 0.0, rz) * 0.06);`,
+          float tt = uTime;
+          float rx = sin(p.x * 1.3 + sin(p.y * 0.7) + tt * 1.1) + 0.5 * sin(p.x * 2.9 - p.y * 1.7 - tt * 1.7);
+          float rz = sin(p.y * 1.1 + sin(p.x * 0.9) - tt * 0.9) + 0.5 * sin(p.y * 3.1 + p.x * 1.3 + tt * 1.4);
+          normal = normalize(normal + vec3(rx, 0.0, rz) * 0.08);`,
         );
     };
-    return withEdgeFade(m);
+    const faded = withEdgeFade(m);
+    // Wrapped shader hooks all print the same source, so name this program explicitly.
+    faded.customProgramCacheKey = () => "water";
+    return faded;
   }, []);
 
   return <mesh geometry={geometry} material={material} receiveShadow />;

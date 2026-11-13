@@ -1,16 +1,12 @@
 import { useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { readWorld } from "../data/world";
+import { carGeometry } from "./carShape";
 import { theme } from "./theme";
 
-const carGeo = mergeGeometries([
-  new THREE.BoxGeometry(4.2, 1.0, 1.8).translate(0, 0.75, 0),
-  new THREE.BoxGeometry(2.3, 0.8, 1.6).translate(-0.25, 1.65, 0),
-])!;
 const palette = theme.cars.map((c) => new THREE.Color(c));
 
-/** Decorative cars along streets (positions are illustrative, not data). */
+/** Parked toy cars along streets (positions are illustrative, not data). */
 export function Cars() {
   const { details } = readWorld();
   const ref = useRef<THREE.InstancedMesh>(null);
@@ -31,8 +27,8 @@ export function Cars() {
     ref.current!.computeBoundingSphere();
   }, [details]);
   return (
-    <instancedMesh ref={ref} args={[carGeo, undefined, count]} castShadow receiveShadow>
-      <meshStandardMaterial roughness={0.6} />
+    <instancedMesh ref={ref} args={[carGeometry, undefined, count]} castShadow receiveShadow>
+      <meshStandardMaterial roughness={0.45} vertexColors />
     </instancedMesh>
   );
 }

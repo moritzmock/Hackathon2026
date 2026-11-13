@@ -9,7 +9,6 @@ import * as THREE from "three";
 import { buildingsById } from "../data/challenge";
 import { useStore } from "../store";
 import { EDGE } from "./edgeFade";
-import { registerCamera } from "./cameraApi";
 import { buildingAnchor, focusCenter } from "./focus";
 
 const ACTION = CameraControlsImpl.ACTION;
@@ -75,25 +74,6 @@ export function MapCamera() {
     area.addEventListener("wheel", onWheel, { passive: false });
     return () => area.removeEventListener("wheel", onWheel);
   }, [gl, camera, scene, invalidate]);
-
-  // Expose zoom/home to the UI outside the canvas, and report the zoom level.
-  useEffect(() => {
-    const c = ref.current;
-    if (!c) return;
-    const homeDistance = HOME.pos.distanceTo(HOME.target);
-    const home = () =>
-      c.setLookAt(HOME.pos.x, HOME.pos.y, HOME.pos.z, HOME.target.x, HOME.target.y, HOME.target.z, true);
-    registerCamera({ controls: c, invalidate, home });
-    const onUpdate = () => {
-      const zoomPct = Math.round((homeDistance / c.distance) * 100);
-      if (useStore.getState().zoomPct !== zoomPct) useStore.setState({ zoomPct });
-    };
-    c.addEventListener("update", onUpdate);
-    return () => {
-      c.removeEventListener("update", onUpdate);
-      registerCamera(null);
-    };
-  }, [invalidate]);
 
   // Fly to the selected building (or back home).
   useEffect(() => {
