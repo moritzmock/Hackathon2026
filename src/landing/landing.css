@@ -1,42 +1,8 @@
-/* The landing page, laid out like the INTEGRATES site (integratesproject.eu) with Calibra's own
-   logo and words: a violet band with the sentence and the way in, rounded tiles on the right; the
-   city picture overlapping into a pale violet band; violet headings; light grey panels. */
+/* The landing page's own parts: the city window, the building cards and the links. The bands,
+   tiles and panels are the shared ones in src/site/site.css. */
 
-/* Full-width bands with the content in a centred column */
-.site.landing main { max-width: none; padding-inline: 0; }
-.landing-wrap { position: relative; max-width: 1160px; margin: 0 auto; padding-inline: 40px; }
-.landing h2 { margin: 0; color: var(--brand-violet); font: 600 clamp(1.6rem, 2.8vw, 2.25rem)/1.15 var(--display); letter-spacing: -0.035em; }
-
-/* The violet band */
-.landing-hero { background: var(--brand-violet); color: #fff; }
-.landing-hero__inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; align-items: start; padding-block: clamp(56px, 9vh, 96px) 220px; }
-.landing-hero h1 { max-width: 15em; margin: 0 0 22px; font: 600 clamp(2.2rem, 4.2vw, 3.6rem)/1.08 var(--display); letter-spacing: -0.04em; }
-.landing-hero p { max-width: 560px; margin: 0 0 30px; color: rgb(255 255 255 / 0.82); font-size: 1.0625rem; line-height: 1.65; }
-.landing-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px; }
-.landing-hero__link { display: inline-flex; align-items: center; gap: 6px; color: #fff; font-size: 0.9375rem; font-weight: 600; text-decoration: none; }
-.landing-hero__link:hover { text-decoration: underline; text-underline-offset: 4px; }
-.landing .site-button--light:hover { background: var(--brand-violet-soft); }
-
-/* Decorative tiles: rounded squares, one sharp corner each */
-.landing-tiles { display: grid; pointer-events: none; }
-.landing-tiles--hero { grid-template-columns: repeat(3, 76px); grid-template-rows: repeat(5, 76px); margin-right: -40px; }
-.landing-tiles--picture { position: absolute; top: 100%; left: 40px; grid-template-columns: repeat(2, 44px); grid-template-rows: repeat(3, 44px); }
-.landing-tile { border-radius: 26px; }
-.landing-tiles--picture .landing-tile { border-radius: 14px; }
-.landing-tile--tl { border-top-left-radius: 0 !important; }
-.landing-tile--tr { border-top-right-radius: 0 !important; }
-.landing-tile--br { border-bottom-right-radius: 0 !important; }
-.landing-tile--bl { border-bottom-left-radius: 0 !important; }
-.landing-tile--violet { background: var(--brand-violet-2); }
-.landing-tile--light { background: var(--brand-violet-4); }
-.landing-tile--white { background: #f4f1f6; }
-.landing-tile--orange { background: var(--brand-orange); }
-.landing-tile--grey { background: var(--baseline); }
-.landing-tiles--picture .landing-tile--violet { background: var(--brand-violet); }
-
-/* The city picture, half in the violet band, half in the pale one */
-.landing-picture { display: flow-root; padding-bottom: 72px; background: var(--brand-violet-soft); }
-.landing-window { position: relative; margin: -170px 0 0; overflow: hidden; border-radius: 24px 24px 24px 0; background: var(--panel-card); }
+/* The city picture, half in the violet band, half in the pale one (.site-overlap) */
+.landing-window { margin: 0; overflow: hidden; border-radius: 24px 24px 24px 0; background: var(--panel-card); }
 .landing-window img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 7; object-fit: cover; }
 .landing-window__label {
   position: absolute; transform: translate(20px, -50%); display: inline-flex; align-items: center; gap: 6px;
@@ -47,11 +13,8 @@
 /* 01 and 02 stand close together: 01's name goes to the left of its pin. */
 .landing-window__label--building_01 { transform: translate(calc(-100% - 20px), -50%); }
 
-/* The three buildings, in a light grey panel */
-.landing-section { padding-block: 120px 88px; }
-.landing-section__head { display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 24px; }
-.landing-section__head p { max-width: 380px; margin: 0; color: var(--muted); font-size: 0.875rem; line-height: 1.55; }
-.landing-buildings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 14px; border-radius: 24px; background: #efeef1; list-style: none; }
+/* The three buildings, in a light grey panel (.site-panel) */
+.landing-buildings { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0; list-style: none; }
 .landing-building { padding: 14px 14px 20px; border-radius: 18px; background: #fff; }
 .landing-building__photo { overflow: hidden; border-radius: 12px; background: var(--panel-card); }
 .landing-building__photo img { display: block; width: 100%; height: auto; aspect-ratio: 960 / 660; }
@@ -62,9 +25,8 @@
 .landing-building__score strong { color: var(--optimised); font: 600 1.75rem/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
 .landing-building__score span { color: var(--muted); font-size: 0.8125rem; }
 
-/* Links to the detail pages, on a grey band */
-.landing-more-band { padding-block: 72px; background: #efeef1; }
-.landing-more-band h2 { margin-bottom: 24px; }
+/* Links to the detail pages, on a grey band (.site-grey) */
+.site-bands .landing-more__title { margin-bottom: 24px; }
 .landing-more { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
 .landing-more a {
   display: flex; align-items: center; gap: 16px; padding: 22px 24px; border-radius: 18px 18px 18px 0; background: #fff;
@@ -75,27 +37,14 @@
 .landing-more__text { display: grid; flex: 1; gap: 2px; }
 .landing-more__text strong { font: 600 1rem/1.3 var(--display); letter-spacing: -0.015em; }
 .landing-more__text span { color: var(--muted); font-size: 0.8125rem; }
-.landing .site-footer { margin-top: 0; border-top: 0; }
 
 @media (max-width: 900px) {
-  .landing-hero__inner { grid-template-columns: 1fr; padding-bottom: 180px; }
-  .landing-tiles--hero { display: none; }
-  .landing-window { margin-top: -130px; }
   .landing-buildings { grid-template-columns: 1fr; }
   .landing-more { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
-  .landing-wrap { padding-inline: 16px; }
-  .landing-hero__inner { padding-block: 40px 120px; }
-  .landing-hero p { font-size: 1rem; }
-  .landing-window { margin-top: -90px; border-radius: 16px 16px 16px 0; }
+  .landing-window { border-radius: 16px 16px 16px 0; }
   .landing-window img { aspect-ratio: 4 / 3; object-position: 40% 50%; }
   .landing-window__label { display: none; }
-  .landing-tiles--picture { left: 16px; grid-template-columns: repeat(2, 32px); grid-template-rows: repeat(3, 32px); }
-  .landing-picture { padding-bottom: 48px; }
-  .landing-section { padding-block: 96px 56px; }
-  .landing-section__head { display: block; }
-  .landing-section__head p { max-width: none; margin-top: 10px; }
   .landing-buildings { padding: 10px; }
-  .landing-more-band { padding-block: 48px; }
 }

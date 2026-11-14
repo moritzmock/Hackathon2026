@@ -1,21 +1,29 @@
 import results from "../approaches/results.json";
 import { CityInvite } from "../site/CityInvite";
+import { PageBand } from "../site/PageBand";
 import { pages } from "../site/pages";
 import { SiteFooter } from "../site/SiteFooter";
 import { SiteHeader } from "../site/SiteHeader";
+import { CORNER_TILES, Tiles } from "../site/Tiles";
 import { MethodChart } from "./MethodChart";
 
 export function MethodsPage() {
   return (
     <div className="site">
       <SiteHeader current="methods" />
-      <main>
-        <section className="methods-intro" aria-labelledby="methods-title">
-          <h1 id="methods-title">Which search method gets closest to the bills?</h1>
-          <p>Each dot is one run, and further right is closer to the bills. Pick a building to see how each method did there, hover or tap a dot for its details, or <a href={pages.runs}>see every run in a table</a>.</p>
-        </section>
-        <MethodChart rows={results} />
-        <CityInvite />
+      <main className="site-bands">
+        <PageBand titleId="methods-title" title="Which search method gets closest to the bills?" overlap>
+          <p>Each dot is one run, and further right is closer to the bills. Pick a building to see how each method did there, hover a dot for its details, or <a href={pages.runs}>see every run in a table</a>.</p>
+        </PageBand>
+        <div className="site-overlap">
+          <div className="site-wrap">
+            <MethodChart rows={results} />
+            <Tiles tiles={CORNER_TILES} className="site-tiles--corner" />
+          </div>
+        </div>
+        <div className="site-wrap methods-closing">
+          <CityInvite />
+        </div>
       </main>
       <SiteFooter />
     </div>

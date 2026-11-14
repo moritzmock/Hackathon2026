@@ -9,9 +9,9 @@
   through react-three-fiber and drei; shared state in zustand. `src/sim/` runs
   the simulation in Web Workers. Four pages: `index.html` is the landing page
   (`src/landing/`), `methods.html` the search methods compared
-  (`src/methods/`), both with the frame in `src/site/`; `city.html` the 3D
-  city (`src/main.tsx`); `approaches.html` the table of recorded calibration
-  runs (`src/approaches/`).
+  (`src/methods/`); `approaches.html` the table of recorded calibration runs
+  (`src/approaches/`); these three share the frame in `src/site/`.
+  `city.html` is the 3D city (`src/main.tsx`).
 - `public/`: static files served as they are. `landing/` holds the landing
   page's pictures of the city and the buildings, taken from the app by
   `scripts/capture_landing_images.mjs`. `baseline.html` and `data.js`

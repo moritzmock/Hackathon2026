@@ -4,9 +4,11 @@ import { buildingsById } from "../data/challenge";
 import { rankMethods } from "../methods/methodRanking";
 import { buildingName, buildingNumber } from "../panels/buildingName";
 import { OpenCity } from "../site/OpenCity";
+import { PageBand } from "../site/PageBand";
 import { pages } from "../site/pages";
 import { SiteFooter } from "../site/SiteFooter";
 import { SiteHeader } from "../site/SiteHeader";
+import { CORNER_TILES, Tiles } from "../site/Tiles";
 import cityPins from "./cityPins.json";
 
 const base = import.meta.env.BASE_URL;
@@ -69,69 +71,39 @@ const MORE = [
   { href: pages.runs, icon: Table2, title: `All ${results.length} runs`, text: "Each run's method, settings and building scores." },
 ];
 
-/**
- * Decorative tiles in the INTEGRATES manner: rounded squares on a grid, each with one sharp
- * corner, in the brand's violets, white and one orange. [column, row, colour, sharp corner].
- */
-type Tile = [number, number, "violet" | "light" | "soft" | "white" | "orange" | "grey", "tl" | "tr" | "br" | "bl"];
-const HERO_TILES: Tile[] = [
-  [1, 1, "violet", "br"], [3, 1, "light", "bl"],
-  [2, 2, "white", "tr"],
-  [3, 3, "violet", "tl"],
-  [2, 4, "orange", "tr"], [3, 4, "white", "bl"],
-  [3, 5, "violet", "tr"],
-];
-const PICTURE_TILES: Tile[] = [[1, 1, "orange", "tr"], [2, 2, "violet", "bl"], [1, 3, "grey", "tr"]];
-
-function Tiles({ tiles, className }: { tiles: Tile[]; className: string }) {
-  return (
-    <div className={`landing-tiles ${className}`} aria-hidden="true">
-      {tiles.map(([column, row, colour, sharp]) => (
-        <span key={`${column}-${row}`} className={`landing-tile landing-tile--${colour} landing-tile--${sharp}`} style={{ gridColumn: column, gridRow: row }} />
-      ))}
-    </div>
-  );
-}
-
 export function LandingPage() {
   return (
-    <div className="site landing">
+    <div className="site">
       <SiteHeader current="landing" />
-      <main>
-        <section className="landing-hero" aria-labelledby="landing-title">
-          <div className="landing-wrap landing-hero__inner">
-            <div className="landing-hero__copy">
-              <h1 id="landing-title">Three buildings, their real heating bills, and a simulation tuned to meet them.</h1>
-              <p>Calibra runs the INTEGRATES building energy model in your browser. Fly over Bolzano, pick a building and see how close the simulation gets to what was actually paid for heating.</p>
-              <div className="landing-hero__actions">
-                <OpenCity tone="light" />
-                <a className="landing-hero__link" href={pages.methods}>Compare the methods <ArrowRight size={16} aria-hidden="true" /></a>
-              </div>
-            </div>
-            <Tiles tiles={HERO_TILES} className="landing-tiles--hero" />
+      <main className="site-bands">
+        <PageBand titleId="landing-title" title="Three buildings, their real heating bills, and a simulation tuned to meet them." overlap>
+          <p>Calibra runs the INTEGRATES building energy model in your browser. Fly over Bolzano, pick a building and see how close the simulation gets to what was actually paid for heating.</p>
+          <div className="site-band__actions">
+            <OpenCity tone="light" />
+            <a className="site-band__link" href={pages.methods}>Compare the methods <ArrowRight size={16} aria-hidden="true" /></a>
           </div>
-        </section>
+        </PageBand>
 
-        <div className="landing-picture">
-          <div className="landing-wrap">
+        <div className="site-overlap">
+          <div className="site-wrap">
             <CityWindow />
-            <Tiles tiles={PICTURE_TILES} className="landing-tiles--picture" />
+            <Tiles tiles={CORNER_TILES} className="site-tiles--corner" />
           </div>
         </div>
 
-        <section className="landing-section" aria-labelledby="landing-buildings-title">
-          <div className="landing-wrap">
-            <div className="landing-section__head">
+        <section className="site-section" aria-labelledby="landing-buildings-title">
+          <div className="site-wrap">
+            <div className="site-section__head">
               <h2 id="landing-buildings-title">The three buildings</h2>
               <p>Score out of 100 from our best run: 100 means the simulation matches the heating bills of February and March, 2018 and 2019, exactly.</p>
             </div>
-            <ul className="landing-buildings">{buildings.map((id) => <BuildingCard key={id} id={id} />)}</ul>
+            <ul className="landing-buildings site-panel">{buildings.map((id) => <BuildingCard key={id} id={id} />)}</ul>
           </div>
         </section>
 
-        <section className="landing-more-band" aria-labelledby="landing-more-title">
-          <div className="landing-wrap">
-            <h2 id="landing-more-title">Look closer at the results</h2>
+        <section className="site-grey" aria-labelledby="landing-more-title">
+          <div className="site-wrap">
+            <h2 id="landing-more-title" className="landing-more__title">Look closer at the results</h2>
             <ul className="landing-more">
               {MORE.map(({ href, icon: Icon, title, text }) => (
                 <li key={href}>

@@ -1,6 +1,8 @@
-/* The frame shared by the Calibra pages (landing and methods), after the corporate identity
-   (public/brand/calibra-corporate-identity.pdf): white page, thin lines, no heavy shadows; Sora for
-   headings and numbers, Inter for text; ink headings and one black main button. */
+/* The frame shared by the Calibra pages (landing, methods, all runs), after the corporate identity
+   (public/brand/calibra-corporate-identity.pdf) and laid out like the INTEGRATES site
+   (integratesproject.eu): a violet band with the title and rounded tiles, pictures and panels
+   overlapping into a pale violet band, violet headings, light grey panels. Sora for headings and
+   numbers, Inter for text. */
 .site { min-height: 100%; background: var(--app); color: var(--ink); }
 .site a:focus-visible, .site button:focus-visible { outline: 2px solid var(--accent-deep); outline-offset: 3px; }
 
@@ -45,7 +47,75 @@
 .site-footer a { color: var(--heading); text-decoration: none; }
 .site-footer a:hover { text-decoration: underline; }
 
+/* Full-width bands with the content in a centred column */
+.site main.site-bands { max-width: none; padding-inline: 0; }
+.site-wrap { position: relative; max-width: 1160px; margin: 0 auto; padding-inline: 40px; }
+.site-bands h2 { margin: 0; color: var(--brand-violet); font: 600 clamp(1.6rem, 2.8vw, 2.25rem)/1.15 var(--display); letter-spacing: -0.035em; }
+
+/* The violet band */
+.site-band { background: var(--brand-violet); color: #fff; }
+.site-band__inner { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 48px; align-items: start; padding-block: clamp(56px, 9vh, 96px); }
+.site-band--overlap .site-band__inner { padding-bottom: 220px; }
+.site-band h1 { max-width: 15em; margin: 0 0 22px; font: 600 clamp(2.2rem, 4.2vw, 3.6rem)/1.08 var(--display); letter-spacing: -0.04em; }
+.site-band__copy > p { max-width: 560px; margin: 0 0 30px; color: rgb(255 255 255 / 0.82); font-size: 1.0625rem; line-height: 1.65; }
+.site-band__copy > p:last-child { margin-bottom: 0; }
+.site-band__copy a:not(.site-button) { color: #fff; }
+.site-band__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px; }
+.site-band__link { display: inline-flex; align-items: center; gap: 6px; color: #fff; font-size: 0.9375rem; font-weight: 600; text-decoration: none; }
+.site-band__link:hover { text-decoration: underline; text-underline-offset: 4px; }
+.site-band .site-button--light:hover { background: var(--brand-violet-soft); }
+
+/* What follows a band with room: it overlaps the band's lower edge into a pale violet band */
+.site-overlap { display: flow-root; padding-bottom: 72px; background: var(--brand-violet-soft); }
+.site-overlap > .site-wrap > :first-child { position: relative; margin-top: -170px; }
+
+/* Light grey band and panel */
+.site-grey { padding-block: 72px; background: #efeef1; }
+.site-panel { padding: 14px; border-radius: 24px; background: #efeef1; }
+.site-section { padding-block: 112px 88px; }
+.site-section__head { display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 24px; }
+.site-section__head p { max-width: 380px; margin: 0; color: var(--muted); font-size: 0.875rem; line-height: 1.55; }
+
+/* Decorative tiles: rounded squares, one sharp corner each */
+.site-tiles { display: grid; pointer-events: none; }
+.site-tiles--band { grid-template-columns: repeat(3, 76px); grid-template-rows: repeat(5, 76px); margin-right: -40px; }
+.site-tiles--corner { position: absolute; top: 100%; left: 40px; grid-template-columns: repeat(2, 44px); grid-template-rows: repeat(3, 44px); }
+.site-tile { border-radius: 26px; }
+.site-tiles--corner .site-tile { border-radius: 14px; }
+.site-tile--tl { border-top-left-radius: 0 !important; }
+.site-tile--tr { border-top-right-radius: 0 !important; }
+.site-tile--br { border-bottom-right-radius: 0 !important; }
+.site-tile--bl { border-bottom-left-radius: 0 !important; }
+.site-tile--violet { background: var(--brand-violet-2); }
+.site-tile--deep { background: var(--brand-violet); }
+.site-tile--light { background: var(--brand-violet-4); }
+.site-tile--white { background: #f4f1f6; }
+.site-tile--orange { background: var(--brand-orange); }
+.site-tile--grey { background: var(--baseline); }
+.site-bands ~ .site-footer { margin-top: 0; border-top: 0; }
+/* The dark closing band keeps its white heading inside the banded pages */
+.site-bands .site-closing h2 { margin: 0 0 6px; color: #fff; font-size: 1.5rem; }
+
+@media (max-width: 900px) {
+  .site-band__inner { grid-template-columns: 1fr; }
+  .site-band--overlap .site-band__inner { padding-bottom: 180px; }
+  .site-tiles--band { display: none; }
+  .site-overlap > .site-wrap > :first-child { margin-top: -130px; }
+}
+
 @media (max-width: 600px) {
+  .site-wrap { padding-inline: 16px; }
+  .site-band__inner { padding-block: 40px; }
+  .site-band--overlap .site-band__inner { padding-bottom: 120px; }
+  .site-band__copy > p { font-size: 1rem; }
+  .site-overlap { padding-bottom: 48px; }
+  .site-overlap > .site-wrap > :first-child { margin-top: -90px; }
+  .site-tiles--corner { left: 16px; grid-template-columns: repeat(2, 32px); grid-template-rows: repeat(3, 32px); }
+  .site-section { padding-block: 96px 56px; }
+  .site-section__head { display: block; }
+  .site-section__head p { max-width: none; margin-top: 10px; }
+  .site-grey { padding-block: 48px; }
+
   .site-header, .site main, .site-footer { padding-inline: 16px; }
   .site-header { padding-block: 16px; }
   .site-header .calibra-mark { width: 32px; height: 32px; }
