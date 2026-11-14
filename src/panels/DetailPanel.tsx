@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { Gauge, Sparkles, X } from "lucide-react";
+import { Gauge, X } from "lucide-react";
+import { CalibraMark } from "../brand/CalibraLogo";
 import { CompareLines } from "../charts/CompareLines";
 import { visibleCustomRows } from "../charts/visibleCustomRows";
 import { optimisedFor } from "../data/optimised";
@@ -65,7 +66,7 @@ function Content({ b }: { b: ChallengeBuilding }) {
               <span className="ptile__label">Optimised</span>
               <b className="ptile__value" style={{ color: opt ? "var(--optimised)" : "var(--muted)" }}>{optScore !== undefined ? optScore.toFixed(2) : "–"}<small>{opt ? "/ 100" : "no result yet"}</small></b>
             </div>
-            <span className="ptile__icon" style={{ color: "var(--optimised)", background: "color-mix(in srgb, var(--optimised) 10%, var(--surface))" }}><Sparkles size={20} /></span>
+            <span className="ptile__icon" style={{ color: "var(--optimised)", background: "color-mix(in srgb, var(--optimised) 10%, var(--surface))" }}><CalibraMark size={24} /></span>
           </div>
         )}
       </div>

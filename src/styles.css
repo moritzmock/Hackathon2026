@@ -539,8 +539,8 @@ body { background: #fff; }
 @keyframes winter-sheen { to { transform: translateX(100%); } }
 
 /* Score: counts to the new value; a chip says how much closer to the bills it got. */
-.ascore { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; }
-.ascore__delta { font-size: 0.6875rem; font-weight: 600; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
+.ascore { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; min-width: 0; }
+.ascore__delta { max-width: 100%; overflow: hidden; text-overflow: ellipsis; font-size: 0.6875rem; font-weight: 600; padding: 1px 7px; border-radius: 999px; white-space: nowrap; }
 .ascore__delta.is-up { background: color-mix(in srgb, var(--optimised) 12%, var(--surface)); color: var(--optimised); }
 .ascore__delta.is-down { background: var(--brand-orange-soft); color: var(--accent-deep); }
 

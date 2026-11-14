@@ -40,10 +40,11 @@ export function AnimatedScore({ value, pending, color }: { value: number; pendin
           <motion.span
             key={settled.current}
             className={`ascore__delta ${delta > 0 ? "is-up" : "is-down"}`}
+            title={delta > 0 ? "Closer to the gas bills than the last result" : "Further from the gas bills than the last result"}
             initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
             transition={{ type: "spring", stiffness: 420, damping: 30 }}
           >
-            {delta > 0 ? "+" : "−"}{Math.abs(delta).toFixed(2)} {delta > 0 ? "closer to the bills" : "further from the bills"}
+            {delta > 0 ? "+" : "−"}{Math.abs(delta).toFixed(2)} {delta > 0 ? "closer" : "further"}
           </motion.span>
         )}
       </AnimatePresence>
