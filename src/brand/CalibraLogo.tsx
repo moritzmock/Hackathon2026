@@ -22,7 +22,7 @@ export function CalibraMark({ size = 40, spinning = false, tone = "brand" }: { s
         <circle cx="24" cy="24" r="3.6" />
         <path className="calibra-mark__needle" d={NEEDLE} />
       </g>
-      <path transform="translate(40.6 25) scale(1.12)" d={FLAME} fill="var(--accent)" stroke="var(--accent)" strokeWidth="1" strokeLinejoin="round" />
+      <path transform="translate(40.6 22.6) scale(1.15 1.45)" d={FLAME} fill="var(--accent)" stroke="var(--accent)" strokeWidth="1" strokeLinejoin="round" />
     </svg>
   );
 }
