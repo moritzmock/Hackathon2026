@@ -1,16 +1,17 @@
 // Colour for how well a building's current settings match its bills (score 0–100):
-// red when far off, amber around 90, green only when very close (log scale near
-// 100). Used for the building's outline and glow on the map.
+// a single green scale, grey when far off and deep green when very close (log
+// scale near 100). Used for the outline, glow, score label and score card.
 import * as THREE from "three";
 import type { ChallengeBuilding, SimRow } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 
-// Stops along a 0–1 "closeness" scale (see closeness() below).
+// One hue: grey when far off, deepening into green as the settings get closer to
+// the bills. Stops along a 0–1 "closeness" scale (see closeness() below).
 const STOPS: [number, THREE.Color][] = [
-  [0, new THREE.Color("#ff1a3c")], // far off
-  [0.45, new THREE.Color("#ff8800")], // about 90
-  [0.72, new THREE.Color("#c8e600")], // about 97
-  [1, new THREE.Color("#00d65c")], // matches the bills
+  [0, new THREE.Color("#a9adb8")], // far off: neutral grey
+  [0.45, new THREE.Color("#8fd1a8")], // about 90: pale green
+  [0.72, new THREE.Color("#2fb46c")], // about 97: green
+  [1, new THREE.Color("#0a7d43")], // matches the bills: deep green
 ];
 
 /**
