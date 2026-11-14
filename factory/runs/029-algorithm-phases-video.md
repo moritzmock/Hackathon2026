@@ -28,8 +28,8 @@ The run's `evaluation_trace.csv` records every try: 48 per building × 3 buildin
 ### UX/UI (agreed, after several rounds)
 
 - The owner's data: `~/Downloads/evaluation_trace.csv` ("evaluation trace for our best algorithm"), byte-identical to the backend's trace for the best run; the score on the y-axis, `is_final_candidate` marks each building's best try, grouped by `building_id`.
-- The owner's direction, in order: real data only; "remove the flame"; "it should have this animation where it approximates the real data" (the textbook picture of a Bayesian search); "shouldn't it work across epochs, together with the one below, and killing the bar chart"; "make it more fluent as an animation"; expected improvement as its own panel is not needed.
-- "Our best run, epoch by epoch": on top, the method on one setting against the real model's true score, the guess fitted through the tries, the next batch ringed on the guess, each pick dropping onto the true score while the epoch runs; below, the real run's 48 tries with the stages shaded and the epochs marked; beside it, the stage's explanation; play, pause and a position slider; a switch between the buildings. Both charts play together, epoch by epoch, each epoch as one smooth movement (fit, pick, run).
+- The owner's direction, in order: real data only; "remove the flame"; "it should have this animation where it approximates the real data" (the textbook picture of a Bayesian search); "shouldn't it work across epochs, together with the one below, and killing the bar chart"; "make it more fluent as an animation"; expected improvement as its own panel is not needed; "what did you mean night temperature?"; "show me the epochs and phases, show both graphs"; "style this a bit easier, right now it's hard to read, just simplify it in general".
+- The section: a building switch and the best score so far; one track with the three phase names over the epochs (clickable) and one sentence on the current phase; side by side "Up close: one setting" (the method on one setting against the real model's score, the guess fitted through the tries, the next tries ringed on the guess, each dropping onto the real score while the epoch runs, a one-line note on what the setting is) and "The real run: all 12 settings" (the 48 tries, phases shaded, epochs as dashed borders); play, pause and a position slider. Both charts play together, epoch by epoch, each epoch as one smooth movement (fit, pick, run).
 - Starts by itself once scrolled into view, once; still and finished with reduced motion (the factory's choice). Placed after "The three buildings".
 
 ### Architecture (the factory's choices, at hackathon pace)
@@ -37,7 +37,7 @@ The run's `evaluation_trace.csv` records every try: 48 per building × 3 buildin
 - `data/evaluation_trace.csv`: the owner's trace, kept as given (like `data/submission_result.json`).
 - `scripts/bake_search_replay.py` (`npm run replay`): tries, stages and epochs (the method's batches, from replaying it with the backend's own code and the run's seed against the trace), and the one setting to search along. Nothing in `vendor/` is changed.
 - `scripts/bake_slice_truth.ts`: the in-browser model along that setting (54 runs). `scripts/bake_slice_search.py` (`npm run replay:slice`): the one-setting search, in as many epochs as the real run, with the method's own `_fit_gp`, `_expected_improvement` and `_kriging_believer`.
-- `src/searchReplay/`: `replayTimeline.ts` and `sliceSteps.ts` (rules), `usePlayClock.ts`, `GuessChart.tsx`, `SearchReplay.tsx`, `searchReplay.css`.
+- `src/searchReplay/`: `replayTimeline.ts` and `sliceSteps.ts` (rules), `usePlayClock.ts`, `PhaseStrip.tsx`, `GuessChart.tsx`, `SearchReplay.tsx`, `searchReplay.css`.
 - The settings' plain labels move from `WhatIf.tsx` to `src/panels/settingGroups.ts`; the pill switch moves to the shared `.site-switch`. No new library: SVG and `requestAnimationFrame`.
 
 ### Checks
@@ -56,6 +56,7 @@ The run's `evaluation_trace.csv` records every try: 48 per building × 3 buildin
 - The real bills against the simulation after each stage (bars, with the score at each stage): six extra model runs, all matching the trace; the owner asked to remove the bar chart in favour of the epoch-by-epoch picture. Committed in d5d1523, removed with `scripts/bake_phase_results.ts` and its data.
 - The one-setting search as single tries, synced to the stages: the owner wanted it to work across the real run's epochs. Replaced by batches per epoch.
 - Expected improvement as its own panel with diamonds: the owner asked whether it was needed; the picks are ringed on the guess instead.
+- A big text box per phase (held settings, epoch details), two-row phase and epoch strips, four legends and long notes: the owner found it hard to read; simplified to one track, one sentence, two short legends and one note.
 - A video file: the owner chose the landing page.
 
 ## Status
@@ -67,8 +68,8 @@ done.
 - Landing page: "How the search found the settings" → "Our best run, epoch by epoch", as above.
 - One-setting search: night temperature (building 01), fully heated share (02, 03); 5 epochs each (3 spread-out tries, then 2 per epoch), 11 tries, every one a real model run; all three end on the true top, our best try's own score (96.44, 99.41, 96.81). The true line: 54 runs, about 15 minutes in 9 processes; the best try's own point matches the trace in all three.
 - Epochs of the real run: building 01 13 · 6 (of 12 picked) · 10 · 12 · 7; building 03 13 · 8 · 12 · 11 · 4 (exact replays); building 02 13 · 6 · then Fine-tune cut into 3 equal parts (marked as estimated).
-- Commits: c7130bf (12-slice version), d5d1523 (bills version), 6d87744 (one-setting search), and this one (epochs, fluent animation, bars and the expected-improvement panel removed).
-- Checks: `npm test` 80 pass, 0 fail; type check passes; `npm run build` passes (model assets verified). Headless Chrome: the landing page at 1360 px and 390 px plays to try 48, no console errors, no sideways scrolling. `npx software-factory check-docs` passes.
+- Commits: c7130bf (12-slice version), d5d1523 (bills version), 6d87744 (one-setting search), c9b3382 (epochs, fluent animation, bars and the expected-improvement panel removed), and the simplified layout with both charts side by side.
+- Checks: `npm test` 81 pass, 0 fail; type check passes; `npm run build` passes (model assets verified). Headless Chrome: the landing page at 1360 px and 390 px plays to try 48, no console errors, no sideways scrolling. `npx software-factory check-docs` passes.
 - Docs: [Search replay](../../docs/reference/features/search-replay.md), the features index, the landing page's page, the blueprint (structure, Open).
 
 ## Later

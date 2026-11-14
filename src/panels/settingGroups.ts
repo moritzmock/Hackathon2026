@@ -40,8 +40,13 @@ export const GROUPS: { title: string; icon: LucideIcon; items: { name: string; l
 
 const LABELS: Record<string, string> = Object.fromEntries(GROUPS.flatMap((g) => g.items.map((it) => [it.name, it.label])));
 
+const HINTS: Record<string, string> = Object.fromEntries(GROUPS.flatMap((g) => g.items.map((it) => [it.name, it.hint])));
+
 /** The plain label of a setting, or its name when it has none. */
 export const settingLabel = (name: string) => LABELS[name] ?? name;
+
+/** A setting's one-sentence explanation, or an empty string when it has none. */
+export const settingHint = (name: string) => HINTS[name] ?? "";
 
 /** A setting's value as people read it, by its unit. */
 export const fmt = (v: number, unit: string) => {

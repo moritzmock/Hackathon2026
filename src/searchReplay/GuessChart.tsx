@@ -4,7 +4,7 @@
 // is, pinched at each try. The next batch's picks are ringed on the guess (where a try is expected
 // to gain the most); each then drops from where the guess expected it onto the true score.
 import challenge from "../data/challenge.json";
-import { fmt, settingLabel } from "../panels/settingGroups";
+import { fmt, settingHint, settingLabel } from "../panels/settingGroups";
 import type { SliceSearch, SliceView } from "./sliceSteps";
 
 const W = 640;
@@ -44,8 +44,8 @@ export function GuessChart({ search, view, label }: { search: SliceSearch; view:
 
   return (
     <figure className="guess">
+      <p className="replay__chart-title">Up close: one setting, {name.toLowerCase()}</p>
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`A Bayesian search over ${name}: the true score from the real model, the tries on it, and the method's guess through them.`}>
-        <text className="guess__label" x={4} y={TOP.y - 8}>Score</text>
         <text className="guess__step" x={W - RIGHT} y={TOP.y - 8} textAnchor="end">{label}</text>
         {ticks.map((t) => (
           <g key={t} className="replay-grid">
@@ -77,19 +77,14 @@ export function GuessChart({ search, view, label }: { search: SliceSearch; view:
           <text x={(LEFT + W - RIGHT) / 2} y={H - 8} textAnchor="middle" className="replay-axis__name">{name}</text>
         </g>
       </svg>
-      <figcaption>
-        <ul className="replay-legend">
-          <li><i className="is-truth" aria-hidden="true" />True score (real model)</li>
-          <li><i className="is-try-dark" aria-hidden="true" />A try</li>
-          <li><i className="is-mean" aria-hidden="true" />The method's guess</li>
-          <li><i className="is-band" aria-hidden="true" />How unsure</li>
-          <li><i className="is-next" aria-hidden="true" />Next batch: where a try is expected to gain most</li>
-        </ul>
-        <p className="replay__note">
-          The same method on one setting, {name.toLowerCase()}, with the other 11 settings at our best try's values, in as many epochs as the real run below.
-          Every try is a real run of the model: it drops from where the guess expected it onto the true score, and the guess is fitted again.
-        </p>
-      </figcaption>
+      <ul className="replay-legend">
+        <li><i className="is-truth" aria-hidden="true" />Real model</li>
+        <li><i className="is-try-dark" aria-hidden="true" />Try</li>
+        <li><i className="is-mean" aria-hidden="true" />Guess</li>
+        <li><i className="is-band" aria-hidden="true" />Unsure</li>
+        <li><i className="is-next" aria-hidden="true" />Next tries</li>
+      </ul>
+      <p className="replay__note">{name} is {settingHint(spec.name).split(".")[0].toLowerCase()}. Only it changes here; the other 11 settings stay at the best try's values.</p>
     </figure>
   );
 }

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import challenge from "../data/challenge.json" with { type: "json" };
 import replay from "./searchReplay.json" with { type: "json" };
-import { bestSoFar, frameAt, planTimeline, type BuildingReplay } from "./replayTimeline.ts";
+import { bestSoFar, epochStart, frameAt, planTimeline, type BuildingReplay } from "./replayTimeline.ts";
 
 const buildings = replay.buildings as Record<string, BuildingReplay>;
 const ids = ["building_01", "building_02", "building_03"];
@@ -81,6 +81,17 @@ test("the timeline starts empty, plays epoch by epoch, only moves forward and en
       assert.ok(f.shown >= e.start && f.shown <= e.end);
       previous = f;
     }
+  }
+});
+
+test("jumping to an epoch lands on its start, before any of its tries", () => {
+  for (const id of ids) {
+    const b = buildings[id];
+    const timeline = planTimeline(b);
+    b.epochs.forEach((e, i) => {
+      const f = frameAt(timeline, b, epochStart(timeline, i));
+      assert.deepEqual([f.epoch, f.beat, f.shown], [i, "pause", e.start]);
+    });
   }
 });
 

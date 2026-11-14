@@ -6,7 +6,6 @@
 .replay-legend i { display: block; width: 9px; height: 9px; border-radius: 50%; }
 .replay-legend i.is-try { background: var(--brand-violet-4); }
 .replay-legend i.is-best { width: 11px; height: 11px; background: var(--brand-violet); box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--brand-violet); }
-.replay-legend i.is-epoch { width: 16px; height: 8px; border-radius: 3px; background: var(--brand-violet-4); }
 .replay-legend i.is-mean { width: 16px; height: 3px; border-radius: 2px; background: var(--brand-violet); }
 .replay__play {
   display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 999px;
@@ -17,11 +16,11 @@
 /* Our best run, stage by stage */
 .replay { display: grid; gap: 18px; padding: 22px; border-radius: 18px; background: #fff; }
 .replay__controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
-.replay__title { flex-basis: 100%; margin: 0; color: var(--heading); font: 600 1.25rem/1.25 var(--display); letter-spacing: -0.02em; }
 .replay__score { display: flex; align-items: baseline; gap: 10px; color: var(--muted); font-size: 0.8125rem; }
 .replay__score strong { color: var(--optimised); font: 600 1.75rem/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
 
-.replay__stage { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.replay__charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
+.replay__chart-title { margin: 0 0 6px; color: var(--heading); font: 600 0.9375rem/1.3 var(--display); letter-spacing: -0.01em; }
 .replay__chart { margin: 0; }
 .replay-main { display: block; width: 100%; height: auto; overflow: visible; }
 .replay-grid line { stroke: rgb(31 34 40 / 0.07); stroke-width: 1; }
@@ -30,32 +29,17 @@
 .replay-axis .replay-axis__name { fill: var(--heading); font-weight: 600; }
 .replay-stage { fill: var(--panel-card); transition: fill 0.4s; }
 .replay-stage.is-current { fill: var(--brand-violet-soft); fill-opacity: 0.55; }
-.replay-stage__label { fill: var(--muted); font: 600 11px "Inter", sans-serif; }
-.replay-stage__label.is-current { fill: var(--brand-violet); }
-.replay-epoch rect { fill: rgb(31 34 40 / 0.06); transition: fill 0.4s; }
-.replay-epoch text { fill: var(--muted); font: 600 8px "Inter", sans-serif; }
-.replay-epoch line { stroke: rgb(31 34 40 / 0.14); stroke-dasharray: 2 3; }
-.replay-epoch.is-current rect { fill: var(--brand-violet-4); }
-.replay-epoch.is-current text { fill: #fff; }
+.replay-epoch { stroke: rgb(31 34 40 / 0.22); stroke-dasharray: 3 3; }
 .replay-best { fill: none; stroke: var(--brand-violet); stroke-width: 2.5; stroke-linejoin: round; }
 .replay-dots circle { fill: var(--brand-violet-4); }
 .replay-dots circle.is-best { fill: var(--brand-violet); stroke: #fff; stroke-width: 2; }
 .replay-dots circle.is-new { animation: replay-drop 0.3s var(--spring); }
 @keyframes replay-drop { from { opacity: 0; } to { opacity: 1; } }
 
-.replay__caption { padding: 18px 20px; border-radius: 14px 14px 14px 0; background: var(--panel-card); }
-.replay__caption h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; color: var(--heading); font: 600 1.25rem/1.2 var(--display); letter-spacing: -0.02em; }
-.replay__caption h3 span {
-  display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px;
-  background: var(--brand-violet); color: #fff; font-size: 0.875rem;
-}
-.replay__caption p { margin: 0; color: var(--ink); font-size: 0.875rem; line-height: 1.6; }
-.replay__caption p + p { margin-top: 10px; }
-.replay__caption .replay__held, .replay__caption .replay__fact { color: var(--muted); font-size: 0.8125rem; }
-.replay__caption .replay__done { padding-top: 10px; border-top: 1px solid var(--line); color: var(--heading); font-weight: 500; }
 
 /* The guess against the true score along one setting */
-.guess { margin: 0; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.guess { margin: 0; }
+.replay__note b { color: var(--heading); font-weight: 600; }
 .guess svg { display: block; width: 100%; height: auto; overflow: visible; }
 .guess__label { fill: var(--heading); font: 600 11px "Inter", sans-serif; }
 .guess__band { fill: var(--brand-violet); fill-opacity: 0.16; }
@@ -77,11 +61,32 @@
 .replay__timeline input[type="range"] { width: 100%; margin: 0; accent-color: var(--brand-violet); }
 .replay__count { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
+/* The phases and epochs, above both charts: phase names over one track of epochs */
+.phase-strip { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.phase-strip > li { display: grid; grid-template-columns: minmax(0, 1fr); flex-basis: 0; gap: 6px; min-width: 0; }
+.phase-strip__name { overflow: hidden; color: var(--muted); font-size: 0.8125rem; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
+.phase-strip > li.is-current .phase-strip__name { color: var(--brand-violet); }
+.phase-strip__epochs { display: flex; gap: 3px; }
+.phase-strip__epochs button {
+  position: relative; flex-basis: 0; min-width: 0; height: 26px; overflow: hidden; padding: 0; border: 0; border-radius: 6px;
+  background: var(--paper); color: var(--muted); font: 500 0.6875rem "Inter", sans-serif; cursor: pointer;
+}
+.phase-strip__epochs button i { position: absolute; inset: 0 auto 0 0; background: var(--brand-violet-soft); }
+.phase-strip__epochs button.is-current i { background: var(--brand-violet-4); }
+.phase-strip__epochs button.is-current { color: var(--heading); }
+.phase-strip__epochs button span { position: relative; padding: 0 6px; white-space: nowrap; }
+.phase-strip__epochs button:hover { color: var(--heading); }
+.replay__phase { min-height: 1.5em; margin: -6px 0 0; color: var(--ink); font-size: 0.9375rem; }
+
+@media (max-width: 1100px) {
+  .replay__charts { grid-template-columns: 1fr; gap: 20px; }
+}
 @media (max-width: 900px) {
-  .replay__stage { grid-template-columns: 1fr; gap: 16px; }
 }
 @media (max-width: 600px) {
   .replay { padding: 14px; }
+  .phase-strip__name { font-size: 0.6875rem; }
+  .phase-strip__word { display: none; }
   .replay__timeline { grid-template-columns: auto minmax(0, 1fr); }
   .replay__count { grid-column: 1 / -1; }
 }

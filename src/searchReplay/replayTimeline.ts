@@ -54,6 +54,9 @@ export function frameAt(timeline: Timeline, replay: BuildingReplay, ms: number):
   return { shown, stage: stageOf(replay, Math.min(e.start, replay.tries.length - 1)), epoch: beat.epoch, beat: beat.kind, progress, done: time >= timeline.duration };
 }
 
+/** When epoch `epoch` starts (its pause), in milliseconds. */
+export const epochStart = (timeline: Timeline, epoch: number) => timeline.beats.find((b) => b.kind === "pause" && b.epoch === epoch)?.start ?? 0;
+
 /** The index of the highest-scoring try among the first `shown`, or −1 when none is shown. */
 export function bestSoFar(tries: Try[], shown: number): number {
   let best = -1;
