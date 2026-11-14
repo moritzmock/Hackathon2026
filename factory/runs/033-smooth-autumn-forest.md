@@ -14,7 +14,7 @@ What made those looks fail, as far as the screenshots and the code show:
 
 ## Plan and checks
 
-- **Only the forest turns.** The ground picture paints all forest one colour (104, 158, 76); the shader finds it by its red value (forest 0.14 in linear colour, scrub from 0.24) and its green lead, so meadows, vineyards, water and the city stay as they are.
+- **Only the forest turns.** The ground picture paints all forest one colour (104, 158, 76); the shader finds it by its red value (forest 0.14 in linear colour, scrub from 0.24) and its green lead, so water, roads and the city stay as they are.
 - **A smooth wash, not patches.** The forest takes warm leaf colours that drift slowly and softly over the slopes, from gold through orange to rust, made with smooth noise (no sine waves, so no hatching or repeating lines) at a scale of a few hundred metres, with no edges. About a quarter stays green (pines), also in soft, wide areas. The colours are full leaf colours (replaced, not mixed into the green), at about the forest's own brightness, so they read as foliage and not as dirt.
 - **Larches above 1000 m** lean to gold, with more green (spruce) between them.
 - **Meadows a bit too (the owner, after seeing the first version):** the lighter greens (meadows, lawns, vineyards, scrub) take a light straw-gold touch in autumn, 15–50 % in soft areas, fading as the leaves fall.
