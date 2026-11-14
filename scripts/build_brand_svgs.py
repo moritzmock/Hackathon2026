@@ -1,6 +1,8 @@
 # Writes the Calibra logo files in public/brand as SVG: the mark, the full logo with the name as outlines,
 # white versions and the app icon. Run: uv run --no-project --with fonttools python scripts/build_brand_svgs.py "$PWD" public/brand
-# The PNG and PDF files and calibra-corporate-identity.pdf were rendered from these SVGs in a browser.
+# The PNG and PDF files were rendered from these SVGs in a browser. calibra-corporate-identity.pdf is printed
+# from scripts/brand/corporate-identity.html (node scripts/print_brand_identity.mjs); calibra-brand-kit.zip holds
+# all of them in a brand/ folder.
 # The logo PNGs (2000 x 477, transparent) and PDFs (300 pt high) are each one headless-Chrome render of the SVG.
 import sys
 from fontTools.ttLib import TTFont
