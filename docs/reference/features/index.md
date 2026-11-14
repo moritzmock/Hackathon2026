@@ -14,4 +14,4 @@ open.
 - [Explored approaches](explored-approaches.md): the 52 recorded calibration runs and their scores.
 - [Calibration chart](calibration-chart.md): when measured, optimised and custom heating lines appear.
 - [Railway and trains](railway.md): the real tracks and bridges across the valley and the decorative trains on them.
-- [Phone layout](phone-layout.md): the city page below 760 px: the building strip, the bottom sheet and the camera framing.
+- [Phone layout and map controls](phone-layout.md): the city page below 760 px (building strip, folding card, camera framing) and how the map moves by touch and mouse.
