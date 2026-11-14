@@ -83,7 +83,6 @@ try {
   })()`);
   if (pins.length !== 3) throw new Error(`Expected 3 pins, found ${pins.length}`);
   const pinsById = Object.fromEntries(pins.map((p, i) => [`building_0${i + 1}`, p]));
-  writeFileSync(new URL("../src/landing/cityPins.json", import.meta.url), `${JSON.stringify(pinsById, null, 2)}\n`);
 
   // The map alone: everything but the canvas is hidden, then the picture is cut to the canvas.
   await evaluate(`(() => { const s = document.createElement("style");
@@ -94,6 +93,9 @@ try {
     return { x: r.x, y: r.y, width: r.width, height: r.height }; })()`);
   const shot = await send("Page.captureScreenshot", { format: "jpeg", quality: 84, clip: { ...box, scale: 1 } });
   writeFileSync(new URL("city.jpg", out), Buffer.from(shot.data, "base64"));
+  // The pins, with the picture's size: the landing page cuts the picture to a strip and needs its shape.
+  const picture = { width: Math.round(box.width), height: Math.round(box.height) };
+  writeFileSync(new URL("../src/landing/cityPins.json", import.meta.url), `${JSON.stringify({ picture, pins: pinsById }, null, 2)}\n`);
   console.log(`Saved city.jpg (${Math.round(box.width)}×${Math.round(box.height)}) and ${photos.length} portraits in public/landing/, pin positions in src/landing/cityPins.json`);
 } finally {
   chrome.kill("SIGKILL");

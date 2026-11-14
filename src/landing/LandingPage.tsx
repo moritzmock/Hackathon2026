@@ -19,29 +19,41 @@ const buildings = ["building_01", "building_02", "building_03"] as const;
 type BuildingId = (typeof buildings)[number];
 const fmt = (score: number) => score.toFixed(2);
 
-// The city picture is 1600×1080 and shown as a wide strip (16:7), cut evenly at the top and the
-// bottom, so the pins' heights are re-measured against the visible part.
-const PICTURE = 1080 / 1600;
+// The city picture (its size saved with the pins by scripts/capture_landing_images.mjs) is shown as
+// a wide strip (16:7), cut evenly at the top and the bottom, so the pins' heights are re-measured
+// against the visible part.
+const { picture, pins: cityPinsById } = cityPins;
+const PICTURE = picture.height / picture.width;
 const STRIP = 7 / 16;
 const stripTop = (pinY: number) => (100 * ((pinY / 100) * PICTURE - (PICTURE - STRIP) / 2)) / STRIP;
 
 /**
  * The 3D city at its opening view, taken from the app (scripts/capture_landing_images.mjs),
- * with each building's name next to its pin.
+ * with each building's name next to its pin. The picture opens the city; a name opens the city on
+ * that building.
  */
 function CityWindow() {
   return (
     <figure className="landing-window">
-      <img
-        src={`${base}landing/city.jpg`}
-        width={1600}
-        height={1080}
-        alt="The 3D city of Bolzano in its valley, with the three challenge buildings marked by pins."
-      />
+      <a className="landing-window__open" href={pages.city}>
+        <img
+          src={`${base}landing/city.jpg`}
+          width={picture.width}
+          height={picture.height}
+          alt="Open the 3D city of Bolzano in its valley, with the three challenge buildings marked by pins."
+        />
+        <span className="landing-window__hint" aria-hidden="true">Open the city <ArrowRight size={16} /></span>
+      </a>
       {buildings.map((id) => (
-        <span key={id} className={`landing-window__label landing-window__label--${id}`} style={{ left: `${cityPins[id].x}%`, top: `${stripTop(cityPins[id].y)}%` }}>
+        <a
+          key={id}
+          href={cityAt(id)}
+          className={`landing-window__label landing-window__label--${id}`}
+          style={{ left: `${cityPinsById[id].x}%`, top: `${stripTop(cityPinsById[id].y)}%` }}
+          aria-label={`Open ${buildingNumber(id)} ${buildingName(id)} in the city`}
+        >
           <b>{buildingNumber(id)}</b> {buildingName(id)}
-        </span>
+        </a>
       ))}
     </figure>
   );
