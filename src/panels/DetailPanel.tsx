@@ -67,7 +67,7 @@ function Content({ b }: { b: ChallengeBuilding }) {
         <div className="ptile">
           <div className="ptile__text">
             <span className="ptile__label">{onOptimised ? "Optimised settings" : "Your settings"}</span>
-            <AnimatedScore value={yours} pending={pending} color={yoursColor} />
+            <AnimatedScore key={b.id} value={yours} pending={pending} color={yoursColor} />
           </div>
           <span className="ptile__icon" style={{ color: yoursColor, background: `color-mix(in srgb, ${yoursColor} 12%, var(--surface))` }}><Gauge size={20} /></span>
         </div>
@@ -87,23 +87,25 @@ function Content({ b }: { b: ChallengeBuilding }) {
         {/* Click a month, or a day in the strip under it, to show its weather on the map. */}
         <CompareLines records={b.records} yours={customRows} optimised={opt?.rows}
           focus={weatherFocus} onPickMonth={setWeatherFocus} day={day} onPickDay={(d) => (d ? (setWeatherFocus({ year: d.year, month: d.month }), setDay(d)) : setDay(null))} />
-        <RunOutcome id={b.id} />
+        <RunOutcome key={b.id} id={b.id} />
       </section>
-      <WhatIf id={b.id} />
+      <WhatIf key={b.id} id={b.id} />
     </>
   );
 }
 
-/** Building card that slides in over the map when a building is selected. */
+/** Building card that slides in over the map when a building is selected, and stays while you switch buildings. */
 export function DetailPanel() {
   const selected = useStore((s) => s.selected);
   const folded = useStore((s) => s.sheetFolded);
   const b = selected ? buildingsById[selected] : undefined;
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence>
       {b && (
+        // One panel for every building: switching keeps it in place and only its contents change
+        // (the chart glides to the new numbers); score, run note and settings start fresh per building.
         <motion.aside
-          key={b.id}
+          key="detail"
           className={`detail${folded ? " is-folded" : ""}`}
           initial={{ x: 24, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}

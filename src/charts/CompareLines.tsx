@@ -119,7 +119,7 @@ export function CompareLines({
           {values.measured.map((v, i) => v === undefined ? null : (
             <g key={`bar${i}`}>
               <rect className="chart__bar" x={x(i) - 13} y={y(v)} width={26} height={y(0) - y(v)} rx={4} />
-              <line className="chart__bar-top" x1={x(i) - 13} x2={x(i) + 13} y1={y(v) + 1} y2={y(v) + 1} />
+              <rect className="chart__bar-top" x={x(i) - 13} y={y(v)} width={26} height={2} rx={1} />
             </g>
           ))}
         </g>
