@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { chartFloor, rankMethods, type Run } from "./methodRanking.ts";
-import rows from "./results.json" with { type: "json" };
+import rows from "../approaches/results.json" with { type: "json" };
 
 const run = (method: string, group: string, overall: number): Run => ({
   run: `${group}__${method}__budget48`, name: group,

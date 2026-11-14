@@ -20,13 +20,10 @@ const methodLabels: Record<string, string> = {
   hyperband: "Hyperband",
 };
 
-/** The display name of a parameter group key, such as `all_12`. */
-export const groupLabel = (group: string) => groupLabels[group] ?? group.replaceAll("_", " ");
-
 export function describeApproach(run: string): { group: string; method: string; variant: string | null } {
   const [group, method, , , , , variant] = run.split("__");
   return {
-    group: groupLabel(group),
+    group: groupLabels[group] ?? group.replaceAll("_", " "),
     method: methodLabels[method] ?? method.replaceAll("_", " "),
     variant: variant ?? null,
   };

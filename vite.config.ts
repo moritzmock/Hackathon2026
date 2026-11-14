@@ -18,7 +18,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: fileURLToPath(new URL("./index.html", import.meta.url)),
+        landing: fileURLToPath(new URL("./index.html", import.meta.url)),
+        city: fileURLToPath(new URL("./city.html", import.meta.url)),
         approaches: fileURLToPath(new URL("./approaches.html", import.meta.url)),
       },
     },

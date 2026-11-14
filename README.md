@@ -25,6 +25,8 @@ npm run pipeline                 # package model, build world data, parity test
 npm run dev
 ```
 
+`npm run dev` opens the landing page; the 3D city is at `/city.html` and every run at `/approaches.html`.
+
 Install Node 24 with `nvm install` if needed. The city-data pipeline needs
 `uv`; packaging the browser model only needs Python 3 and Git.
 

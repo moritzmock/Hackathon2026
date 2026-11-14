@@ -17,7 +17,7 @@ State: the landing page is `approaches.html` (`src/approaches/`), linked from th
 
 ## Status
 
-done.
+stopped: the owner meant a new landing page, not this one. [Run 024](024-landing-page.md) put the approaches page back as it was and moved the chart to the new page.
 
 ## Result
 

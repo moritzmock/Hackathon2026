@@ -1,25 +1,16 @@
 import { useState } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { describeApproach, groupLabel } from "./describeApproach";
+import { describeApproach } from "../approaches/describeApproach";
+import { buildingName, buildingNumber } from "../panels/buildingName";
 import { chartFloor, rankMethods, type Metric, type Run } from "./methodRanking";
 
+const BUILDINGS = ["building_01", "building_02", "building_03"] as const;
 const METRICS: { key: Metric; label: string }[] = [
   { key: "OVERALL", label: "All buildings" },
-  { key: "building_01", label: "building_01" },
-  { key: "building_02", label: "building_02" },
-  { key: "building_03", label: "building_03" },
+  ...BUILDINGS.map((id) => ({ key: id, label: `${buildingNumber(id)} ${buildingName(id)}` })),
 ];
 
-/** One colour per parameter group, in a fixed order (checked for colour-blind separation). */
-export const GROUP_COLORS: Record<string, string> = {
-  all_12: "#6e4281",
-  no_envelope_9: "#f26e26",
-  core_6: "#0e9494",
-  continuous_8: "#c9a227",
-};
-
 const fmt = (score: number) => score.toFixed(2);
-
 /** Where a score sits on the line, in percent from the floor (left) to 100 (right). */
 const position = (score: number, floor: number) => ((score - floor) / (100 - floor)) * 100;
 
@@ -33,12 +24,12 @@ function RunDot({ row, metric, floor, best }: { row: Run; metric: Metric; floor:
         <button
           type="button"
           className={`method-dot${best ? " is-best" : ""}${below ? " is-below" : ""}`}
-          style={below ? { left: 0, borderColor: GROUP_COLORS[row.name] } : { left: `${position(score, floor)}%`, background: GROUP_COLORS[row.name] }}
+          style={{ left: below ? 0 : `${position(score, floor)}%` }}
           aria-label={`${d.method}, ${d.group}${d.variant ? `, variant ${d.variant}` : ""}: ${fmt(score)}`}
         />
       </TooltipTrigger>
       <TooltipContent side="top" sideOffset={6} className="method-tip">
-        <strong>{fmt(score)}</strong> · {fmt(100 - score)}% off the bills
+        <strong>{fmt(score)}</strong> · {fmt(100 - score)}% from the bills
         <span>{d.group}{d.variant ? ` · variant ${d.variant}` : ""}</span>
       </TooltipContent>
     </Tooltip>
@@ -52,7 +43,6 @@ export function MethodChart({ rows }: { rows: Run[] }) {
   const floor = chartFloor(ranked, metric);
   const ticks = Array.from({ length: (100 - floor) / 5 + 1 }, (_, i) => floor + i * 5);
   const belowCount = rows.filter((row) => row[metric] < floor).length;
-  const groups = Object.keys(GROUP_COLORS);
 
   return (
     <TooltipProvider delayDuration={80}>
@@ -63,10 +53,9 @@ export function MethodChart({ rows }: { rows: Run[] }) {
               <button key={m.key} type="button" aria-pressed={metric === m.key} onClick={() => setMetric(m.key)}>{m.label}</button>
             ))}
           </div>
-          <ul className="method-legend" aria-label="Parameter groups">
-            {groups.map((g) => (
-              <li key={g}><i style={{ background: GROUP_COLORS[g] }} />{groupLabel(g)}</li>
-            ))}
+          <ul className="method-legend">
+            <li><i className="is-best" aria-hidden="true" />Best run of a method</li>
+            <li><i aria-hidden="true" />Other runs</li>
           </ul>
         </div>
 
@@ -104,8 +93,8 @@ export function MethodChart({ rows }: { rows: Run[] }) {
           <div />
         </div>
         <p className="method-chart__note">
-          Score out of 100: 100 means the simulation matches the heating bills exactly. The large dot is each method's best run; its score is on the right.
-          {belowCount > 0 && ` ${belowCount} ${belowCount === 1 ? "run scores" : "runs score"} below ${floor} and ${belowCount === 1 ? "sits" : "sit"} at the left edge.`}
+          Score out of 100: 100 means the simulation matches the heating bills exactly. The score on the right is each method's best run.
+          {belowCount > 0 && ` ${belowCount} ${belowCount === 1 ? "run scores" : "runs score"} below ${floor} and ${belowCount === 1 ? "sits" : "sit"} at the left edge as an open circle.`}
         </p>
       </div>
     </TooltipProvider>
