@@ -8,6 +8,7 @@ import "@fontsource/sora/600.css";
 import { App } from "./App";
 import "./index.css";
 import "./styles.css";
+import "./brand/brand.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
