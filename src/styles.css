@@ -232,7 +232,12 @@ kbd, .kbd {
 .chart .chart__col.is-on { fill: color-mix(in srgb, var(--optimised) 8%, transparent); }
 .legend { display: flex; gap: 1rem; font-size: 0.75rem; color: var(--muted); margin-bottom: 0.25rem; }
 .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 0.35rem; vertical-align: -1px; }
-.tip { font-size: 0.75rem; color: var(--muted); min-height: 1.2em; font-variant-numeric: tabular-nums; }
+/* One month's values in the chart tooltip. */
+.chart-tip { display: grid; gap: 3px; min-width: 12rem; font-variant-numeric: tabular-nums; }
+.chart-tip__row { display: flex; align-items: center; gap: 6px; }
+.chart-tip__row i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.chart-tip__value { margin-left: auto; padding-left: 12px; font-weight: 600; }
+.chart-tip small { margin-top: 2px; opacity: 0.7; }
 
 /* Compare chart */
 .legend { flex-wrap: wrap; gap: 0.25rem 0.9rem; }
@@ -583,3 +588,4 @@ body { background: #fff; }
 .mdl.run-overlay__card { gap: 10px; }
 /* The open building in the folded strip: a soft orange tile. */
 .list.is-collapsed .stay.is-active { background: var(--brand-orange-soft); }
+.chart-tip__row i.chart-tip__bar { border-radius: 2px; background: #d5d9df; box-shadow: inset 0 2px 0 #6b707b; }

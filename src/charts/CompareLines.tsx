@@ -1,4 +1,5 @@
-import { useId, useState } from "react";
+import { useId } from "react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { MonthlyRecord, SimRow } from "../data/types";
 import type { DayKey } from "../weather/conditions";
 import { WeatherStrip } from "./WeatherStrip";
@@ -39,7 +40,6 @@ export function CompareLines({
   /** Clicking a day in the weather strip; clicking it again clears it. */
   onPickDay?: (d: DayKey | null) => void;
 }) {
-  const [tip, setTip] = useState<string | null>(null);
   const revealId = `reveal${useId().replace(/:/g, "")}`;
   const at = (rows: SimRow[] | undefined, r: MonthlyRecord) => rows?.find((s) => s.year === r.year && s.month === r.month)?.kwh;
   const visibleSeries = SERIES.filter((s) => s.key !== "yours" || Boolean(yours));
@@ -85,11 +85,25 @@ export function CompareLines({
           const half = (W - ml - mr) / (records.length - 1) / 2;
           const on = focus?.year === r.year && focus?.month === r.month;
           return (
-            <rect key={`col${i}`} className={on ? "chart__col is-on" : "chart__col"}
-              x={x(i) - half} y={mt - 8} width={half * 2} height={H - mt - mb + 30} rx={6}
-              onClick={() => onPickMonth?.(on ? null : { year: r.year, month: r.month })}>
-              <title>{on ? "Back to the weather now" : `Show ${MONTHS[r.month]} ${r.year}'s weather on the map`}</title>
-            </rect>
+            // Hovering a month shows its three values in one tooltip; clicking it shows its weather.
+            <Tooltip key={`col${i}`}>
+              <TooltipTrigger asChild>
+                <rect className={on ? "chart__col is-on" : "chart__col"}
+                  x={x(i) - half} y={mt - 8} width={half * 2} height={H - mt - mb + 30} rx={6}
+                  onClick={() => onPickMonth?.(on ? null : { year: r.year, month: r.month })} />
+              </TooltipTrigger>
+              <TooltipContent side="top" className="chart-tip">
+                <b>{MONTHS[r.month]} {r.year}</b>
+                {visibleSeries.map((s) => values[s.key][i] !== undefined && (
+                  <span key={s.key} className="chart-tip__row">
+                    <i className={s.key === "measured" ? "chart-tip__bar" : undefined} style={s.key === "measured" ? undefined : { background: s.color }} />
+                    {s.label}
+                    <span className="chart-tip__value">{fmtKwh(values[s.key][i]!)} kWh</span>
+                  </span>
+                ))}
+                <small>{on ? "Click to go back to the weather now" : "Click to show its weather on the map"}</small>
+              </TooltipContent>
+            </Tooltip>
           );
         })}
         {records.map((r, i) => (
@@ -101,9 +115,9 @@ export function CompareLines({
           <WeatherStrip month={focus} left={0} width={W} top={H - mb + 30} day={day} onPickDay={onPickDay} />
         )}
         {/* Measured bills: one bar per month, its top edge darker so the exact value reads. */}
-        <g className="chart__bars">
+        <g className="chart__bars" pointerEvents="none">
           {values.measured.map((v, i) => v === undefined ? null : (
-            <g key={`bar${i}`} onMouseEnter={() => setTip(`${MONTHS[records[i].month]} ${records[i].year} · Measured: ${fmtKwh(v)} kWh`)} onMouseLeave={() => setTip(null)}>
+            <g key={`bar${i}`}>
               <rect className="chart__bar" x={x(i) - 13} y={y(v)} width={26} height={y(0) - y(v)} rx={4} />
               <line className="chart__bar-top" x1={x(i) - 13} x2={x(i) + 13} y1={y(v) + 1} y2={y(v) + 1} />
             </g>
@@ -117,13 +131,11 @@ export function CompareLines({
           if (pts.some((p) => p === null)) return null;
           const d = pts.map((p, i) => `${i ? "L" : "M"}${p![0]},${p![1]}`).join(" ");
           return (
-            <g key={s.key} className="line">
+            <g key={s.key} className="line" pointerEvents="none">
               <path d={d} fill="none" stroke={s.color} strokeWidth={2.5} strokeDasharray={s.dash} strokeLinejoin="round" style={{ transition: "d 0.6s ease" }} />
               {pts.map((p, i) => (
                 <circle key={i} cx={p![0]} cy={p![1]} r={3.5} fill={s.key === "yours" ? "var(--surface)" : s.color} stroke={s.key === "yours" ? s.color : "var(--surface)"} strokeWidth={s.key === "yours" ? 2 : 1.5}
-                  style={{ transition: "cy 0.6s ease" }}
-                  onMouseEnter={() => setTip(`${MONTHS[records[i].month]} ${records[i].year} · ${s.label}: ${fmtKwh(values[s.key][i]!)} kWh`)}
-                  onMouseLeave={() => setTip(null)} />
+                  style={{ transition: "cy 0.6s ease" }} />
               ))}
             </g>
           );
@@ -138,7 +150,6 @@ export function CompareLines({
           <span><i className="is-snow" />snow</span>
         </div>
       )}
-      {tip && <figcaption className="tip">{tip}</figcaption>}
     </figure>
   );
 }

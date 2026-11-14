@@ -1,13 +1,13 @@
-// "Optimised" as a small dial with its needle on the mark: the Calibra mark's dial without the
-// building, drawn in the same 24-unit, 2-wide line style as the Lucide icons beside it. Used on
-// the "Use optimised" button. Not Lucide's own gauge: this one should echo the logo.
+// "Optimised" as the searching animation in miniature: the fitted curve with a hump and a valley,
+// one run on the hump, and the best run as a bigger dot at the lowest point. Drawn in the same
+// 24-unit, 2-wide line style as the Lucide icons beside it, in the text colour. A plain valley
+// read as a chevron at button size, so the curve is a wave. Used on the "Use optimised" button.
 export function OptimisedIcon({ size = 16 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M5.4 18.6 A9.5 9.5 0 1 1 18.6 18.6" />
-      <path d="M12 3.6 V5.4 M20.4 12 H18.6 M3.6 12 H5.4" />
-      <circle cx="12" cy="13" r="1.6" />
-      <path d="M13.2 11.8 L16.6 8.4" />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+      <path d="M2 9.5 C4.5 9.5 6 5.6 8.6 6.4 C11.6 7.4 12.4 16 15.5 16 C18.5 16 19.5 11 22 11" />
+      <circle cx="8.6" cy="6.4" r="1.7" fill="currentColor" stroke="none" />
+      <circle cx="15.5" cy="16" r="2.7" fill="currentColor" stroke="none" />
     </svg>
   );
 }
