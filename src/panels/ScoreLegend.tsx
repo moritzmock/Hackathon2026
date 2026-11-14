@@ -9,10 +9,7 @@ const gradient = `linear-gradient(to right, ${Array.from({ length: 101 }, (_, sc
 export function ScoreLegend() {
   return (
     <figure className="score-scale" role="img" aria-label="Score colour: 0 is far from the bills; 100 matches the bills">
-      <figcaption className="score-scale__caption">
-        <span>Score colour</span>
-        <span>Closer to bills →</span>
-      </figcaption>
+      <figcaption className="score-scale__caption">Score colour</figcaption>
       <div className="score-scale__bar" style={{ backgroundImage: gradient }} />
       <div className="score-scale__ticks">
         {ticks.map((tick) => (

@@ -201,10 +201,8 @@ kbd, .kbd {
 
 .score-scale { margin: -0.3rem 0 0.8rem; }
 .score-scale__caption {
-  display: flex; justify-content: space-between; gap: 0.5rem;
-  margin-bottom: 0.3rem; color: var(--muted); font-size: 0.6875rem;
+  margin-bottom: 0.3rem; color: var(--ink); font-size: 0.6875rem; font-weight: 600;
 }
-.score-scale__caption span:first-child { color: var(--ink); font-weight: 600; }
 .score-scale__bar {
   height: 9px; border-radius: 999px;
   box-shadow: inset 0 0 0 1px rgb(35 38 45 / 0.12);
