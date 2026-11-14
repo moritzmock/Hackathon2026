@@ -408,48 +408,77 @@ kbd, .kbd {
 .settings-action--optimised:hover:not(:disabled) { background: color-mix(in srgb, var(--optimised) 8%, var(--surface)); }
 .settings-action--icon { width: 26px; padding: 0; justify-content: center; color: var(--muted); }
 
-/* ---------- Floating cards (UI only, not the map) ----------
-   The map fills the window; the sidebar, building panel and map controls float over
-   it as solid white cards: soft radius, fine grey edge, light shadow, lighter type. */
-:root {
-  --card-bg: #ffffff;
-  --card-line: rgb(23 26 33 / 0.07);
-  --card-shadow: 0 10px 30px rgb(23 26 33 / 0.08), 0 1px 2px rgb(23 26 33 / 0.05);
-  --r-card: 18px;
-}
-body { background: #e7e8ec; }
-.workspace { padding: 0; gap: 0; background: transparent; --side: 328px; }
-.workspace:has(.list.is-collapsed) { --side: 92px; }
-.stage { position: absolute; inset: 0; border-radius: 0; }
-
-.list, .detail, .layers__panel, .wcard, .wsign, .mapctl__btn.mapctl__single {
-  background: var(--card-bg); -webkit-backdrop-filter: none; backdrop-filter: none;
-  border: 1px solid var(--card-line); box-shadow: var(--card-shadow);
-}
+/* ---------- Docked panels (UI only, not the map) ----------
+   The building list is a white bar on the left edge and the building panel a white bar
+   on the right edge, both full height; the map fills the space between. The list shows
+   the buildings as cards in two columns: a big rounded photo, the name, a muted line. */
+body { background: #fff; }
+.workspace { padding: 0; gap: 0; background: #fff; }
+.stage { border-radius: 0; }
 .list {
-  position: absolute; z-index: 26; left: 14px; top: 14px; bottom: 14px;
-  padding: 10px 8px; border-radius: var(--r-card); overflow: hidden;
+  width: 400px; padding: 22px 18px 12px; background: #fff;
+  border-right: 1px solid var(--line); box-shadow: none; border-radius: 0;
 }
-.list.is-collapsed { width: 64px; }
-.detail { top: 14px; right: 14px; bottom: 14px; border-radius: var(--r-card); }
-.layers { top: 14px; left: var(--side); transition: left 0.35s var(--spring); }
-.wsign { top: 14px; left: calc(var(--side) + 42px); transition: left 0.35s var(--spring); }
-.wcard { left: var(--side); bottom: 14px; border-radius: 14px; transition: left 0.35s var(--spring); }
-.mapctl__btn.mapctl__single { border-radius: 10px; }
-.layers__panel { border-radius: 14px; }
+.list.is-collapsed { width: 72px; padding: 22px 8px 12px; }
+.list__scroll { grid-template-columns: 1fr 1fr; gap: 20px 14px; padding: 2px 2px 14px; }
+.list.is-collapsed .list__scroll { grid-template-columns: 1fr; gap: 10px; }
 
-/* Sidebar cards: light grey tiles; the open one white with an orange edge. */
-.stay { background: #f5f6f8; border-radius: 14px; }
-.stay:hover, .stay.is-hover { background: #eef0f3; }
-.stay.is-active { background: #fff; box-shadow: 0 0 0 1.5px var(--accent), 0 6px 18px rgb(23 26 33 / 0.08); }
-.stay__photo { border-radius: 12px; }
-.stay__tag { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #eef0f4; color: var(--muted); font-size: 0.6875rem; }
+.stay { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 0; margin: 0; background: none; border-radius: 0; box-shadow: none; }
+.stay:hover, .stay.is-hover { background: none; }
+.stay.is-active { background: none; box-shadow: none; }
+.stay__photo {
+  width: 100%; height: auto; aspect-ratio: 4 / 3; border-radius: 16px;
+  background: linear-gradient(180deg, #f6f7f9 0%, #eceef2 100%);
+  transition: box-shadow 0.15s;
+}
+.stay:hover .stay__photo, .stay.is-hover .stay__photo { box-shadow: 0 0 0 1px rgb(23 26 33 / 0.08), 0 6px 16px rgb(23 26 33 / 0.08); }
+.stay.is-active .stay__photo { box-shadow: 0 0 0 2px var(--accent), 0 6px 16px rgb(23 26 33 / 0.08); }
+.stay__text { padding: 0 2px; }
+.stay__title { font-size: 0.9375rem; margin-bottom: 1px; }
+.stay__title b { font-weight: 600; }
+.stay.is-active .stay__title b { color: var(--accent-deep); }
+.stay__line { font-size: 0.75rem; color: var(--muted); }
+.stay__tag { display: inline-block; margin-top: 4px; padding: 2px 8px; border-radius: 999px; background: #eef0f4; color: var(--muted); font-size: 0.6875rem; }
+.list.is-collapsed .stay { align-items: center; }
 
-/* Lighter, calmer type: big numbers in regular weight, headings medium. */
-.detail__head h2 { font-weight: 500; letter-spacing: -0.02em; }
-.detail .text-2xl { font-weight: 450; letter-spacing: -0.02em; }
-.detail h3 { font-weight: 500; }
-.list__head h2 { font-weight: 500; }
+.detail {
+  top: 0; right: 0; bottom: 0; border-radius: 0;
+  border: 0; border-left: 1px solid var(--line); box-shadow: -12px 0 32px rgb(23 26 33 / 0.06);
+  padding: 22px 22px 28px;
+}
+.detail__head h2 { font-weight: 600; letter-spacing: -0.02em; }
+.settings-action { border-radius: 10px; }
 
-/* Buttons as soft pills. */
-.settings-action { border-radius: 10px; background: #fff; border-color: rgb(23 26 33 / 0.1); }
+/* Motion: cards lift and their photos zoom on hover, the panel's sections rise in one
+   after another, scores and buttons react. Off for people who ask for less motion. */
+.stay { transition: transform 0.25s var(--spring); }
+.stay:hover, .stay.is-hover { transform: translateY(-3px); }
+.stay:active { transform: translateY(-1px) scale(0.98); }
+.stay__photo { overflow: hidden; }
+.stay__photo img { transition: transform 0.5s var(--spring); }
+.stay:hover .stay__photo img, .stay.is-hover .stay__photo img { transform: scale(1.06); }
+.stay__title b { transition: color 0.2s; }
+
+.detail > * { animation: panel-rise 0.45s var(--spring) both; }
+.detail > *:nth-child(2) { animation-delay: 0.05s; }
+.detail > *:nth-child(3) { animation-delay: 0.1s; }
+.detail > *:nth-child(4) { animation-delay: 0.15s; }
+.detail > *:nth-child(5) { animation-delay: 0.2s; }
+@keyframes panel-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.detail .text-2xl { transition: color 0.5s ease; }
+.detail [data-slot="card"] { transition: background 0.5s ease, transform 0.25s var(--spring); }
+.detail [data-slot="card"]:hover { transform: translateY(-1px); }
+
+.settings-action, .mapctl__btn, .icon-btn { transition: background 0.15s, transform 0.15s var(--spring), box-shadow 0.15s; }
+.settings-action:hover:not(:disabled), .mapctl__btn:hover { transform: translateY(-1px); }
+.settings-action:active:not(:disabled), .mapctl__btn:active, .icon-btn:active { transform: scale(0.95); }
+[data-slot="slider-thumb"] { transition: transform 0.15s var(--spring), box-shadow 0.15s; }
+[data-slot="slider-thumb"]:hover, [data-slot="slider-thumb"]:active { transform: scale(1.25); }
+[data-slot="slider-range"] { transition: background 0.2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stay, .stay__photo img, .detail > *, .detail [data-slot="card"], .settings-action, .mapctl__btn, .icon-btn, [data-slot="slider-thumb"] {
+    transition: none !important; animation: none !important; transform: none !important;
+  }
+}
