@@ -17,7 +17,8 @@ const HOLD_MS = 2400;
 const EASE_MS = 500;
 const FLAME = "M0.5 -7 C1 -3.5 6 -1.5 6 2.8 C6 5.8 3.4 7.5 0 7.5 C-3.4 7.5 -6 5.6 -6 2.6 C-6 0.2 -4.6 -1.3 -3.6 -3.2 C-2.6 -1.4 -1.6 -0.6 -0.6 -0.4 C-1.2 -3 -0.6 -5.2 0.5 -7 Z";
 
-export function SearchAnimation({ className = "" }: { className?: string }) {
+/** `flame={false}` draws the best run as a plain dot, without the flame. */
+export function SearchAnimation({ className = "", flame: showFlame = true }: { className?: string; flame?: boolean }) {
   const band = useRef<SVGPathElement>(null);
   const mean = useRef<SVGPathElement>(null);
   const dots = useRef<SVGGElement>(null);
@@ -36,7 +37,7 @@ export function SearchAnimation({ className = "" }: { className?: string }) {
       // The best run is drawn as the flame, the others as dots.
       if (dots.current) {
         dots.current.innerHTML = step.px
-          .map((x, i) => (i === step.best ? "" : `<circle cx="${X(x).toFixed(1)}" cy="${Y(step.py[i]).toFixed(1)}" r="3.6" />`))
+          .map((x, i) => (showFlame && i === step.best ? "" : `<circle cx="${X(x).toFixed(1)}" cy="${Y(step.py[i]).toFixed(1)}" r="3.6" />`))
           .join("");
       }
       const bx = step.px[step.best];
@@ -77,9 +78,11 @@ export function SearchAnimation({ className = "" }: { className?: string }) {
       <path ref={band} className="search-animation__band" />
       <path ref={mean} className="search-animation__mean" />
       <g ref={dots} className="search-animation__dots" />
-      <g ref={flame}>
-        <path className="search-animation__flame" transform="scale(1.35)" d={FLAME} />
-      </g>
+      {showFlame && (
+        <g ref={flame}>
+          <path className="search-animation__flame" transform="scale(1.35)" d={FLAME} />
+        </g>
+      )}
     </svg>
   );
 }

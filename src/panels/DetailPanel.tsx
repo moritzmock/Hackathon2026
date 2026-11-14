@@ -14,7 +14,6 @@ import { RunOutcome } from "./RunOutcome";
 import { resultPending } from "./resultPending";
 import { ScoreLegend } from "./ScoreLegend";
 import { AnimatedScore } from "./AnimatedScore";
-import { ModelDownload } from "./ModelDownload";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useWeather } from "../weather/focus";
 
@@ -51,7 +50,6 @@ function Content({ b }: { b: ChallengeBuilding }) {
         <button className="icon-btn" onClick={() => select(null)} aria-label="Close"><X size={16} /></button>
       </header>
 
-      <ModelDownload />
       {/* Score tiles: one while on the optimised settings; two once you change something. */}
       <div className={`ptiles ${onOptimised ? "" : "ptiles--two"}`}>
         <div className="ptile">

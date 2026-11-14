@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { challenge, defaultParams } from "../data/challenge";
 import { optimisedFor } from "../data/optimised";
 import { useStore } from "../store";
+import { ModelDownload } from "./ModelDownload";
 import { RunOverlay, type LastMove } from "./RunOverlay";
 import { nextRun } from "./nextRun";
 
@@ -67,6 +68,8 @@ export function WhatIf({ id }: { id: string }) {
   const run = useStore((s) => s.runs[id]);
   const { setParam, setParams, useSaved, run: start } = useStore.getState();
   const running = run?.status === "running";
+  const modelReady = useStore((s) => s.modelReady);
+  const locked = running || !modelReady;
   const optimised = optimisedFor(id);
   // The settings moved since the last result (each with its value before the first move),
   // so the overlay can say what changed. A move after a finished result starts a new list.
@@ -93,6 +96,7 @@ export function WhatIf({ id }: { id: string }) {
 
   return (
     <section className="pcard settings relative">
+      {!running && <ModelDownload />}
       <RunOverlay id={id} moves={moves} label={(name) => LABELS[name] ?? name} format={(name, v) => fmt(v, specs[name].unit)} />
       {/* Header row: title, then the shortcut back to the optimised values. */}
       <div className="flex items-center gap-2">
@@ -100,7 +104,7 @@ export function WhatIf({ id }: { id: string }) {
         <button
           type="button"
           className="settings-action settings-action--optimised"
-          disabled={running || !optimised || same(params, optimised.params)}
+          disabled={locked || !optimised || same(params, optimised.params)}
           title="Set the sliders back to the optimised values (the violet marks)"
           onClick={() => { setMoves([]); if (optimised) setParams(id, optimised.params); }}
         >
@@ -132,7 +136,7 @@ export function WhatIf({ id }: { id: string }) {
                   <span className="setrow__value">{fmt(v, p.unit)}</span>
                 </div>
                 <div className="relative">
-                  <Slider disabled={running} min={p.lower} max={p.upper} step={(p.upper - p.lower) / 100} value={[v]}
+                  <Slider disabled={locked} min={p.lower} max={p.upper} step={(p.upper - p.lower) / 100} value={[v]}
                     onValueChange={([nv]) => move(p.name, nv)} aria-label={it.label} />
                   {opt !== undefined && (
                     <i className="setrow__opt" title="Optimised value"
