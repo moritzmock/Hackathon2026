@@ -20,7 +20,8 @@ import json
 import numpy as np
 
 import build_world as world
-from rail_routes import Piece, drape, drape_route, join
+from drape import Piece, drape
+from rail_routes import drape_route, join
 
 SPACING = 20.0       # metres between points, so the track follows the terrain (40 m grid)
 EDGE = world.HALF - 40

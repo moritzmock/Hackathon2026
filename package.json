@@ -18,7 +18,7 @@
     "model": "python3 scripts/sync_model.py",
     "check:model-assets": "node scripts/check_model_assets.mjs",
     "test:deployment": "node --test scripts/test_model_assets.mjs && python3 -m unittest discover -s scripts -p test_sync_model.py -v",
-    "test:data": "python3 -m unittest discover -s scripts -p 'test_rail_routes.py'",
+    "test:data": "python3 -m unittest discover -s scripts -p 'test_rail_routes.py' && python3 -m unittest discover -s scripts -p 'test_drape.py'",
     "test:model": "node scripts/test_model.ts",
     "test:regimes": "node scripts/test_parallel_regimes.ts",
     "pipeline": "npm run model && npm run data && npm run test:model",
