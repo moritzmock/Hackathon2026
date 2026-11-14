@@ -1,0 +1,65 @@
+/* The methods page: every run of every search method on one score line. */
+.methods-intro { display: flex; align-items: end; justify-content: space-between; gap: 32px; padding-block: 48px 28px; }
+.methods-intro h1 { max-width: 15em; margin: 0; color: var(--heading); font: 600 clamp(2.1rem, 4vw, 3.4rem)/1.1 var(--display); letter-spacing: -0.04em; }
+.methods-intro p { max-width: 360px; margin: 0; color: var(--ink); font-size: 0.9375rem; line-height: 1.6; }
+.methods-intro a { color: var(--heading); text-underline-offset: 3px; }
+
+/* Method chart */
+.method-chart { padding: 24px 28px 22px; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
+.method-chart__controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; margin-bottom: 18px; }
+.method-switch { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 999px; background: var(--paper); }
+.method-switch button {
+  padding: 7px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--muted);
+  font: 500 0.8125rem "Inter", sans-serif; cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.method-switch button:hover { color: var(--heading); }
+.method-switch button[aria-pressed="true"] { background: #fff; color: var(--heading); box-shadow: var(--shadow-sm); }
+.method-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: 0.8125rem; }
+.method-legend li { display: inline-flex; align-items: center; gap: 7px; }
+.method-legend i { width: 9px; height: 9px; border-radius: 50%; background: var(--brand-violet-4); }
+.method-legend i.is-best { width: 13px; height: 13px; background: var(--optimised); }
+
+.method-plot { position: relative; }
+.method-grid, .method-row, .method-axis { display: grid; grid-template-columns: 260px minmax(0, 1fr) 56px; gap: 16px; }
+.method-grid { position: absolute; inset: 0; pointer-events: none; }
+.method-grid__lines, .method-axis__ticks { position: relative; margin: 0 8px; }
+.method-grid__lines span { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--grid); }
+.method-rows { position: relative; margin: 0; padding: 0; list-style: none; }
+.method-row { align-items: center; min-height: 40px; border-bottom: 1px solid var(--grid); }
+.method-row:last-child { border-bottom: 0; }
+.method-row__name { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
+.method-row__name strong { overflow: hidden; color: var(--heading); font-size: 0.8125rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.method-row__name span { flex: none; color: var(--muted); font-size: 0.6875rem; }
+.method-row__track { position: relative; height: 28px; margin: 0 8px; }
+.method-row__track::before { content: ""; position: absolute; top: 50%; right: 0; left: 0; height: 2px; border-radius: 2px; background: var(--paper); }
+.method-dot {
+  position: absolute; top: 50%; width: 11px; height: 11px; padding: 0; border: 2px solid #fff; border-radius: 50%;
+  background: var(--brand-violet-4); transform: translate(-50%, -50%); cursor: pointer; transition: transform 0.15s var(--spring);
+}
+.method-dot::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; }
+.method-dot.is-best { width: 16px; height: 16px; background: var(--optimised); }
+.method-dot.is-below { border-color: var(--brand-violet-4); background: #fff; }
+.method-dot:hover, .method-dot:focus-visible { z-index: 2; transform: translate(-50%, -50%) scale(1.35); }
+.method-row__best { color: var(--optimised); font: 600 0.9375rem var(--display); font-variant-numeric: tabular-nums; text-align: right; }
+.method-axis { margin-top: 6px; }
+.method-axis__ticks { height: 18px; }
+.method-axis__ticks span { position: absolute; transform: translateX(-50%); color: var(--muted); font-size: 0.6875rem; font-variant-numeric: tabular-nums; }
+.method-chart__note { margin: 14px 0 0; color: var(--muted); font-size: 0.75rem; line-height: 1.55; }
+.method-tip { display: grid; gap: 2px; font-size: 0.75rem; }
+.method-tip span { opacity: 0.75; }
+
+@media (max-width: 900px) {
+  .methods-intro { display: block; padding-top: 28px; }
+  .methods-intro p { max-width: 560px; margin-top: 16px; }
+  .method-grid, .method-row, .method-axis { grid-template-columns: 180px minmax(0, 1fr) 48px; gap: 10px; }
+}
+@media (max-width: 600px) {
+  .method-chart { padding: 18px 14px; }
+  .method-switch { flex-wrap: nowrap; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .method-switch button { flex: none; padding: 6px 10px; font-size: 0.75rem; white-space: nowrap; }
+  .method-grid { display: none; }
+  .method-row, .method-axis { grid-template-columns: minmax(0, 1fr) 44px; gap: 4px 8px; }
+  .method-axis > :first-child { display: none; }
+  .method-row { padding: 8px 0 4px; }
+  .method-row__name { grid-column: 1 / -1; }
+}

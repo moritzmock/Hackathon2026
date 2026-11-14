@@ -20,6 +20,7 @@ export default defineConfig({
       input: {
         landing: fileURLToPath(new URL("./index.html", import.meta.url)),
         city: fileURLToPath(new URL("./city.html", import.meta.url)),
+        methods: fileURLToPath(new URL("./methods.html", import.meta.url)),
         approaches: fileURLToPath(new URL("./approaches.html", import.meta.url)),
       },
     },

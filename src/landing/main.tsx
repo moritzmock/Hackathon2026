@@ -7,6 +7,7 @@ import "@fontsource/sora/600.css";
 import "../index.css";
 import "../styles.css";
 import "../brand/brand.css";
+import "../site/site.css";
 import "./landing.css";
 import { LandingPage } from "./LandingPage";
 

@@ -1,27 +1,20 @@
-import { ArrowRight, Building2, Cpu, Map as MapIcon, Target } from "lucide-react";
-import { CalibraLogo, CalibraMark } from "../brand/CalibraLogo";
+import { ArrowRight, Building2, Cpu, Target } from "lucide-react";
 import { SearchAnimation } from "../brand/SearchAnimation";
 import { describeApproach } from "../approaches/describeApproach";
 import results from "../approaches/results.json";
+import { rankMethods } from "../methods/methodRanking";
 import { buildingName, buildingNumber } from "../panels/buildingName";
-import { MethodChart } from "./MethodChart";
+import { CityInvite } from "../site/CityInvite";
+import { OpenCity } from "../site/OpenCity";
+import { pages } from "../site/pages";
+import { SiteFooter } from "../site/SiteFooter";
+import { SiteHeader } from "../site/SiteHeader";
 
-const base = import.meta.env.BASE_URL;
-const cityUrl = `${base}city.html`;
-const runsUrl = `${base}approaches.html`;
 const best = results[0];
 const bestLabel = describeApproach(best.run);
-const methodCount = new Set(results.map((row) => row.run.split("__")[1])).size;
+const ranked = rankMethods(results, "OVERALL");
 const buildings = ["building_01", "building_02", "building_03"] as const;
 const fmt = (score: number) => score.toFixed(2);
-
-function OpenCity({ tone = "dark" }: { tone?: "dark" | "light" }) {
-  return (
-    <a className={`landing-button landing-button--${tone}`} href={cityUrl}>
-      <MapIcon size={16} aria-hidden="true" /> Open the city
-    </a>
-  );
-}
 
 function BestResult() {
   return (
@@ -61,17 +54,34 @@ const STEPS = [
   },
 ];
 
+/** The three best search methods, as a way into the methods page. */
+function MethodsPreview() {
+  return (
+    <section className="landing-section" aria-labelledby="landing-methods-title">
+      <div className="landing-preview">
+        <div>
+          <h2 id="landing-methods-title" className="site-title">Which search method gets closest?</h2>
+          <p>We ran {ranked.length} search methods {results.length} times in all. These three came closest to the bills; the methods page shows every run of every method, for each building.</p>
+          <a className="site-link" href={pages.methods}>Compare all {ranked.length} methods <ArrowRight size={16} aria-hidden="true" /></a>
+        </div>
+        <ol className="landing-top">
+          {ranked.slice(0, 3).map((m) => (
+            <li key={m.method}>
+              <span>{describeApproach(m.best.run).method}</span>
+              <div className="landing-bar" aria-hidden="true"><span style={{ width: `${m.best.OVERALL}%` }} /></div>
+              <strong>{fmt(m.best.OVERALL)}</strong>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
 export function LandingPage() {
   return (
-    <div className="landing">
-      <header className="landing-header">
-        <CalibraLogo />
-        <nav className="landing-nav" aria-label="Pages">
-          <a href={runsUrl}>All runs</a>
-          <a className="landing-nav__city" href={cityUrl}>Open the city <ArrowRight size={16} aria-hidden="true" /></a>
-        </nav>
-      </header>
-
+    <div className="site">
+      <SiteHeader current="landing" />
       <main>
         <section className="landing-hero" aria-labelledby="landing-title">
           <div className="landing-hero__copy">
@@ -79,11 +89,11 @@ export function LandingPage() {
             <p>Calibra puts three buildings in Bolzano on a 3D map, runs the real INTEGRATES model in your browser and lets search methods tune it until the simulation matches what was actually paid for heating.</p>
             <div className="landing-hero__actions">
               <OpenCity />
-              <a className="landing-link" href="#methods">Compare the methods <ArrowRight size={16} aria-hidden="true" /></a>
+              <a className="site-link" href={pages.methods}>Compare the methods <ArrowRight size={16} aria-hidden="true" /></a>
             </div>
             <ul className="landing-facts">
               <li><strong>{results.length}</strong> runs</li>
-              <li><strong>{methodCount}</strong> search methods</li>
+              <li><strong>{ranked.length}</strong> search methods</li>
               <li><strong>3</strong> buildings</li>
             </ul>
           </div>
@@ -91,7 +101,7 @@ export function LandingPage() {
         </section>
 
         <section className="landing-section" aria-labelledby="landing-how-title">
-          <h2 id="landing-how-title" className="landing-section__title">How it works</h2>
+          <h2 id="landing-how-title" className="site-title">How it works</h2>
           <ol className="landing-steps">
             {STEPS.map(({ icon: Icon, title, text }) => (
               <li key={title} className="landing-step">
@@ -107,28 +117,10 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section id="methods" className="landing-section" aria-labelledby="landing-methods-title">
-          <div className="landing-section__head">
-            <h2 id="landing-methods-title" className="landing-section__title">Which search method gets closest to the bills?</h2>
-            <p>Each dot is one run. Further right is closer to the bills. Hover a dot for its details, or <a href={runsUrl}>see every run in a table</a>.</p>
-          </div>
-          <MethodChart rows={results} />
-        </section>
-
-        <section className="landing-closing" aria-labelledby="landing-closing-title">
-          <CalibraMark size={56} tone="current" />
-          <div>
-            <h2 id="landing-closing-title">See it on the map</h2>
-            <p>Pick a building, change its settings and watch the simulation move towards its bills.</p>
-          </div>
-          <OpenCity tone="light" />
-        </section>
+        <MethodsPreview />
+        <CityInvite />
       </main>
-
-      <footer className="landing-footer">
-        <span>Calibra · INTEGRATES calibration challenge, Bolzano</span>
-        <a href={runsUrl}>All {results.length} runs</a>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

@@ -38,3 +38,16 @@ done.
 - Links shared before today that point at the site's root now land on the landing page instead of the city.
 - The approaches page still never loads `src/index.css` (Tailwind), so its screen-reader-only table caption shows as visible text (seen in run 022; left as it was because the owner asked for the page back unchanged).
 - The convergence view needs each run's score after every try, exported from the optimisation runs.
+
+## Follow-up: two pages (2026-11-14)
+
+The owner: "restore the old landing page, and make 2 different pages", then: "the old page of approaches is landing page, then the values for each is a different page right?" and chose "Landing + method comparison".
+
+- The original approaches page stays as restored above.
+- The new page is split: `index.html` keeps the landing page (best result, how it works) with a short preview of the top methods and a link; the method chart moves to its own page, `methods.html` (`src/methods/`).
+- The header, footer and their styles shared by both pages move to `src/site/` (`SiteHeader.tsx`, `SiteFooter.tsx`, `site.css`).
+
+Result of the follow-up:
+
+- `methods.html` with `src/methods/` (`main.tsx`, `MethodsPage.tsx`, `methods.css`, and `MethodChart.tsx`, `methodRanking.ts` with its tests, moved from `src/landing/`); the landing page shows the top three methods and links to it. `src/site/` holds `SiteHeader.tsx` (the logo now leads back to the landing page; “Methods” is marked on its own page), `SiteFooter.tsx`, `CityInvite.tsx` (the closing band), `OpenCity.tsx`, `pages.ts` and `site.css`. `vite.config.ts` builds four pages.
+- Checks: `npm test` 49 pass, 0 fail; type check passes; `vite build` into a scratch folder builds `index.html`, `methods.html`, `city.html` and `approaches.html`. Headless Chrome: both new pages at 1360 px and at 390 px, no sideways scrolling, no console errors. The header's “Open the city” first broke onto two lines at 390 px; the phone header is now tighter and the link no longer wraps.
