@@ -1,7 +1,8 @@
-// The season on the terrain: snow down to a snow line, duller grass in the cold, and the forest
-// turning with the city's trees: in autumn a smooth wash of leaf colours (gold, orange, rust) with
-// soft green areas of pines, and a light straw-gold touch on meadows; bare grey-brown in winter. Tints on top of the ground texture (theme
-// colours stay the base).
+// The season on the terrain: snow down to a snow line, duller grass in the cold, and the greens
+// turning with the city's trees. In autumn the forest takes a smooth wash of leaf colours (gold,
+// orange, rust) with soft green areas of pines, and goes bare grey-brown in winter; meadows and
+// lawns take the same colours, lighter, with about half staying green. Tints on top of the ground
+// texture (theme colours stay the base).
 import * as THREE from "three";
 import { SUMMER, type Foliage } from "../weather/foliage";
 
@@ -86,32 +87,34 @@ export function withSeason<M extends THREE.Material>(material: M): M {
         `#include <map_fragment>
         {
           // the forest (the ground picture paints it one colour, found by its low red and green lead)
+          // and the lighter greens (meadows, lawns, vineyards, scrub): every green but water and roads
           vec3 ground = diffuseColor.rgb;
-          float wood = smoothstep(0.21, 0.17, ground.r) * smoothstep(0.03, 0.10, ground.g - max(ground.r, ground.b));
-          if (wood > 0.0) {
+          float green = smoothstep(0.03, 0.10, ground.g - max(ground.r, ground.b));
+          float wood = smoothstep(0.21, 0.17, ground.r) * green;
+          if (green > 0.0 && (uAutumn > 0.0 || uLeaves < 1.0)) {
             vec2 q = vSeasonXZ;
             float hue = seasonNoise(q / 150.0) * 0.6 + seasonNoise(q / 55.0 + 7.3) * 0.3 + seasonNoise(q / 22.0 + 3.1) * 0.1;
             float pines = seasonNoise(q / 110.0 + 19.7) * 0.75 + seasonNoise(q / 40.0 + 4.2) * 0.25;
             float high = smoothstep(uLarchFrom - 200.0, uLarchFrom + 200.0, vSeasonY);
-            // broadleaf woods: rust, orange and gold flowing into each other; larches above lean to gold
+            // rust, orange and gold flowing into each other; larches above lean to gold
             vec3 leaf = mix(uWoodRust, uWoodOrange, smoothstep(0.25, 0.5, hue));
             leaf = mix(leaf, uWoodGold, smoothstep(0.5, 0.75, hue));
             leaf = mix(leaf, uWoodLarch, high * 0.7);
-            // pines and spruce stay green (about a quarter below, more above)
-            float evergreen = smoothstep(0.52, 0.66, pines + high * 0.08);
-            // each place turns at its own time, then goes bare as the leaves fall
+            // each place turns at its own time
             float turned = smoothstep(hue * 0.4, hue * 0.4 + 0.6, uAutumn);
-            leaf = mix(leaf, uWoodBare, (1.0 - uLeaves) * 0.85);
+            // forest: pines and spruce stay green (about a quarter below, more above); bare as the leaves fall
+            float evergreen = smoothstep(0.52, 0.66, pines + high * 0.08);
+            vec3 woodLeaf = mix(leaf, uWoodBare, (1.0 - uLeaves) * 0.85);
             float broadleaf = max(turned, 1.0 - uLeaves);
-            diffuseColor.rgb = mix(ground, leaf, wood * (1.0 - evergreen) * broadleaf);
-          }
-          // the lighter greens (meadows, lawns, vineyards, scrub) take a light straw-gold touch in autumn
-          float grass = (1.0 - wood) * smoothstep(0.03, 0.10, ground.g - max(ground.r, ground.b));
-          if (grass > 0.0) {
-            float touch = seasonNoise(vSeasonXZ / 90.0 + 11.1) * 0.7 + seasonNoise(vSeasonXZ / 30.0 + 5.7) * 0.3;
+            vec3 turnedColour = mix(ground, woodLeaf, (1.0 - evergreen) * broadleaf);
+            // lighter greens: the same leaf colours, full (not mixed into the green, which looks sickly),
+            // lifted to the ground's own brightness and a little softer; about half stays green
             float l = dot(ground, vec3(0.3, 0.59, 0.11));
-            vec3 straw = vec3(1.45, 1.05, 0.35) * l;
-            diffuseColor.rgb = mix(diffuseColor.rgb, straw, grass * uAutumn * uLeaves * mix(0.15, 0.5, touch));
+            vec3 light = leaf * (l / max(dot(leaf, vec3(0.3, 0.59, 0.11)), 0.01));
+            light = mix(light, vec3(l), 0.25);
+            float meadowTurns = 1.0 - smoothstep(0.44, 0.56, pines);
+            vec3 lightColour = mix(ground, light, meadowTurns * turned * uLeaves);
+            diffuseColor.rgb = mix(ground, mix(lightColour, turnedColour, wood / max(green, 0.001)), green);
           }
           float lum = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11));
           vec3 dull = mix(vec3(lum), vec3(0.66, 0.58, 0.44) * lum * 1.5, 0.55);

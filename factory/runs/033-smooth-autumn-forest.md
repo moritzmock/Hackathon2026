@@ -17,7 +17,7 @@ What made those looks fail, as far as the screenshots and the code show:
 - **Only the forest turns.** The ground picture paints all forest one colour (104, 158, 76); the shader finds it by its red value (forest 0.14 in linear colour, scrub from 0.24) and its green lead, so water, roads and the city stay as they are.
 - **A smooth wash, not patches.** The forest takes warm leaf colours that drift slowly and softly over the slopes, from gold through orange to rust, made with smooth noise (no sine waves, so no hatching or repeating lines) at a scale of a few hundred metres, with no edges. About a quarter stays green (pines), also in soft, wide areas. The colours are full leaf colours (replaced, not mixed into the green), at about the forest's own brightness, so they read as foliage and not as dirt.
 - **Larches above 1000 m** lean to gold, with more green (spruce) between them.
-- **Meadows a bit too (the owner, after seeing the first version):** the lighter greens (meadows, lawns, vineyards, scrub) take a light straw-gold touch in autumn, 15–50 % in soft areas, fading as the leaves fall.
+- **Meadows too (the owner):** the lighter greens (meadows, lawns, vineyards, scrub) take the same leaf colours, full (not mixed into the green), lifted to the ground's own brightness and a little softer; about half stays green, in soft areas. Fades as the leaves fall.
 - **Smaller (the owner):** the wash drifts at about 150 m, 55 m and 22 m (first version 420, 150, 60 m); pines in areas of about 110 and 40 m.
 - **The calendar of the city's trees** (`foliage.ts`): turning from 28 September to 1 November, each place at its own time; as the leaves fall (8 November to 8 December) the turned woods fade to a soft bare grey-brown, and they are green again when the leaves come out in spring.
 - Only `src/world/season.ts` changes (the terrain's season shader). Decoration only: OpenStreetMap does not say which trees grow in a forest.
@@ -30,8 +30,9 @@ done
 
 ## Result
 
-- `src/world/season.ts`: the forest wash (rust, orange, gold, larch gold above 1000 m, soft pine areas, bare grey-brown as the leaves fall) and the straw touch on the lighter greens, on the dates of the city's trees.
+- `src/world/season.ts`: the forest wash (rust, orange, gold, larch gold above 1000 m, soft pine areas, bare grey-brown as the leaves fall) and the lighter leaf colours on about half of the lighter greens, on the dates of the city's trees.
 - The owner watched it live in the dev server and asked for the meadows to turn a bit and for a smaller pattern; both are in, then "push all".
+- The meadows first took a light straw-gold touch mixed into the green (15–50 %); the owner found the light green "still weird" (the mix gives a sickly yellow-green, as run 031's ochre did), so they now take full colours in areas instead.
 - Checks: type check passes; `npm test` 76 pass, 0 fail; `vite build` passes. Headless screenshots did not finish this time (software WebGL hung before the scene showed), so the look was checked by the owner in the running app, not by screenshots.
 
 ## Later
