@@ -13,12 +13,17 @@ Add a “Show approaches” control immediately left of the existing temperature
 
 ## Status
 
-in progress: location confirmed, data and app structure inspected; implementation and checks remain.
+done: the map control, static page, source copy, checks and feature reference are complete.
 
 ## Result
 
-Pending.
+- Added “Show approaches” immediately left of the temperature chip. It opens the directly addressable `approaches.html` page; “Back to city” returns to the map. The static build includes both pages.
+- The page shows all 52 recorded runs, four parameter groups, their methods and exact variant codes, three anonymous building scores, overall scores and expandable full run IDs. The original CSV is kept in `docs/sources/2026-11-14-approach-results.csv`; its row values were compared with `src/approaches/results.json` and matched 52/52. The repository copy uses LF line endings, while the supplied text used CRLF.
+- `npm test` passed all 13 tests. `npm run build` passed TypeScript, both Vite pages and model asset verification. Browser checks passed for the direct page, navigation from the desktop and mobile maps, the return link and mobile table layout. Browser page errors and console output were empty.
+- The documented `npx software-factory check-docs` command was attempted and returned `unknown command 'check-docs'`. A direct local-link check of the changed feature pages passed. `git diff --check` passed.
+- Implementation and feature documentation were committed as `0dc5907`.
 
 ## Later
 
-None.
+- The installed factory CLI does not provide its documented `check-docs` command; the project should restore that check.
+- Vite still reports the main 3D app chunk above 500 kB during the product build. The separate approaches page is a small independent entry.
