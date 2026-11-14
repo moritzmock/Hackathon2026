@@ -44,15 +44,18 @@ function Content({ b }: { b: ChallengeBuilding }) {
       </header>
 
       <div className="mb-2">
-      <div className="mb-3 grid grid-cols-2 gap-2">
+      {/* One box while on the optimised settings; it splits in two once you change something. */}
+      <div className={`mb-3 grid gap-2 ${onOptimised ? "" : "grid-cols-2"}`}>
         <Card className="gap-0 rounded-xl border-0 px-3 py-2 shadow-none" style={{ background: `color-mix(in srgb, ${yoursColor} 12%, var(--paper))` }}>
           <span className="text-[0.7rem] text-muted-foreground">{onOptimised ? "Optimised settings" : "Your settings"}</span>
           <b className="text-2xl tabular-nums" style={{ color: yoursColor }}>{yours.toFixed(2)}<small className="ml-1 text-xs font-normal text-muted-foreground">/ 100</small></b>
         </Card>
-        <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${opt ? "bg-[color-mix(in_srgb,var(--optimised)_10%,var(--paper))]" : ""}`}>
-          <span className="text-[0.7rem] text-muted-foreground">Optimised</span>
-          <b className={`text-2xl tabular-nums ${opt ? "text-[var(--optimised)]" : "text-[var(--line)]"}`}>{optScore !== undefined ? optScore.toFixed(2) : "–"}<small className="ml-1 text-xs font-normal text-muted-foreground">{opt ? "/ 100" : "no result yet"}</small></b>
-        </Card>
+        {!onOptimised && (
+          <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${opt ? "bg-[color-mix(in_srgb,var(--optimised)_10%,var(--paper))]" : ""}`}>
+            <span className="text-[0.7rem] text-muted-foreground">Optimised</span>
+            <b className={`text-2xl tabular-nums ${opt ? "text-[var(--optimised)]" : "text-[var(--line)]"}`}>{optScore !== undefined ? optScore.toFixed(2) : "–"}<small className="ml-1 text-xs font-normal text-muted-foreground">{opt ? "/ 100" : "no result yet"}</small></b>
+          </Card>
+        )}
       </div>
       <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"} focus={weatherFocus} onPickMonth={setWeatherFocus} />
         <RunProgress id={b.id} />

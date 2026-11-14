@@ -16,6 +16,11 @@ const fmt = (v: number, unit: string) => {
   return `× ${v.toFixed(2)}`;
 };
 
+// Where the slider draws its handle for a value (0 … 1): the handle is kept inside the
+// track, so it is shifted in by up to half its width at the ends. Marks use the same.
+const THUMB_PX = 12; // size-3 in components/ui/slider.tsx
+const tickLeft = (t: number) => `calc(${t * 100}% + ${(THUMB_PX / 2) * (1 - 2 * t)}px)`;
+
 // The 12 settings in three topics, each with a plain label and a hint.
 const GROUPS: { title: string; items: { name: string; label: string; hint: string }[] }[] = [
   {
@@ -101,7 +106,8 @@ export function WhatIf({ id }: { id: string }) {
             const p = specs[it.name];
             const v = params[p.name];
             const opt = optimised?.params[p.name];
-            const isChanged = v !== p.default;
+            // Highlight only what was moved away from the starting values (the optimised ones when there are).
+            const isChanged = v !== (opt ?? p.default);
             return (
               <div key={p.name} className="grid grid-cols-[11.5rem_1fr_3.8rem] items-center gap-3">
                 <span className={`flex items-center gap-1 text-[0.8rem] ${isChanged ? "font-semibold text-[var(--whatif)]" : ""}`}>
@@ -117,8 +123,8 @@ export function WhatIf({ id }: { id: string }) {
                   <Slider min={p.lower} max={p.upper} step={(p.upper - p.lower) / 100} value={[v]}
                     onValueChange={([nv]) => setParam(id, p.name, nv)} aria-label={it.label} />
                   {opt !== undefined && (
-                    <i className="pointer-events-none absolute -top-1.5 h-3 w-0.5 -translate-x-1/2 rounded bg-[var(--optimised)]"
-                      style={{ left: `${((opt - p.lower) / (p.upper - p.lower)) * 100}%` }} />
+                    <i className="pointer-events-none absolute top-0 h-3 w-0.5 -translate-x-1/2 rounded bg-[var(--optimised)]"
+                      style={{ left: tickLeft((opt - p.lower) / (p.upper - p.lower)) }} />
                   )}
                 </div>
                 <span className="text-right text-[0.8rem] tabular-nums">{fmt(v, p.unit)}</span>

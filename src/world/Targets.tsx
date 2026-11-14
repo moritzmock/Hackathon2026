@@ -11,8 +11,10 @@ import { TargetBounce } from "./TargetBounce";
 import { lookFor } from "./targetLooks";
 import { createTargetMaterial } from "./targetMaterial";
 import { currentScore, scoreColor } from "./scoreColor";
+import { theme } from "./theme";
 
 const WHITE = new THREE.Color("#ffffff");
+const NEUTRAL = new THREE.Color(theme.target);
 
 /**
  * One challenge building, drawn as it really looks. Its outline and a soft glow show
@@ -34,7 +36,8 @@ function Target({ b }: { b: ChallengeBuilding }) {
 
   const rows = useStore((s) => s.runs[b.id]?.rows);
   const running = useStore((s) => s.runs[b.id]?.status === "running");
-  const goal = useMemo(() => scoreColor(currentScore(b, rows)), [b, rows]);
+  // Only the open building shows its score; the others keep a plain orange outline.
+  const goal = useMemo(() => (selected ? scoreColor(currentScore(b, rows)) : NEUTRAL), [b, rows, selected]);
   const color = useMemo(() => goal.clone(), []); // eslint-disable-line react-hooks/exhaustive-deps
   const glow = useMemo(
     () => new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.28, side: THREE.BackSide, depthWrite: false, toneMapped: false }),
@@ -51,8 +54,8 @@ function Target({ b }: { b: ChallengeBuilding }) {
       edges.current?.material.color.copy(color);
       glow.color.copy(color); // the material keeps its own copy of the colour
     }
-    glow.opacity = running ? 0.25 + 0.25 * (0.5 + 0.5 * Math.sin(clock.elapsedTime * 3)) : selected ? 0.5 : 0.4;
-    if (settling || running) invalidate(); // frameloop is "demand"
+    glow.opacity = running ? 0.25 + 0.25 * (0.5 + 0.5 * Math.sin(clock.elapsedTime * 3)) : 0.5;
+    if (settling || (running && selected)) invalidate(); // frameloop is "demand"
   });
 
   return (
@@ -76,9 +79,11 @@ function Target({ b }: { b: ChallengeBuilding }) {
         <Edges ref={edges} threshold={30} lineWidth={selected ? 4 : hovered ? 2.5 : 1.5} color={color} />
       </mesh>
       {/* Glow: the building's shape a little larger, seen from inside, so it rims the walls. */}
-      <group position={center} scale={1.045}>
-        <mesh geometry={geometry} material={glow} position={center.clone().negate()} raycast={() => null} renderOrder={1} />
-      </group>
+      {selected && (
+        <group position={center} scale={1.045}>
+          <mesh geometry={geometry} material={glow} position={center.clone().negate()} raycast={() => null} renderOrder={1} />
+        </group>
+      )}
       <RoofDetails b={b} look={look} />
     </group>
   );
