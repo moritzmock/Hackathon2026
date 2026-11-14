@@ -57,7 +57,7 @@ export function WeatherLights() {
       sun.current!.color.set(theme.sun).lerp(SKY.dusk, low * day * 0.6).lerp(SKY.night, 1 - day);
       hemi.current!.intensity = 0.55 + 0.45 * day + 0.3 * (1 - c.clear) * day;
       sky.copy(SKY.clear).lerp(SKY.overcast, (1 - c.clear) * day).lerp(SKY.dusk, low * day * 0.5).lerp(SKY.night, (1 - day) * 0.85);
-      setSeason(c.snowLine, c.winter, c.citySnow, minAltitude);
+      setSeason(c.snowLine, c.winter, c.citySnow, minAltitude, c.foliage);
     }
     if (scene.background instanceof THREE.Color) scene.background.copy(sky);
     if (scene.fog) scene.fog.color.copy(sky);

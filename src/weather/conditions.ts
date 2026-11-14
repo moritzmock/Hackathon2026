@@ -1,6 +1,7 @@
 // What the map shows: one set of weather conditions: Bolzano right now (live),
 // a scored month, or one day of it (from the model's own weather file, with
 // daily rain from the Open Data Hub baked in).
+import { foliage, type Foliage } from "./foliage";
 import weather from "../data/weather.json";
 import type { LiveWeather } from "./live";
 import { clearness, clearSky, sunPosition, type SunPosition } from "./sun";
@@ -33,6 +34,8 @@ export interface Conditions {
   winter: number;
   /** 0 … 1: snow lying in the city. */
   citySnow: number;
+  /** The leafy trees and the larch slopes on this date. */
+  foliage: Foliage;
 }
 
 export interface DaySummary extends DayKey {
@@ -169,6 +172,7 @@ export function monthConditions(m: MonthKey): Conditions {
     clear: cold > 0.5 ? Math.min(s.clear, 0.35) : s.clear,
     sky: cold > 0.5 ? "snow" : skyOf(s.clear, 0, false),
     season: seasonOf(m.month, 15),
+    foliage: foliage(m.month, 15),
     snowLine: Math.min(base.snowLine, 1100 - 850 * cold),
     winter: Math.max(base.winter, cold),
     citySnow,
@@ -186,6 +190,7 @@ export function dayConditions(d: DayKey): Conditions {
     clear: s.rain >= RAIN_MIN_MM ? Math.min(s.clear, 0.2) : s.clear,
     sky: skyOf(s.clear, s.rain, s.snowfall),
     season: seasonOf(d.month, d.day),
+    foliage: foliage(d.month, d.day),
     ...look(s.temp),
     citySnow: s.snowLying ? 1 : 0,
   };
@@ -206,6 +211,7 @@ export function liveConditions(live: LiveWeather, now = new Date()): Conditions 
     clear: precipitating ? Math.min(clear, 0.2) : clear,
     sky,
     season: seasonOf(rome.getMonth() + 1, rome.getDate()),
+    foliage: foliage(rome.getMonth() + 1, rome.getDate()),
     ...look(live.temp),
     citySnow: snowing ? 1 : 0,
   };
