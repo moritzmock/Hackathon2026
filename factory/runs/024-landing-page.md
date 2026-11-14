@@ -51,3 +51,10 @@ Result of the follow-up:
 
 - `methods.html` with `src/methods/` (`main.tsx`, `MethodsPage.tsx`, `methods.css`, and `MethodChart.tsx`, `methodRanking.ts` with its tests, moved from `src/landing/`); the landing page shows the top three methods and links to it. `src/site/` holds `SiteHeader.tsx` (the logo now leads back to the landing page; “Methods” is marked on its own page), `SiteFooter.tsx`, `CityInvite.tsx` (the closing band), `OpenCity.tsx`, `pages.ts` and `site.css`. `vite.config.ts` builds four pages.
 - Checks: `npm test` 49 pass, 0 fail; type check passes; `vite build` into a scratch folder builds `index.html`, `methods.html`, `city.html` and `approaches.html`. Headless Chrome: both new pages at 1360 px and at 390 px, no sideways scrolling, no console errors. The header's “Open the city” first broke onto two lines at 390 px; the phone header is now tighter and the link no longer wraps.
+
+## Follow-up: the landing page with the All runs page's content (2026-11-14)
+
+The owner: "cant you restore the old landing page? Like the one we had as the first website, a similar one to that content-wise", then "the all runs page".
+
+- The landing page now carries the All runs page's content at a glance, in the Calibra look and without eyebrows: “Every approach we explored.”, the highest overall score with its three buildings, method, group and variant, and “Four ways to choose what to tune”. “Look closer” links to the two detail pages: the methods chart and the All runs table. Dropped from the landing page: the guideline sentence as title, “How it works”, the search animation and the top-three preview.
+- Checks: `npm test` 49 pass, 0 fail; type check passes; `vite build` passes. Headless Chrome at 1360 px and 390 px: no sideways scrolling, no console errors.

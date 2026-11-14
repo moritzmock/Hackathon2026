@@ -1,4 +1,4 @@
-/* The landing page: what Calibra is, the best result, how it works and a preview of the methods. */
+/* The landing page: the explored approaches at a glance (best result, parameter groups) and the way to the detail pages. */
 /* Hero */
 .landing-hero {
   display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.75fr); gap: 56px;
@@ -8,6 +8,7 @@
   max-width: 13.5em; margin: 0 0 22px; color: var(--heading);
   font: 600 clamp(2.3rem, 4.4vw, 3.9rem)/1.08 var(--display); letter-spacing: -0.04em;
 }
+.landing-hero h1 em { color: var(--brand-violet); font-style: normal; }
 .landing-hero__copy > p { max-width: 560px; margin: 0 0 32px; color: var(--ink); font-size: 1.0625rem; line-height: 1.65; }
 .landing-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
 .landing-facts { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 40px 0 0; padding: 22px 0 0; border-top: 1px solid var(--line); list-style: none; color: var(--muted); font-size: 0.875rem; }
@@ -25,50 +26,52 @@
 .landing-best__buildings strong { color: var(--heading); font: 600 0.875rem var(--display); font-variant-numeric: tabular-nums; text-align: right; }
 .landing-bar { overflow: hidden; height: 6px; border-radius: 999px; background: var(--line); }
 .landing-bar span { display: block; height: 100%; border-radius: inherit; background: var(--optimised); }
-.landing-best__method { margin: 16px 0 0; color: var(--muted); font-size: 0.8125rem; }
+.landing-best__method { margin: 16px 0 0; color: var(--heading); font-size: 0.875rem; font-weight: 600; line-height: 1.5; }
+.landing-best__method span { display: block; color: var(--muted); font-size: 0.8125rem; font-weight: 400; }
 
 /* Sections */
 .landing-section { padding-block: 72px 0; }
 .landing-section > .site-title { margin-bottom: 24px; }
-.landing-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
-.landing-step { padding: 24px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel-card); }
-.landing-step__icon {
-  display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 10px;
-  background: #fff; color: var(--heading);
-}
-.landing-step h3 { margin: 18px 0 8px; color: var(--heading); font: 600 1.0625rem/1.3 var(--display); letter-spacing: -0.02em; }
-.landing-step p { margin: 0; color: var(--ink); font-size: 0.875rem; line-height: 1.6; }
-.landing-search {
-  display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px; align-items: center; margin-top: 14px;
-  padding: 20px 28px; border: 1px solid var(--line); border-radius: 20px;
-}
-.landing-search__picture { max-width: 220px; }
-.landing-search p { max-width: 620px; margin: 0; color: var(--muted); font-size: 0.875rem; line-height: 1.6; }
+.landing-section__head { display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 24px; }
+.landing-section__head h2 { max-width: 620px; }
+.landing-section__head p { max-width: 360px; margin: 0; color: var(--muted); font-size: 0.875rem; line-height: 1.55; }
 
-/* Preview of the methods page: the three best methods and a link */
-.landing-preview { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 40px; align-items: center; padding: 32px; border: 1px solid var(--line); border-radius: 20px; }
-.landing-preview > div > p { max-width: 420px; margin: 14px 0 24px; color: var(--ink); font-size: 0.9375rem; line-height: 1.6; }
-.landing-top { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; counter-reset: top; }
-.landing-top li {
-  display: grid; grid-template-columns: 28px minmax(0, 1fr) minmax(60px, 0.6fr) 52px; align-items: center; gap: 14px;
-  padding: 14px 18px; border-radius: 14px; background: var(--panel-card); font-size: 0.875rem; counter-increment: top;
+/* Parameter groups */
+.landing-groups { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
+.landing-group { padding: 22px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel-card); }
+.landing-group__top { display: flex; justify-content: space-between; align-items: start; gap: 8px; min-height: 40px; color: var(--heading); font-size: 0.875rem; font-weight: 600; }
+.landing-group__count { flex: none; padding: 3px 8px; border: 1px solid var(--line); border-radius: 99px; background: #fff; color: var(--muted); font-size: 0.6875rem; font-weight: 500; white-space: nowrap; }
+.landing-group__value { margin-top: 14px; color: var(--optimised); font: 600 2.1rem/1.1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -0.04em; }
+.landing-group__label { display: block; margin-top: 6px; color: var(--muted); font-size: 0.75rem; }
+
+/* The two detail pages */
+.landing-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
+.landing-detail {
+  display: flex; flex-direction: column; height: 100%; padding: 26px; border: 1px solid var(--line); border-radius: 20px;
+  color: inherit; text-decoration: none; transition: border-color 0.15s, background 0.15s;
 }
-.landing-top li::before { content: counter(top); color: var(--muted); font: 600 0.875rem var(--display); }
-.landing-top span { overflow: hidden; color: var(--heading); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-.landing-top strong { color: var(--optimised); font: 600 0.9375rem var(--display); font-variant-numeric: tabular-nums; text-align: right; }
+.landing-detail:hover { border-color: #cfd2d9; background: var(--panel-card); }
+.landing-detail__icon { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 10px; background: #fff; color: var(--heading); }
+.landing-detail h3 { margin: 18px 0 8px; color: var(--heading); font: 600 1.25rem/1.25 var(--display); letter-spacing: -0.025em; }
+.landing-detail p { flex: 1; max-width: 440px; margin: 0 0 20px; color: var(--ink); font-size: 0.9375rem; line-height: 1.6; }
+.landing-detail__go { display: inline-flex; align-items: center; gap: 6px; color: var(--heading); font-size: 0.875rem; font-weight: 600; }
 
 @media (max-width: 900px) {
   .landing-hero { grid-template-columns: 1fr; gap: 36px; padding-block: 28px 48px; }
-  .landing-steps { grid-template-columns: 1fr; }
-  .landing-preview { grid-template-columns: 1fr; gap: 24px; }
+  .landing-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
   .landing-hero__copy > p { font-size: 1rem; }
   .landing-best { padding: 22px; }
   .landing-best__buildings li { grid-template-columns: 112px 1fr 44px; gap: 10px; }
   .landing-section { padding-top: 56px; }
-  .landing-search { grid-template-columns: 1fr; gap: 16px; padding: 20px; }
-  .landing-preview { padding: 20px; }
-  .landing-top li { grid-template-columns: 20px minmax(0, 1fr) 52px; padding: 12px 14px; }
-  .landing-top .landing-bar { display: none; }
+  .landing-section__head { display: block; }
+  .landing-section__head p { max-width: none; margin-top: 10px; }
+  .landing-groups { gap: 10px; }
+  .landing-group { padding: 16px; }
+  .landing-group__top { display: block; min-height: 52px; }
+  .landing-group__count { display: table; margin-top: 8px; }
+  .landing-group__value { font-size: 1.7rem; }
+  .landing-details { grid-template-columns: 1fr; }
+  .landing-detail { padding: 22px; }
 }
