@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { challenge } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
@@ -12,9 +11,11 @@ import { ModelStatus } from "./ModelStatus";
 const ids = challenge.buildings.map((b) => b.id);
 
 /**
- * Listing-style sidebar (think holiday rentals): a photo card per building, taken
- * from the 3D scene. Click a card to fly there and open its details; ← / → step
- * through, Esc goes back. Slides in after the first-load clouds have parted.
+ * Slim sidebar: one row per building, a small photo taken from the 3D scene next to
+ * its name, facts and score. While a building is open the list folds down to just
+ * the photos, leaving the map more room. Click a row to fly there and open its
+ * details; ↑ / ↓ step through, Esc goes back. Slides in after the first-load clouds
+ * have parted.
  */
 export function BuildingList() {
   const selected = useStore((s) => s.selected);
@@ -36,7 +37,7 @@ export function BuildingList() {
   }, [selected, select]);
 
   return (
-    <aside className="list" aria-label="Challenge buildings">
+    <aside className={`list${selected ? " is-collapsed" : ""}`} aria-label="Challenge buildings">
       <AnimatePresence>
         {revealed && (
           <motion.div
@@ -78,18 +79,13 @@ export function BuildingList() {
 function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
   const run = useStore((s) => s.runs[b.id]);
   const hovered = useStore((s) => s.hovered === b.id);
-  const photos = useStore((s) => s.snapshots?.[b.id]);
+  const photo = useStore((s) => s.snapshots?.[b.id]?.[0]);
   const { select, hover } = useStore.getState();
-  const [photo, setPhoto] = useState(0);
   const w = run?.rows ? wape(b.records, simLookup(run.rows)) : undefined;
   const yours = score(w ?? baselineWape(b.records))!;
   const f = b.facts;
   const tag = run?.status === "running" ? "Simulating…" : run?.status === "error" ? "Model error" : w !== undefined ? "Your settings" : "Untuned model";
-  const n = photos?.length ?? 0;
-  const flip = (d: number) => (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setPhoto((p) => (p + d + n) % n);
-  };
+  const name = buildingName(b.id);
 
   return (
     <article
@@ -98,37 +94,22 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
       onPointerEnter={() => hover(b.id)}
       onPointerLeave={() => hover(null)}
       aria-current={active}
+      aria-label={name}
+      title={`${name} · ${String(f.construction_year)} · score ${yours.toFixed(0)}`}
     >
       <div className="stay__photo">
-        {photos ? (
-          <div className="stay__track" style={{ transform: `translateX(-${photo * 100}%)` }}>
-            {photos.map((src, i) => <img key={i} src={src} alt="" draggable={false} />)}
-          </div>
-        ) : (
-          <div className="stay__placeholder" />
-        )}
-        <span className="stay__tag">{tag}</span>
-        {n > 1 && (
-          <>
-            <button className="stay__nav stay__nav--prev" onClick={flip(-1)} aria-label="Previous photo"><ChevronLeft size={12} /></button>
-            <button className="stay__nav stay__nav--next" onClick={flip(1)} aria-label="Next photo"><ChevronRight size={12} /></button>
-            <span className="stay__dots" aria-hidden="true">
-              {photos!.map((_, i) => <i key={i} className={i === photo ? "is-on" : ""} />)}
-            </span>
-          </>
-        )}
+        {photo ? <img src={photo} alt="" draggable={false} /> : <div className="stay__placeholder" />}
       </div>
-
-      <div className="stay__title">
-        <b>{buildingName(b.id)} · {String(f.construction_year)}</b>
-        <span className="stay__rating" title="Score: 100 − error against the heating bills">
-          <Gauge /> {yours.toFixed(0)}
-        </span>
+      <div className="stay__text">
+        <div className="stay__title">
+          <b>{name}</b>
+          <span className="stay__rating" title="Score: 100 − error against the heating bills">
+            <Gauge /> {yours.toFixed(0)}
+          </span>
+        </div>
+        <p className="stay__line">{String(f.construction_year)} · {String(f.floors_above_ground)} floors · {Math.round(f.gross_floor_area_m2 as number).toLocaleString("en-US")} m²</p>
+        <p className="stay__tag">{tag}</p>
       </div>
-      <p className="stay__line">{String(f.floors_above_ground)} floors · {Math.round(f.gross_floor_area_m2 as number).toLocaleString("en-US")} m² · {String(f.heat_generator_type)}</p>
-      <p className="stay__price">
-        <b>{yours.toFixed(0)}</b> / 100 score
-      </p>
     </article>
   );
 }
