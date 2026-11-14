@@ -23,3 +23,11 @@ setting. `npm run test:model` still checks the unchanged one-year reference.
 [Run 011](../../../factory/runs/011-fresh-regimes.md) records browser timing
 and the remaining limits. The gain on a different physical device has not
 been measured.
+
+The solver consumes a fixed 744 January hours before returning February–March
+results. Removing evenly spaced rows from the whole January–March weather
+window makes the current app path reject the result; retaining January and
+thinning the scored months changes monthly energy and the score substantially.
+[Run 015](../../../factory/runs/015-uniform-hour-reduction-pretests.md) records
+the isolated timing and accuracy measurements. Production calculations keep
+all hourly rows.
