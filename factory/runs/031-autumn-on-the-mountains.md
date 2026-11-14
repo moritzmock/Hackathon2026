@@ -35,9 +35,9 @@ stopped: the owner chose to leave the mountain forest green.
 
 ## Result
 
-- `src/world/season.ts` is back to its state before this run and before daadcea (the version from 4318f76): the mountain forest stays green; the city's leafy trees, bushes and scattered single trees keep their autumn colours. The gold larch band (1000–2000 m) is still in that code but barely shows, because its forest test looks for a darker green than the map's forest colour.
-- Checks: type check of the file, `npm test` 80 pass, 0 fail; overview seen in headless Chrome: green slopes, autumn trees in the city.
+- 5176dee put `src/world/season.ts` back to its 4318f76 version, removing daadcea's orange shade. That version still had the gold larch patches (1000–2000 m, October–November), which another session pointed out were live again today; the next commit removes them: the larch block of the terrain shader and its uniforms, and `larch` from `foliage.ts` and its tests. The mountain forest now stays green all year; the city's leafy trees, bushes and scattered single trees keep their autumn colours, and winter's snow and duller grass stay.
+- Checks: type check of the changed files, `npm test` 80 pass, 0 fail; overview and a slope seen in headless Chrome today: green slopes, no gold patches, autumn colours only on single trees.
 
 ## Later
 
-- The larch band's forest test (dark green, brightness 0.18–0.32) misses most of the map's forest (brightness 0.26 in linear colour); a test on the red value (forest 0.14, scrub from 0.24) finds it. Remove the larch band, or fix the test if a gold band up high is wanted after all.
+- If autumn on the mountains is wanted again: the map's forest is found exactly by its red value in linear colour (forest 0.14, scrub from 0.24), and the three looks tried here (stands, one shade, single crowns) were each turned down.

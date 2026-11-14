@@ -34,7 +34,7 @@ export interface Conditions {
   winter: number;
   /** 0 … 1: snow lying in the city. */
   citySnow: number;
-  /** The leafy trees and the larch slopes on this date. */
+  /** The leafy trees on this date. */
   foliage: Foliage;
 }
 

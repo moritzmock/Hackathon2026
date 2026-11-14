@@ -1,5 +1,6 @@
 // The season on the terrain: snow down to a snow line, and duller grass in the
-// cold. Tints on top of the ground texture (theme colours stay the base).
+// cold. Tints on top of the ground texture (theme colours stay the base). The mountain
+// forest stays green all year (the owner's choice, run 031); only the trees and bushes turn.
 import * as THREE from "three";
 import { SUMMER, type Foliage } from "../weather/foliage";
 
@@ -8,11 +9,6 @@ export const seasonUniforms = {
   uWinter: { value: 0 },
   /** 0 … 1: snow lying in the valley and on the roofs. */
   uCitySnow: { value: 0 },
-  /** 0 … 1: gold larches on the slopes (late October). */
-  uLarch: { value: 0 },
-  /** Larch band, metres above the lowest terrain point. */
-  uLarchLow: { value: 700 },
-  uLarchHigh: { value: 1700 },
 };
 
 /** The leafy trees and bushes: how full the crowns are, how far autumn has turned them, spring freshness. */
@@ -34,10 +30,6 @@ export function setSeason(snowLine: number, winter: number, citySnow: number, mi
   seasonUniforms.uSnowY.value = snowLine - minAltitude;
   seasonUniforms.uWinter.value = winter;
   seasonUniforms.uCitySnow.value = citySnow;
-  // Larches grow from about 1000 to 2000 m in South Tyrol.
-  seasonUniforms.uLarchLow.value = 1000 - minAltitude;
-  seasonUniforms.uLarchHigh.value = 2000 - minAltitude;
-  seasonUniforms.uLarch.value = f.larch;
   foliageUniforms.uLeaves.value = f.leaves;
   foliageUniforms.uAutumn.value = f.autumn;
   foliageUniforms.uFresh.value = f.fresh;
@@ -56,7 +48,7 @@ export function withSeason<M extends THREE.Material>(material: M): M {
         "#include <begin_vertex>\nvec4 seasonWorld = modelMatrix * vec4(transformed, 1.0);\nvSeasonY = seasonWorld.y;\nvSeasonXZ = seasonWorld.xz;\nvSeasonUp = normalize(mat3(modelMatrix) * objectNormal).y;",
       );
     shader.fragmentShader = shader.fragmentShader
-      .replace("#include <common>", "#include <common>\nvarying float vSeasonY;\nvarying float vSeasonUp;\nvarying vec2 vSeasonXZ;\nuniform float uSnowY;\nuniform float uWinter;\nuniform float uCitySnow;\nuniform float uLarch;\nuniform float uLarchLow;\nuniform float uLarchHigh;")
+      .replace("#include <common>", "#include <common>\nvarying float vSeasonY;\nvarying float vSeasonUp;\nvarying vec2 vSeasonXZ;\nuniform float uSnowY;\nuniform float uWinter;\nuniform float uCitySnow;")
       .replace(
         "#include <map_fragment>",
         `#include <map_fragment>
@@ -64,12 +56,6 @@ export function withSeason<M extends THREE.Material>(material: M): M {
           float lum = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11));
           vec3 dull = mix(vec3(lum), vec3(0.66, 0.58, 0.44) * lum * 1.5, 0.55);
           diffuseColor.rgb = mix(diffuseColor.rgb, dull, uWinter * 0.5);
-          // late October: the larch forest on the slopes turns gold, in patches, only where the ground is wooded
-          float wooded = smoothstep(0.02, 0.10, diffuseColor.g - max(diffuseColor.r, diffuseColor.b)) * (1.0 - smoothstep(0.18, 0.32, lum));
-          float band = smoothstep(uLarchLow - 150.0, uLarchLow + 150.0, vSeasonY) * (1.0 - smoothstep(uLarchHigh - 150.0, uLarchHigh + 150.0, vSeasonY));
-          float stands = smoothstep(0.25, 0.65, 0.5 + 0.5 * sin(vSeasonXZ.x * 0.021 + sin(vSeasonXZ.y * 0.017) * 2.5) * sin(vSeasonXZ.y * 0.027 + 1.3));
-          vec3 gold = vec3(0.62, 0.40, 0.08) * (0.55 + lum * 2.2);
-          diffuseColor.rgb = mix(diffuseColor.rgb, gold, uLarch * wooded * band * stands * 0.85);
           // ragged snow line: lower in hollows, none on steep faces
           float wobble = (sin(vSeasonXZ.x * 0.011) * sin(vSeasonXZ.y * 0.013) + 0.5 * sin(vSeasonXZ.x * 0.037 + vSeasonXZ.y * 0.029)) * 70.0;
           float snow = smoothstep(uSnowY - 80.0, uSnowY + 80.0, vSeasonY + wobble) * smoothstep(0.45, 0.75, vSeasonUp);

@@ -2,18 +2,16 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { foliage } from "./foliage.ts";
 
-test("midsummer: full green leaves, no autumn, no gold", () => {
+test("midsummer: full green leaves, no autumn", () => {
   const f = foliage(7, 15);
   assert.equal(f.leaves, 1);
   assert.equal(f.autumn, 0);
-  assert.equal(f.larch, 0);
 });
 
-test("late October: leaves still on, mostly turned, larches gold", () => {
+test("late October: leaves still on, mostly turned", () => {
   const f = foliage(10, 28);
   assert.equal(f.leaves, 1);
   assert.ok(f.autumn > 0.7, `autumn ${f.autumn}`);
-  assert.ok(f.larch > 0.9, `larch ${f.larch}`);
 });
 
 test("late November: leaves falling", () => {
@@ -22,10 +20,9 @@ test("late November: leaves falling", () => {
   assert.equal(f.autumn, 1);
 });
 
-test("deep winter: bare trees, no gold", () => {
+test("deep winter: bare trees", () => {
   const f = foliage(1, 15);
   assert.equal(f.leaves, 0);
-  assert.equal(f.larch, 0);
 });
 
 test("mid April: leaves coming out, fresh light green", () => {
