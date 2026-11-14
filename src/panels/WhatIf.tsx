@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Info, RotateCcw, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { challenge } from "../data/challenge";
@@ -71,15 +70,28 @@ export function WhatIf({ id }: { id: string }) {
 
   return (
     <section className="space-y-4 border-t pt-4">
-      <div className="flex items-center justify-end gap-2">
-        <div className="flex gap-1">
-          <Button size="sm" variant="outline" disabled={!optimised} title="Copy the optimised settings (the purple ticks on the sliders)" onClick={() => optimised && setParams(id, optimised.params)}>
-            <Sparkles /> Use optimised
-          </Button>
-          <Button size="sm" variant="ghost" disabled={!changed} onClick={() => resetParams(id)} aria-label="Reset to defaults">
-            <RotateCcw />
-          </Button>
-        </div>
+      {/* Header row: title, then the two shortcuts (optimised values, back to defaults). */}
+      <div className="flex items-center gap-2">
+        <h3 className="flex-1 text-sm font-semibold">Settings</h3>
+        <button
+          type="button"
+          className="settings-action settings-action--optimised"
+          disabled={!optimised}
+          title="Set the sliders to the optimised values (the teal ticks)"
+          onClick={() => optimised && setParams(id, optimised.params)}
+        >
+          <Sparkles size={13} /> Use optimised
+        </button>
+        <button
+          type="button"
+          className="settings-action settings-action--icon"
+          disabled={!changed}
+          onClick={() => resetParams(id)}
+          title="Back to the defaults"
+          aria-label="Back to the defaults"
+        >
+          <RotateCcw size={13} />
+        </button>
       </div>
 
       {GROUPS.map((g) => (
