@@ -35,17 +35,22 @@
 
 
 /* The three phases, above the chart */
-.phase-strip { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.phase-strip > li { flex-basis: 0; min-width: max-content; } /* at least as wide as its name */
+.phase-strip { display: flex; margin: 0 var(--inset-right) 0 var(--inset-left); padding: 0; list-style: none; }
+.phase-strip > li { flex-basis: 0; min-width: 0; padding: 0 0.1%; container-type: inline-size; } /* the plot's phase bands have the same small gaps */
 .phase-strip button {
-  position: relative; display: block; width: 100%; height: 40px; overflow: hidden; padding: 0; border: 0; border-radius: 10px;
+  position: relative; display: block; width: 100%; height: 40px; overflow: hidden; padding: 0; border: 0; border-radius: 8px;
   background: var(--paper); color: var(--muted); font: 600 0.875rem "Inter", sans-serif; text-align: left; cursor: pointer;
 }
 .phase-strip button i { position: absolute; inset: 0 auto 0 0; background: var(--brand-violet-soft); }
 .phase-strip button.is-current { color: var(--brand-violet); box-shadow: inset 0 0 0 1.5px var(--brand-violet-4); }
-.phase-strip button span { position: relative; display: block; padding: 0 12px; white-space: nowrap; }
+.phase-strip button > span { position: relative; display: block; padding: 0 10px; white-space: nowrap; }
 .phase-strip button b { margin-right: 4px; }
 .phase-strip button:hover { color: var(--heading); }
+@container (max-width: 112px) {
+  .phase-strip__name { display: none; } /* too narrow for the name: the number only */
+  .phase-strip button > span { padding: 0; text-align: center; }
+  .phase-strip button b { margin: 0; }
+}
 .replay__phase { min-height: 1.5em; margin: -6px 0 0; color: var(--ink); font-size: 0.9375rem; }
 
 .replay__timeline { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; }
@@ -55,7 +60,6 @@
 @media (max-width: 600px) {
   .replay { padding: 14px; }
   .phase-strip button { height: 34px; font-size: 0.75rem; }
-  .phase-strip button span { padding: 0 8px; }
   .replay__timeline { grid-template-columns: auto minmax(0, 1fr); }
   .replay__count { grid-column: 1 / -1; }
 }

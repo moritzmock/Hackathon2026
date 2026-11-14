@@ -61,7 +61,7 @@ export function SearchReplay() {
         </div>
       </div>
 
-      <PhaseStrip replay={b} frame={frame} titles={TITLES} onPhase={(i) => clock.seek(stageStart(timeline, b, i))} />
+      <PhaseStrip replay={b} frame={frame} titles={TITLES} inset={{ left: (PAD.left / W) * 100, right: (PAD.right / W) * 100 }} onPhase={(i) => clock.seek(stageStart(timeline, b, i))} />
       <p className="replay__phase">
         {clock.done && best >= 0 ? `Done: the best of ${n} tries is try ${best + 1}, with ${b.tries[best].score.toFixed(2)}.` : TEXTS[stage.stage]}
       </p>
