@@ -122,6 +122,11 @@ function daysOf(year: number): DaySummary[] {
   return out;
 }
 
+/** The months the weather data covers (the scored months), in order. */
+export const WEATHER_MONTHS: MonthKey[] = Object.keys(weather.years)
+  .map(Number)
+  .flatMap((year) => [...new Set(daysOf(year).map((d) => d.month))].map((month) => ({ year, month })));
+
 export function daySummary(d: DayKey): DaySummary | undefined {
   return daysOf(d.year).find((x) => x.month === d.month && x.day === d.day);
 }

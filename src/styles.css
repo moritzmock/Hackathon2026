@@ -368,35 +368,42 @@ kbd, .kbd {
 .mstatus__bar { grid-column: 1 / -1; height: 3px; border-radius: 3px; background: #fff; overflow: hidden; }
 .mstatus__bar i { display: block; height: 100%; background: var(--accent); transition: width 0.6s var(--spring); }
 
-/* Weather label (bottom-left of the map) */
-.wchip {
-  position: absolute; left: 12px; bottom: 12px; z-index: 20; display: flex; align-items: center; gap: 7px;
-  height: 32px; padding: 0 10px; background: var(--surface); border: 1px solid var(--line);
-  border-radius: 8px; box-shadow: var(--shadow-sm); font-size: 0.75rem; white-space: nowrap; font-variant-numeric: tabular-nums;
-}
-.wchip b { font-weight: 600; }
-.wchip .muted, .wchip.muted { color: var(--muted); }
-.wchip__live { width: 7px; height: 7px; border-radius: 50%; background: #2fa36b; box-shadow: 0 0 0 3px color-mix(in srgb, #2fa36b 22%, transparent); }
-.wchip__back { display: grid; place-items: center; width: 20px; height: 20px; margin-right: -4px; border: 0; border-radius: 5px; background: transparent; color: var(--muted); cursor: pointer; }
-.wchip__back:hover { background: var(--paper); color: var(--ink); }
+/* Weather card (bottom-left of the map) */
 .wcard {
-  position: absolute; left: 12px; bottom: 12px; z-index: 20; width: min(340px, calc(100% - 210px));
-  display: grid; gap: 6px; padding: 8px 10px 10px; background: var(--surface); border: 1px solid var(--line);
+  position: absolute; left: 12px; bottom: 12px; z-index: 20; width: min(360px, calc(100% - 210px));
+  display: grid; gap: 8px; padding: 8px 10px 10px; background: var(--surface); border: 1px solid var(--line);
   border-radius: 10px; box-shadow: var(--shadow-sm); font-size: 0.75rem; font-variant-numeric: tabular-nums;
 }
-.wcard__head { display: flex; align-items: center; gap: 7px; }
-.wcard__head b { font-weight: 600; }
-.wcard__season { padding: 1px 7px; border-radius: 999px; background: var(--paper); color: var(--muted); font-size: 0.6875rem; }
-.wcard__close { margin-left: auto; display: grid; place-items: center; width: 20px; height: 20px; border: 0; border-radius: 5px; background: transparent; color: var(--muted); cursor: pointer; }
-.wcard__close:hover { background: var(--paper); color: var(--ink); }
-.wcard__facts { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 0; color: var(--muted); }
-.wcard__facts span:first-child { color: var(--ink); font-weight: 600; }
-.wdays { display: flex; align-items: flex-end; gap: 2px; height: 34px; }
-.wdays__day { flex: 1; height: 100%; display: flex; align-items: flex-end; padding: 0; border: 0; border-radius: 3px; background: transparent; cursor: pointer; }
-.wdays__day i { display: block; width: 100%; border-radius: 2px; background: #e2b26a; }
-.wdays__day--some-sun i, .wdays__day--overcast i { background: #c3c7cc; }
-.wdays__day--rain i { background: #5d8fd0; }
-.wdays__day--snow i { background: #fff; box-shadow: inset 0 0 0 1px #9fb3c8; }
+.wcard__when { display: flex; padding: 2px; gap: 2px; border-radius: 8px; background: var(--paper); }
+.wcard__when button {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 4px 0; border: 0; border-radius: 6px;
+  background: transparent; font: inherit; color: var(--muted); cursor: pointer; white-space: nowrap;
+}
+.wcard__when button:hover { color: var(--ink); }
+.wcard__when button.is-on { background: var(--surface); color: var(--ink); font-weight: 600; box-shadow: var(--shadow-sm); }
+.wcard__live { width: 6px; height: 6px; border-radius: 50%; background: #2fa36b; box-shadow: 0 0 0 2px color-mix(in srgb, #2fa36b 25%, transparent); }
+.wcard__line { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 7px; margin: 0; }
+.wcard__line b { white-space: nowrap; }
+.wcard__line > span:not(.wcard__season) { order: 3; flex-basis: 100%; padding-left: 22px; color: var(--muted); }
+.wcard__line b { font-weight: 600; }
+.wcard__line.muted { color: var(--muted); }
+.wcard__season { flex: none; margin-left: auto; padding: 1px 7px; border-radius: 999px; background: var(--paper); color: var(--muted); font-size: 0.6875rem; }
+.wcard__hint { margin: 0; color: var(--muted); font-size: 0.6875rem; }
+.wcard__foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.wcard__link { border: 0; background: transparent; padding: 0; font: inherit; font-size: 0.6875rem; color: var(--ink); text-decoration: underline; cursor: pointer; }
+.wlegend { display: flex; gap: 9px; color: var(--muted); font-size: 0.6875rem; }
+.wlegend span { display: flex; align-items: center; gap: 3px; }
+.wlegend i { width: 8px; height: 8px; border-radius: 2px; }
+.wdays__day i { display: block; border-radius: 2px; background: #e2b26a; }
+.wlegend .is-sun, .wdays__day--sunny i { background: #e2b26a; }
+.wlegend .is-cloud, .wdays__day--some-sun i, .wdays__day--overcast i { background: #c3c7cc; }
+.wlegend .is-rain, .wdays__day--rain i { background: #5d8fd0; }
+.wlegend .is-snow, .wdays__day--snow i { background: #fff; box-shadow: inset 0 0 0 1px #9fb3c8; }
+.wdays { display: flex; align-items: flex-end; gap: 2px; height: 46px; padding-bottom: 12px; }
+.wdays__day { position: relative; flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; padding: 0; border: 0; border-radius: 3px; background: transparent; cursor: pointer; }
+.wdays__icon { position: absolute; top: -1px; left: 50%; transform: translateX(-50%); color: #4a76b3; }
+.wdays__day--snow .wdays__icon { color: #6f8aa6; }
+.wdays__day small { position: absolute; bottom: -13px; left: 50%; transform: translateX(-50%); font-size: 0.5625rem; color: var(--muted); }
 .wdays__day:hover { background: var(--paper); }
 .wdays__day.is-on { background: color-mix(in srgb, var(--ink) 10%, transparent); }
 .wdays__day.is-on i { outline: 2px solid var(--ink); outline-offset: 1px; }
