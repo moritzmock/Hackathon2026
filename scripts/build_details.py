@@ -15,6 +15,8 @@ Output: public/data/details.json
   cars:  flat [x, y, z, heading, colour, …]
   bushes: flat [x, y, z, scale, …]                        decoration in yards and parks
   water: flat triangles [x0, y0, z0, x1, y1, z1, x2, y2, z2, …]  rivers and lakes (real), draped
+  bridges: [[half_width, x0, y0, z0, …], …]                road bridge decks (z = road level)
+  pillars: flat [x, y, top, bottom, heading, half_width, …] under the road bridges
 Coordinates as in city.json: x east, y north, z metres above terrain minimum.
 
 Run: npm run data   (runs build_world.py, then this)
@@ -32,6 +34,7 @@ from shapely.geometry import LineString, Point, Polygon
 from shapely.ops import unary_union
 
 import build_world as world
+from drape import Piece, drape, pillars
 
 RADIUS = 2300.0           # detail zone around the challenge buildings, metres
 DENSIFY = 12.0            # road vertex spacing so roads follow the terrain
@@ -46,6 +49,7 @@ WATER_RADIUS = 11000.0   # water surface is built out to where the map fades int
 WATER_SEGMENT = 40.0    # vertex spacing so the water surface follows the terrain
 WATER_MARGIN = 3.0      # keep trees, bushes and cars this far from the water
 RAIL_MARGIN = 3.5       # keep trees, bushes and cars this far from a railway track's centre
+PAVEMENT = 2.4          # pavement width beside a street (as in Roads.tsx); bridge decks carry it too
 SEED = 2026
 
 ROADS = {  # highway → (width m, kind)
@@ -99,7 +103,10 @@ def main() -> None:
                   if near((b[2][0], b[2][1]), centre)]
     tracks = [LineString(line).buffer(RAIL_MARGIN) for e in context if e.get("tags", {}).get("railway") == "rail"
               for line in world.element_lines(e) if any(near(p, centre) for p in line)]
-    blocked = STRtree([p.buffer(1.5) for p in footprints if p.is_valid] + tracks)
+    decks = [LineString(line).buffer(ROADS[e["tags"]["highway"]][0] / 2 + PAVEMENT + 1) for e in context
+             if e.get("tags", {}).get("highway") in ROADS and e["tags"].get("bridge", "no") != "no"
+             for line in world.element_lines(e) if any(near(p, centre) for p in line)]
+    blocked = STRtree([p.buffer(1.5) for p in footprints if p.is_valid] + tracks + decks)
 
     # Water (real OSM rivers and lakes) blocks trees, bushes and cars, and gets its own surface.
     water_parts = []
@@ -127,19 +134,28 @@ def main() -> None:
             flat_water += [round(x, 1), round(y, 1), round(z_at(x, y), 2)]
 
     # Roads
-    roads, car_slots = [], []
+    roads, car_slots, bridges, under = [], [], [], []
     for e in context:
-        hw = e.get("tags", {}).get("highway")
+        tags = e.get("tags", {})
+        hw = tags.get("highway")
         if hw not in ROADS:
             continue
         for line in world.element_lines(e):
             if not any(near(p, centre) for p in line):
                 continue
             width, kind = ROADS[hw]
-            pts = densify(line)
+            if tags.get("bridge", "no") != "no":  # the deck rises off the water (see drape.py)
+                deck = [(x, y, z) for x, y, z, _ in drape(Piece(line, tags), z_at, DENSIFY)]
+                half = width / 2 + (PAVEMENT if kind != 2 else 0.4)
+                bridges.append([half] + [round(v, 2 if i % 3 == 2 else 1) for p in deck for i, v in enumerate(p)])
+                for x, y, top, bottom, heading in pillars([(x, y, z, 0) for x, y, z in deck], z_at):
+                    under += [round(x, 1), round(y, 1), round(top, 2), round(bottom, 2), round(heading, 3), round(half, 1)]
+            else:
+                deck = [(x, y, z_at(x, y)) for x, y in densify(line)]
+            pts = [(x, y) for x, y, _ in deck]
             flat = [width, kind]
-            for x, y in pts:
-                flat += [round(x, 1), round(y, 1), round(z_at(x, y), 2)]
+            for x, y, z in deck:
+                flat += [round(x, 1), round(y, 1), round(z, 2)]
             roads.append(flat)
             if hw in CAR_ROADS:
                 car_slots.append((width, pts))
@@ -228,8 +244,10 @@ def main() -> None:
         "cars": flat_cars,
         "bushes": flat_bushes,
         "water": flat_water,
+        "bridges": bridges,
+        "pillars": under,
     }, separators=(",", ":")))
-    print(f"details: {len(roads)} roads, {len(trees)} trees ({real} mapped in OSM), {len(flat_cars) // 5} cars, {len(bushes)} bushes, {len(flat_water) // 9} water triangles")
+    print(f"details: {len(roads)} roads, {len(trees)} trees ({real} mapped in OSM), {len(flat_cars) // 5} cars, {len(bushes)} bushes, {len(flat_water) // 9} water triangles, {len(bridges)} bridges with {len(under) // 6} pillars")
 
 
 if __name__ == "__main__":

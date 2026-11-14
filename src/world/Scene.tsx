@@ -14,6 +14,7 @@ import { Effects } from "./Effects";
 import { LetGoWhenZoomedOut } from "./LetGoWhenZoomedOut";
 import { MapCamera } from "./MapCamera";
 import { PopIn } from "./PopIn";
+import { Bridges } from "./Bridges";
 import { Rails } from "./Rails";
 import { Roads } from "./Roads";
 import { SkyDome } from "./SkyDome";
@@ -56,6 +57,7 @@ export function Scene() {
           {layers.city && <RoofUnits />}
           {layers.streets && <Roads />}
           {layers.streets && <Rails />}
+          {layers.streets && <Bridges />}
           {layers.trees && <Trees />}
           {layers.trees && <Bushes />}
           {layers.cars && <Cars />}

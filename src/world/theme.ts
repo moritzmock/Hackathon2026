@@ -35,6 +35,7 @@ export const theme = {
   conifers: ["#3c6f3a", "#457a40", "#335f34"],
   bushes: ["#558f3f", "#62a048", "#4a8238", "#6fa94f"],
   trunk: "#7d5d44",
+  bridge: "#d2cdc4",
   ballast: "#a39b90",
   rail: "#6f6b66",
   trainBody: "#f4f2ee",

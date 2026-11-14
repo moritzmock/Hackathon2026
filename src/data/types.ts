@@ -67,6 +67,10 @@ export interface DetailsData {
   bushes: number[];
   /** Water surface: flat triangles [x0, y0, z0, x1, y1, z1, x2, y2, z2, …]. */
   water: number[];
+  /** Road bridge decks: [half width, x0, y0, z0, …]; z is the road level. */
+  bridges: number[][];
+  /** Pillars under the road bridges: flat [x, y, top, bottom, heading, half width, …]. */
+  pillars: number[];
 }
 
 /** The railway (public/data/rails.json, built by scripts/build_rails.py). */
@@ -75,4 +79,8 @@ export interface RailsData {
   tracks: number[][];
   /** Lines for the trains, longest first: [x0, y0, z0, hidden0, …]; hidden = 1 inside a tunnel. */
   routes: number[][];
+  /** Railway bridge decks: [half width, x0, y0, z0, …]; z is the deck level the track lies on. */
+  bridges: number[][];
+  /** Pillars under the railway bridges: flat [x, y, top, bottom, heading, half width, …]. */
+  pillars: number[];
 }
