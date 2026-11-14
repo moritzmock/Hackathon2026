@@ -16,14 +16,14 @@ test("one building runs four year and regime jobs and blends their hourly heat",
       calls.push({ year: message.year!, reduced: message.reduced!, type: message.type });
       queueMicrotask(() => this.onmessage?.({ data: message.type === "run_regime"
         ? {
-          type: "result", id: message.id,
+          type: "regime_result", id: message.id,
           data: {
             year: message.year, reduced: message.reduced,
             heat: message.reduced ? [500, 1000] : [1000, 2000],
             months: [2, 3], normalFraction: 0.8, efficiency: 1,
           },
         }
-        : { type: "result", id: message.id, rows: [{ year: message.year, month: 2, kwh: 999 }] },
+        : { type: "year_result", id: message.id, rows: [{ year: message.year, month: 2, kwh: 999 }] },
       }));
     }
   }
@@ -68,8 +68,8 @@ test("small worker pools keep the organizer's two year jobs", async () => {
       if (message.type === "warmup") return;
       calls.push({ type: message.type, year: message.year! });
       queueMicrotask(() => this.onmessage?.({ data: message.type === "run"
-        ? { type: "result", id: message.id, rows: [{ year: message.year, month: 2, kwh: message.year }] }
-        : { type: "result", id: message.id, data: {
+        ? { type: "year_result", id: message.id, rows: [{ year: message.year, month: 2, kwh: message.year }] }
+        : { type: "regime_result", id: message.id, data: {
           year: message.year, reduced: message.reduced,
           heat: [1000], months: [2], normalFraction: 1, efficiency: 1,
         } },
