@@ -28,10 +28,28 @@ Code:
 
 Checks: unit tests for the framing rule; `npm test`, type check, build; on a phone-sized touch emulation in headless Chrome: the strip shows three buildings, a tap opens one, the sheet sits at the bottom, the building is visible above it; desktop (1400 × 900) looks as before; the methods dot opens on a tap.
 
+### Tried
+
+- Shrinking the 3D labels for any view narrower than 900 px: at 740 px the label over the open building was still wider than half the screen, because the phone camera stands up to 2.6 times further back and labels grow with distance. Now the labels shrink only in the phone layout, by the view's width (at least to 0.3).
+- A plain click handler on the method dots did not open them: Radix's own click handler closes the tooltip right after. The dot's handler now calls `preventDefault`, which Radix respects.
+
 ## Status
 
-in progress.
+done.
 
 ## Result
 
+- Code: `src/panels/BuildingStrip.tsx` (new), `src/world/framing.ts` with `framing.test.ts` (new), `MapCamera.tsx`, `BuildingLabels3D.tsx` (`labelScale`), `App.tsx`, the phone block at the end of `src/styles.css`, `MethodChart.tsx`, `MethodsPage.tsx`, `methods.css`. Feature page `docs/reference/features/phone-layout.md`.
+- Checks: `npm test` 59 pass, 0 fail (5 new framing tests); type check passes; `vite build` passes (into a scratch folder, as in run 021); `check-docs` passes.
+- Seen in headless Chrome (DevTools protocol, touch emulation, taps sent as touch events):
+  - 390 × 844 phone: no sideways scrolling on the landing, methods, All runs and city pages; the strip shows the three buildings with photos and scores (96.44, 99.41, 96.81); a tap on 01 and on 02 opens the building, the sheet sits at the bottom, the building and its score label are in view above it.
+  - 740 × 1024: the same, the label narrower than the screen.
+  - 1400 × 900 desktop: the list, the map and the open building's side panel as before (the framing on wide screens is unchanged).
+  - Methods page, phone and desktop: a tap on a dot opens its details, a tap elsewhere closes them; the building tabs wrap onto two lines. No console errors.
+- Not checked on a real phone.
+
 ## Later
+
+- Try it on a real phone: speed of the 3D map (the app already lowers the resolution and turns off effects when frames are slow), pinch and drag on the map, the browser's bars changing the height.
+- The sheet could be dragged up and down (a handle), and the top buttons could leave room for a notch in landscape.
+- On desktop, the score label over the open building is very large when the camera is close (it predates this run; seen at 1400 × 900).
