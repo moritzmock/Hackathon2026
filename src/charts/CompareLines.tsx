@@ -7,8 +7,8 @@ import { fmtKwh, MONTHS } from "../metrics";
 type Key = "measured" | "yours" | "optimised";
 const SERIES: { key: Key; label: string; color: string; dash?: string }[] = [
   { key: "measured", label: "Measured", color: "var(--measured)" },
-  { key: "yours", label: "Your settings", color: "var(--whatif)" },
-  { key: "optimised", label: "Optimised", color: "var(--optimised)", dash: "6 4" },
+  { key: "yours", label: "Your settings", color: "var(--whatif)", dash: "5 4" },
+  { key: "optimised", label: "Optimised", color: "var(--optimised)" },
 ];
 
 function niceStep(v: number) {
@@ -61,7 +61,7 @@ export function CompareLines({
       <div className="legend">
         {SERIES.map((s) => (
           <span key={s.key} className={s.key === "optimised" && !optimised ? "legend--off" : undefined}>
-            <i style={{ background: s.color }} />
+            <svg className="legend__line" viewBox="0 0 18 8" aria-hidden="true"><line x1="1" x2="17" y1="4" y2="4" stroke={s.color} strokeWidth={2} strokeDasharray={s.dash} strokeLinecap="round" /></svg>
             {s.label}
             {s.key === "yours" && !yours && <small> (defaults)</small>}
             {s.key === "optimised" && !optimised && <small> (none yet)</small>}
@@ -71,7 +71,7 @@ export function CompareLines({
       <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Measured, your settings and optimised heating energy">
         {ticks.map((t) => (
           <g key={t}>
-            <line x1={ml} x2={W - mr} y1={y(t)} y2={y(t)} stroke="var(--grid)" strokeWidth={t ? 1 : 1.5} />
+            <line x1={ml} x2={W - mr} y1={y(t)} y2={y(t)} stroke="var(--line)" strokeWidth={1} />
             <text x={ml - 6} y={y(t) + 4} textAnchor="end">{t >= 1000 ? `${t / 1000}k` : t}</text>
           </g>
         ))}
@@ -101,9 +101,9 @@ export function CompareLines({
           const d = pts.map((p, i) => `${i ? "L" : "M"}${p![0]},${p![1]}`).join(" ");
           return (
             <g key={s.key} className={s.key === "yours" && running ? "line--running" : "line"}>
-              <path d={d} fill="none" stroke={s.color} strokeWidth={2.5} strokeDasharray={s.dash} strokeLinejoin="round" style={{ transition: "d 0.6s ease" }} />
+              <path d={d} fill="none" stroke={s.color} strokeWidth={2} strokeDasharray={s.dash} strokeLinejoin="round" style={{ transition: "d 0.6s ease" }} />
               {pts.map((p, i) => (
-                <circle key={i} cx={p![0]} cy={p![1]} r={4} fill={s.color} stroke="var(--surface)" strokeWidth={1.5}
+                <circle key={i} cx={p![0]} cy={p![1]} r={3} fill={s.key === "yours" ? "var(--surface)" : s.color} stroke={s.key === "yours" ? s.color : "var(--surface)"} strokeWidth={s.key === "yours" ? 2 : 1.5}
                   style={{ transition: "cy 0.6s ease" }}
                   onMouseEnter={() => setTip(`${MONTHS[records[i].month]} ${records[i].year} · ${s.label}: ${fmtKwh(values[s.key][i]!)} kWh`)}
                   onMouseLeave={() => setTip(null)} />

@@ -74,10 +74,10 @@ export function WhatIf({ id }: { id: string }) {
   }, [params, running, run, changed, id, start]);
 
   return (
-    <section className="space-y-4 border-t pt-4">
+    <section className="pcard space-y-4">
       {/* Header row: title, then the two shortcuts (optimised values, back to defaults). */}
       <div className="flex items-center gap-2">
-        <h3 className="flex-1 text-sm font-semibold">Settings</h3>
+        <h3 className="pcard__title flex-1">Settings</h3>
         <button
           type="button"
           className="settings-action settings-action--optimised"

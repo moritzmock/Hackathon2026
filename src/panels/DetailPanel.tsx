@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { Gauge, Sparkles, X } from "lucide-react";
 import { CompareLines } from "../charts/CompareLines";
 import { optimisedFor } from "../data/optimised";
 import { buildingsById } from "../data/challenge";
@@ -11,7 +11,6 @@ import { same, WhatIf } from "./WhatIf";
 import { scoreColor } from "../world/scoreColor";
 import { RunProgress } from "./RunProgress";
 import { ScoreLegend } from "./ScoreLegend";
-import { Card } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useWeather } from "../weather/focus";
 
@@ -45,26 +44,33 @@ function Content({ b }: { b: ChallengeBuilding }) {
         <button className="icon-btn" onClick={() => select(null)} aria-label="Close"><X size={16} /></button>
       </header>
 
-      <div className="mb-2">
-      {/* One box while on the optimised settings; it splits in two once you change something. */}
-      <div className={`mb-3 grid gap-2 ${onOptimised ? "" : "grid-cols-2"}`}>
-        <Card className="gap-0 rounded-xl border-0 px-3 py-2 shadow-none" style={{ background: `color-mix(in srgb, ${yoursColor} 12%, var(--paper))` }}>
-          <span className="text-[0.7rem] text-muted-foreground">{onOptimised ? "Optimised settings" : "Your settings"}</span>
-          <b className="text-2xl tabular-nums" style={{ color: yoursColor }}>{yours.toFixed(2)}<small className="ml-1 text-xs font-normal text-muted-foreground">/ 100</small></b>
-        </Card>
+      {/* Score tiles: one while on the optimised settings; two once you change something. */}
+      <div className={`ptiles ${onOptimised ? "" : "ptiles--two"}`}>
+        <div className="ptile">
+          <div className="ptile__text">
+            <span className="ptile__label">{onOptimised ? "Optimised settings" : "Your settings"}</span>
+            <b className="ptile__value" style={{ color: yoursColor }}>{yours.toFixed(2)}<small>/ 100</small></b>
+          </div>
+          <span className="ptile__icon" style={{ color: yoursColor, background: `color-mix(in srgb, ${yoursColor} 12%, var(--surface))` }}><Gauge size={20} /></span>
+        </div>
         {!onOptimised && (
-          <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${opt ? "bg-[color-mix(in_srgb,var(--optimised)_10%,var(--paper))]" : ""}`}>
-            <span className="text-[0.7rem] text-muted-foreground">Optimised</span>
-            <b className={`text-2xl tabular-nums ${opt ? "text-[var(--optimised)]" : "text-[var(--line)]"}`}>{optScore !== undefined ? optScore.toFixed(2) : "–"}<small className="ml-1 text-xs font-normal text-muted-foreground">{opt ? "/ 100" : "no result yet"}</small></b>
-          </Card>
+          <div className="ptile">
+            <div className="ptile__text">
+              <span className="ptile__label">Optimised</span>
+              <b className="ptile__value" style={{ color: opt ? "var(--optimised)" : "var(--muted)" }}>{optScore !== undefined ? optScore.toFixed(2) : "–"}<small>{opt ? "/ 100" : "no result yet"}</small></b>
+            </div>
+            <span className="ptile__icon" style={{ color: "var(--optimised)", background: "color-mix(in srgb, var(--optimised) 10%, var(--surface))" }}><Sparkles size={20} /></span>
+          </div>
         )}
       </div>
       <ScoreLegend />
-      {/* Click a month, or a day in the strip under it, to show its weather on the map. */}
-      <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"}
-        focus={weatherFocus} onPickMonth={setWeatherFocus} day={day} onPickDay={(d) => (d ? (setWeatherFocus({ year: d.year, month: d.month }), setDay(d)) : setDay(null))} />
+      <section className="pcard">
+        <h3 className="pcard__title">Heating per month</h3>
+        {/* Click a month, or a day in the strip under it, to show its weather on the map. */}
+        <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"}
+          focus={weatherFocus} onPickMonth={setWeatherFocus} day={day} onPickDay={(d) => (d ? (setWeatherFocus({ year: d.year, month: d.month }), setDay(d)) : setDay(null))} />
         <RunProgress id={b.id} />
-      </div>
+      </section>
       <WhatIf id={b.id} />
     </>
   );
