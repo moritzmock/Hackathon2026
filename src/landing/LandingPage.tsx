@@ -1,68 +1,66 @@
 import { ArrowRight, ChartScatter, Table2 } from "lucide-react";
-import { describeApproach } from "../approaches/describeApproach";
 import results from "../approaches/results.json";
+import { buildingsById } from "../data/challenge";
 import { rankMethods } from "../methods/methodRanking";
 import { buildingName, buildingNumber } from "../panels/buildingName";
-import { CityInvite } from "../site/CityInvite";
+import { OpenCity } from "../site/OpenCity";
 import { pages } from "../site/pages";
 import { SiteFooter } from "../site/SiteFooter";
 import { SiteHeader } from "../site/SiteHeader";
+import cityPins from "./cityPins.json";
 
+const base = import.meta.env.BASE_URL;
 const best = results[0];
-const bestLabel = describeApproach(best.run);
 const methodCount = rankMethods(results, "OVERALL").length;
-const groups = ["all_12", "no_envelope_9", "core_6", "continuous_8"];
 const buildings = ["building_01", "building_02", "building_03"] as const;
+type BuildingId = (typeof buildings)[number];
 const fmt = (score: number) => score.toFixed(2);
 
-function BestResult() {
+/**
+ * The 3D city at its opening view, taken from the app (scripts/capture_landing_images.mjs),
+ * with each building's name next to its pin.
+ */
+function CityWindow() {
   return (
-    <aside className="landing-best" aria-labelledby="landing-best-title">
-      <h2 id="landing-best-title">Highest overall score</h2>
-      <div className="landing-best__score">{fmt(best.OVERALL)}<span>/ 100</span></div>
-      <p className="landing-best__meaning">The simulation is {fmt(100 - best.OVERALL)}% away from the real heating bills.</p>
-      <ul className="landing-best__buildings">
-        {buildings.map((id) => (
-          <li key={id}>
-            <span><b>{buildingNumber(id)}</b> {buildingName(id)}</span>
-            <div className="landing-bar" aria-hidden="true"><span style={{ width: `${best[id]}%` }} /></div>
-            <strong>{fmt(best[id])}</strong>
-          </li>
-        ))}
-      </ul>
-      <p className="landing-best__method">{bestLabel.method}<span>{bestLabel.group} · variant {bestLabel.variant}</span></p>
-    </aside>
+    <figure className="landing-window">
+      <img
+        src={`${base}landing/city.jpg`}
+        width={1600}
+        height={1080}
+        alt="The 3D city of Bolzano in its valley, with the three challenge buildings marked by pins."
+      />
+      {buildings.map((id) => (
+        <span key={id} className={`landing-window__label landing-window__label--${id}`} style={{ left: `${cityPins[id].x}%`, top: `${cityPins[id].y}%` }}>
+          <b>{buildingNumber(id)}</b> {buildingName(id)}
+        </span>
+      ))}
+    </figure>
   );
 }
 
-function GroupCard({ name }: { name: string }) {
-  const rows = results.filter((row) => row.name === name);
-  const highest = Math.max(...rows.map((row) => row.OVERALL));
+function BuildingCard({ id }: { id: BuildingId }) {
+  const f = buildingsById[id].facts;
+  const score = best[id];
   return (
-    <li className="landing-group">
-      <div className="landing-group__top">
-        <span>{describeApproach(rows[0].run).group}</span>
-        <span className="landing-group__count">{rows.length} {rows.length === 1 ? "run" : "runs"}</span>
+    <li className="landing-building">
+      <div className="landing-building__photo">
+        <img src={`${base}landing/${id}.png`} width={960} height={660} alt="" loading="lazy" />
       </div>
-      <div className="landing-group__value">{fmt(highest)}</div>
-      <span className="landing-group__label">best overall score</span>
+      <h3><span>{buildingNumber(id)}</span> {buildingName(id)}</h3>
+      <p className="landing-building__facts">
+        Built {String(f.construction_year)} · {String(f.floors_above_ground)} floors · {Math.round(f.gross_floor_area_m2 as number).toLocaleString("en-US")} m²
+      </p>
+      <div className="landing-building__score">
+        <strong>{fmt(score)}</strong>
+        <span>{fmt(100 - score)}% from the bills</span>
+      </div>
     </li>
   );
 }
 
-const DETAIL_PAGES = [
-  {
-    href: pages.methods,
-    icon: ChartScatter,
-    title: "Compare the search methods",
-    text: `Every run of the ${methodCount} search methods on one score line, for all buildings or one at a time.`,
-  },
-  {
-    href: pages.runs,
-    icon: Table2,
-    title: `All ${results.length} runs`,
-    text: "The complete record: each run's method, parameter group, variant and the score of every building.",
-  },
+const MORE = [
+  { href: pages.methods, icon: ChartScatter, title: "Compare the search methods", text: `${methodCount} methods, every run on one score line.` },
+  { href: pages.runs, icon: Table2, title: `All ${results.length} runs`, text: "Each run's method, settings and building scores." },
 ];
 
 export function LandingPage() {
@@ -70,48 +68,40 @@ export function LandingPage() {
     <div className="site">
       <SiteHeader current="landing" />
       <main>
-        <section className="landing-hero" aria-labelledby="landing-title">
-          <div className="landing-hero__copy">
-            <h1 id="landing-title">Every approach<br /><em>we explored.</em></h1>
-            <p>All {results.length} recorded optimisation runs for the three challenge buildings. Each run combines a parameter group, a search method and, sometimes, a variant setting.</p>
-            <div className="landing-hero__actions">
-              <a className="site-button site-button--dark" href={pages.runs}><Table2 size={16} aria-hidden="true" /> Explore all runs</a>
+        <CityWindow />
+
+        <section className="landing-intro" aria-labelledby="landing-title">
+          <h1 id="landing-title">Three buildings, their real heating bills, and a simulation tuned to meet them.</h1>
+          <div>
+            <p>Calibra runs the INTEGRATES building energy model in your browser. Fly over Bolzano, pick a building and see how close the simulation gets to what was actually paid for heating.</p>
+            <div className="landing-intro__actions">
+              <OpenCity />
               <a className="site-link" href={pages.methods}>Compare the methods <ArrowRight size={16} aria-hidden="true" /></a>
             </div>
-            <ul className="landing-facts">
-              <li><strong>{results.length}</strong> runs</li>
-              <li><strong>{methodCount}</strong> search methods</li>
-              <li><strong>{groups.length}</strong> parameter groups</li>
-            </ul>
           </div>
-          <BestResult />
         </section>
 
-        <section className="landing-section" aria-labelledby="landing-groups-title">
+        <section className="landing-section" aria-labelledby="landing-buildings-title">
           <div className="landing-section__head">
-            <h2 id="landing-groups-title" className="site-title">Four ways to choose what to tune</h2>
-            <p>A parameter group is the set of model settings a run was allowed to change. Run counts and the best overall result within each group.</p>
+            <h2 id="landing-buildings-title" className="site-title">The three buildings</h2>
+            <p>Score out of 100 from our best run: 100 means the simulation matches the heating bills of February and March, 2018 and 2019, exactly.</p>
           </div>
-          <ul className="landing-groups">{groups.map((name) => <GroupCard key={name} name={name} />)}</ul>
+          <ul className="landing-buildings">{buildings.map((id) => <BuildingCard key={id} id={id} />)}</ul>
         </section>
 
-        <section className="landing-section" aria-labelledby="landing-details-title">
-          <h2 id="landing-details-title" className="site-title">Look closer</h2>
-          <ul className="landing-details">
-            {DETAIL_PAGES.map(({ href, icon: Icon, title, text }) => (
+        <section className="landing-section" aria-label="More results">
+          <ul className="landing-more">
+            {MORE.map(({ href, icon: Icon, title, text }) => (
               <li key={href}>
-                <a className="landing-detail" href={href}>
-                  <span className="landing-detail__icon"><Icon size={16} aria-hidden="true" /></span>
-                  <h3>{title}</h3>
-                  <p>{text}</p>
-                  <span className="landing-detail__go">Open <ArrowRight size={16} aria-hidden="true" /></span>
+                <a href={href}>
+                  <span className="landing-more__icon"><Icon size={16} aria-hidden="true" /></span>
+                  <span className="landing-more__text"><strong>{title}</strong><span>{text}</span></span>
+                  <ArrowRight size={16} aria-hidden="true" />
                 </a>
               </li>
             ))}
           </ul>
         </section>
-
-        <CityInvite />
       </main>
       <SiteFooter />
     </div>

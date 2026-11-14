@@ -12,7 +12,9 @@
   (`src/methods/`), both with the frame in `src/site/`; `city.html` the 3D
   city (`src/main.tsx`); `approaches.html` the table of recorded calibration
   runs (`src/approaches/`).
-- `public/`: static files served as they are. `baseline.html` and `data.js`
+- `public/`: static files served as they are. `landing/` holds the landing
+  page's pictures of the city and the buildings, taken from the app by
+  `scripts/capture_landing_images.mjs`. `baseline.html` and `data.js`
   (the first chart of bills against the untuned model); `py/` holds the
   packaged model for Pyodide (`integrates.zip`, `wheels/`, `manifest.json`),
   made by `npm run model`, never edited by hand.
