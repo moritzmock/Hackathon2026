@@ -2,7 +2,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { challenge } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
-import { simLookup, wape } from "../metrics";
 import { useStore } from "../store";
 import { buildingName } from "./buildingName";
 import { CalibraRadar, CalibraWordmark } from "./CalibraLogo";
@@ -81,9 +80,9 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
   const hovered = useStore((s) => s.hovered === b.id);
   const photo = useStore((s) => s.snapshots?.[b.id]?.[0]);
   const { select, hover } = useStore.getState();
-  const w = run?.rows ? wape(b.records, simLookup(run.rows)) : undefined;
   const f = b.facts;
-  const tag = run?.status === "running" ? "Simulating…" : run?.status === "error" ? "Model error" : w !== undefined ? "Your settings" : "Untuned model";
+  // Only say something while the model is busy or failed.
+  const tag = run?.status === "running" ? "Simulating…" : run?.status === "error" ? "Model error" : undefined;
   const name = buildingName(b.id);
 
   return (
@@ -104,7 +103,7 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
           <b>{name}</b>
         </div>
         <p className="stay__line">{String(f.construction_year)} · {String(f.floors_above_ground)} floors · {Math.round(f.gross_floor_area_m2 as number).toLocaleString("en-US")} m²</p>
-        <p className="stay__tag">{tag}</p>
+        {tag && <p className="stay__tag">{tag}</p>}
       </div>
     </article>
   );
