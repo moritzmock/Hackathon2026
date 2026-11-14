@@ -24,17 +24,18 @@ orange, greys). The owner found the violet too heavy and asked for a rebrand.
 
 ## Decision Outcome
 
-Chosen: a **Sora wordmark** and the **radar** logomark, in near-black ink and orange.
+Chosen: a **Sora wordmark** and a **Performa-style C** logomark, in violet and orange.
 
-- **Logomark, "radar" (2026-11-14, [run 017](../../factory/runs/017-ui-redesign.md)):**
-  a C-shaped radar in the INTEGRATES line style (integratesproject.eu/#tools):
-  two violet rings with round caps, open to the right like a C, a hub and a
-  violet sweep pointing at an orange blip in the opening, the target the model
-  is calibrated onto (the bills). As a spinner the sweep swings past the blip,
+- **Logomark, a Performa-style C (2026-11-14, [run 017](../../factory/runs/017-ui-redesign.md)):**
+  the INTEGRATES **Performa** gauge turned into a C, in the tool icons' line
+  style (integratesproject.eu/#tools): one violet ring with round caps, open
+  to the right; three short ticks (top, left, bottom); a ring hub; a needle
+  pointing into the opening at an orange dot, the target the model is
+  calibrated onto (the bills). As a spinner the needle swings past the dot,
   back, and settles on it. On the way the owner also tried, and dropped: a
+  two-ring radar ("not a radar but a C that is the Performa style logo"); a
   Performa-style dial with a house, then with a block of flats in the bolt's
-  place (it fitted the family, but the owner asked to go back to the C and the
-  radar); signs that tried to draw the Bayesian optimisation itself (a chart
+  place; signs that tried to draw the Bayesian optimisation itself (a chart
   does not fit a square icon); an ink "radar" dial, a building in a loop, a
   house with a gauge inside.
 - **Searching animation:** wherever the app waits for the model, a small, real
@@ -42,12 +43,12 @@ Chosen: a **Sora wordmark** and the **radar** logomark, in near-black ink and or
   narrows, and an orange flame (the best run so far) settles on the lowest
   point, the least heating. It searches an example curve, not a building's
   numbers. With reduced motion it shows the last frame.
-- **Optimised:** the "Use optimised" button carries the searching animation
-  in miniature (a curve with a hump and a valley, the best run as a dot at the
-  bottom), not sparkles, which suggested AI magic.
+- **Optimised:** the "Use optimised" button carries the Calibra mark, its
+  line work in the button's text colour and the dot orange ("use optimised
+  should show our logo"); sparkles suggested AI magic.
 - **Wordmark:** "Calibra" in Sora 600, violet, with an orange tile as the dot
   on the i (kept by the owner on 2026-11-14).
-- **Tab icon:** the same radar, white rings and an orange blip on a violet tile (`public/favicon.svg`).
+- **Tab icon:** the same C, white line work and an orange dot on a violet tile (`public/favicon.svg`).
 - **Not one city:** no tagline, and no city in the name. Calibra is meant for
   any city; Bolzano is the one shown for now, named under the logo at the top
   left ("Bolzano · 3 buildings").

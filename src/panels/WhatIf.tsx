@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Building2, Clock, Info, Sparkles, Thermometer } from "lucide-react";
+import { Building2, Clock, Info, Thermometer } from "lucide-react";
+import { CalibraMark } from "../brand/CalibraLogo";
 import type { LucideIcon } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -108,7 +109,7 @@ export function WhatIf({ id }: { id: string }) {
           title="Set the sliders back to the optimised values (the violet marks)"
           onClick={() => { setMoves([]); if (optimised) setParams(id, optimised.params); }}
         >
-          <Sparkles size={13} /> Use optimised
+          <CalibraMark size={16} tone="current" /> Use optimised
         </button>
       </div>
 
