@@ -53,3 +53,46 @@ test("one building runs four year and regime jobs and blends their hourly heat",
     else Object.assign(globalThis, { Worker: previousWorker });
   }
 });
+
+test("small worker pools keep the organizer's two year jobs", async () => {
+  const previousNavigator = Object.getOwnPropertyDescriptor(globalThis, "navigator");
+  const previousWorker = globalThis.Worker;
+  const calls: { type: string; year: number }[] = [];
+
+  class FakeWorker {
+    onmessage?: (event: { data: unknown }) => void;
+    onerror?: (event: unknown) => void;
+    onmessageerror?: () => void;
+
+    postMessage(message: { type: string; id?: number; year?: number; reduced?: boolean }) {
+      if (message.type === "warmup") return;
+      calls.push({ type: message.type, year: message.year! });
+      queueMicrotask(() => this.onmessage?.({ data: message.type === "run"
+        ? { type: "result", id: message.id, rows: [{ year: message.year, month: 2, kwh: message.year }] }
+        : { type: "result", id: message.id, data: {
+          year: message.year, reduced: message.reduced,
+          heat: [1000], months: [2], normalFraction: 1, efficiency: 1,
+        } },
+      }));
+    }
+  }
+
+  Object.defineProperty(globalThis, "navigator", { configurable: true, value: { hardwareConcurrency: 4 } });
+  Object.assign(globalThis, { Worker: FakeWorker });
+  try {
+    const { simulate } = await import(`./client.ts?small-pool=${Date.now()}`);
+    const yearsDone: number[] = [];
+    const rows = await simulate("building_01", { occupied_heating_setpoint_c: 21 }, (year: number) => yearsDone.push(year));
+    assert.deepEqual(calls, [{ type: "run", year: 2018 }, { type: "run", year: 2019 }]);
+    assert.deepEqual(rows, [
+      { year: 2018, month: 2, kwh: 2018 },
+      { year: 2019, month: 2, kwh: 2019 },
+    ]);
+    assert.deepEqual(yearsDone, [2018, 2019]);
+  } finally {
+    if (previousNavigator) Object.defineProperty(globalThis, "navigator", previousNavigator);
+    else Reflect.deleteProperty(globalThis, "navigator");
+    if (previousWorker === undefined) Reflect.deleteProperty(globalThis, "Worker");
+    else Object.assign(globalThis, { Worker: previousWorker });
+  }
+});
