@@ -11,8 +11,10 @@ separate local experiment on `perf/fresh-regimes`.
 - Keep the organizer's existing `run_year` path as a reference. Add an
   app-owned adapter that runs one normal or reduced thermal regime for one
   year using the organizer's BUI, validation, solver and weather window.
-- Submit the two years and two regimes as four worker jobs. Blend the hourly
-  results in the same order as the organizer before summing each scored month.
+- When four workers are available, submit the two years and two regimes as
+  four jobs. Blend the hourly results in the same order as the organizer
+  before summing each scored month. With a smaller pool, retain the
+  organizer's original two year jobs.
 - Start with a failing client test for four jobs and correct blending. Add a
   parity check that exercises the new path across every building/year and at
   least one changed parameter, then run `npm test`, `npm run test:deployment`,
@@ -23,9 +25,8 @@ separate local experiment on `perf/fresh-regimes`.
 
 The trade-off is transferring scored hourly values between workers and
 duplicating a small amount of organizer orchestration code in the app. The
-solver and model data stay untouched. Direct four-way execution may increase
-CPU use and memory pressure on small machines, so the existing worker cap
-still governs concurrency.
+solver and model data stay untouched. The four-way path uses the existing
+worker cap; smaller pools retain the original calculation path.
 
 ## Status
 
@@ -33,24 +34,45 @@ done on `perf/fresh-regimes`.
 
 ## Result
 
-In headless Chrome on this 12-core Mac, the unchanged starting commit
-`c80f1e0` took 18.94 s for the first building run and 13.56 s for a new
-22 °C setting. The four-job branch took 13.75 s and 6.95 s in the first
-browser trial, and 9.60 s and 7.23 s in the second. The fresh changed setting
-was therefore 47–49% faster than the measured baseline. Returning to 21 °C
-still recalculates and took 7.14–7.16 s here; this branch does not use the
-exact-result cache from the separate `perf/input-reuse` experiment. Model
-setup ranged from 8.77–14.81 s on this branch versus 9.54 s in the paired
-baseline, so no setup speedup is claimed. The browser benchmark used the
-same building and 21 °C → 22 °C → 21 °C sequence in Vite development mode,
-calling the app's run action directly without its UI debounce.
+Production-preview browser comparisons used the actual Room temperature
+slider (21.5 °C → Reset defaults to 20 °C → 21.5 °C). Timings start when
+the first model job is posted and end on the last model response, excluding
+the UI's 600 ms debounce. All jobs returned successfully, the displayed
+score matched, and there were no page errors. On this 12-core Mac:
+
+| Browser engine | Original warm reset | Four-job warm reset | Reduction |
+| --- | ---: | ---: | ---: |
+| Chromium headless | 12.62 s | 7.24 s | 43% |
+| Playwright WebKit 26.6 | 12.86 s | 6.03 s | 53% |
+
+After adding the adaptive fallback, a fresh WebKit production smoke still
+used four regime jobs and took 6.46 s for the warm reset. Chromium fetched
+Pyodide from its configured CDN; both WebKit sides used the same pinned
+Pyodide files from local `node_modules/pyodide` to avoid CDN timing variance.
+The app and model bundles were served from each branch's production build.
+The earlier Vite-development benchmark directly requested an out-of-range
+22 °C value through the app store; it was useful as a diagnostic but is not
+the primary user-facing measurement.
+
+Changing only the browser-reported core count on this same 12-core Mac gave
+two model workers at a reported 4 cores and one at a reported 2 cores. The
+unadapted four-job branch improved warm runs by only 13.13 → 12.38 s and
+25.28 → 24.64 s respectively, differences small enough to be timing noise.
+The adaptive branch therefore uses the organizer's original two year jobs
+when fewer than four workers are available. A production Chromium smoke with
+reported 4 cores confirmed two original `run` jobs, a 12.56 s warm reset,
+matching UI score and no errors. These overrides change scheduling but do
+not create a different physical CPU; performance on another machine and peak
+memory use remain unmeasured. Safari's own WebDriver was unavailable because
+its Allow remote automation setting is disabled; WebKit was tested directly.
 
 The new app path matches all three buildings and both years in the official
 CSV, plus one changed occupied-setpoint run against the unchanged `run_year`
 reference. `npm run test:regimes` reports a maximum relative difference of
-2.2×10⁻¹⁵, well below the required 1×10⁻⁹. The four monthly rows in each
-browser run matched the starting commit within 2.4×10⁻¹⁵ relative difference.
-`npm test` passed 10/10, `npm run typecheck` passed, `npm run
+2.2×10⁻¹⁵, well below the required 1×10⁻⁹. In the earlier development-browser
+row comparison, all four monthly rows matched the starting commit within
+2.4×10⁻¹⁵ relative difference.
+`npm test` passed 11/11, `npm run typecheck` passed, `npm run
 test:deployment` passed 7/7 and `npm run build` passed with the model assets
 present in `dist/py`. The unchanged-path `npm run test:model` matched all
 three buildings and both years to the official baseline (maximum relative
@@ -66,8 +88,8 @@ checked directly.
 
 - If this split helps, consider caching the normal and reduced results
   separately for parameter changes that affect only one regime.
-- The 12-core browser measurement does not establish a gain on devices whose
-  worker cap is below four, nor does it measure increased CPU or memory use.
+- Test latency and peak memory on a different physical 4-core device; the
+  reported-core override here changes pool size but keeps this Mac's CPU.
 - For the factory core: before planning a native rewrite of a slow worker,
   check whether its current job has independent subjobs that can use the
   existing pool; verify end-to-end latency and numerical parity.
