@@ -42,11 +42,11 @@ OUT_PUBLIC = ROOT / "public" / "data"
 OUT_SRC = ROOT / "src" / "data"
 
 ORIGIN = (46.4983, 11.3548)          # Bolzano centre (Waltherplatz)
-HALF = 8000.0                        # terrain half-extent, metres
-GRID = 401                           # terrain samples per side (40 m spacing)
-TEX = 4096                           # ground texture size, px (~3.9 m/px)
+HALF = 12000.0                       # terrain half-extent, metres
+GRID = 601                           # terrain samples per side (40 m spacing)
+TEX = 6144                           # ground texture size, px (~3.9 m/px)
 DEM_ZOOM = 13
-BUILDING_BBOX = (46.455, 11.285, 46.53, 11.40)  # s, w, n, e
+BUILDING_BBOX = (46.4395, 11.270, 46.5571, 11.4396)  # s, w, n, e (about ±6.5 km around the centre)
 MIN_IOU = 0.95
 USER_AGENT = "hackathon2026-world-builder/0.1"
 OVERPASS_SERVERS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"]

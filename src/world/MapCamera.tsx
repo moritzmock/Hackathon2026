@@ -13,7 +13,7 @@ import { buildingAnchor, focusCenter } from "./focus";
 
 const ACTION = CameraControlsImpl.ACTION;
 const MIN_DISTANCE = 35;
-const MAX_DISTANCE = 9000;
+const MAX_DISTANCE = 13000;
 const ZOOM_PER_PIXEL = 0.0035; // wheel sensitivity: one mouse notch ≈ 30% closer
 const C = focusCenter;
 const HOME = { pos: new THREE.Vector3(C.x + 250, C.y + 1700, C.z + 3200), target: new THREE.Vector3(C.x + 200, C.y, C.z - 250) };

@@ -3,7 +3,7 @@
 import * as THREE from "three";
 import { focusCenter } from "./focus";
 
-export const EDGE = { start: 4200, end: 7300 };
+export const EDGE = { start: 6300, end: 11000 };
 
 const CLOUD_SCALE = 900; // metres per noise cell
 const CLOUD_WOBBLE = 1800; // how far the cloud border reaches in and out, metres
