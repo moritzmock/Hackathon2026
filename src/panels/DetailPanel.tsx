@@ -39,7 +39,6 @@ function Content({ b }: { b: ChallengeBuilding }) {
           <h2>{buildingName(b.id)}</h2>
           <p className="muted small">{String(f.building_typology)} · built {String(f.construction_year)}</p>
         </div>
-        <kbd className="kbd">esc</kbd>
         <button className="icon-btn" onClick={() => select(null)} aria-label="Close"><X size={16} /></button>
       </header>
 

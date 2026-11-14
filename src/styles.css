@@ -482,13 +482,3 @@ body { background: #fff; }
     transition: none !important; animation: none !important; transform: none !important;
   }
 }
-
-/* The building panel docks on the left of the map, next to the folded list; the map
-   buttons step aside while it is open. */
-.detail {
-  left: 0; right: auto; border-left: 0; border-right: 1px solid var(--line);
-  box-shadow: 12px 0 32px rgb(23 26 33 / 0.06);
-}
-.stage:has(.detail) .layers { left: calc(min(420px, 100% - 24px) + 14px); }
-.stage:has(.detail) .wsign { left: calc(min(420px, 100% - 24px) + 54px); }
-.stage:has(.detail) .wcard { left: calc(min(420px, 100% - 24px) + 14px); }
