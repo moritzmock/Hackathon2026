@@ -15,7 +15,8 @@
   made by `npm run model`, never edited by hand.
 - `scripts/`: Python that bakes data. `sync_model.py` packages the model;
   `build_world.py` (`npm run data`) builds the city, terrain and buildings
-  from OpenStreetMap and the challenge data; `build_data.py` makes
+  from OpenStreetMap and the challenge data, then `build_details.py` the
+  street details and `build_rails.py` the railway; `build_data.py` makes
   `public/data.js`.
 - `vendor/integrates`: the challenge's model as a git submodule, pinned to one
   commit, read-only.
@@ -67,6 +68,7 @@ Ask before changing any of these.
   site and verify the shipped Python assets. This is the product's `verify`.
 - `npm run test:deployment`: asset-check regressions for missing or damaged
   model files and a mismatched Python runtime.
+- `npm run test:data`: the railway joining rules in `scripts/rail_routes.py`.
 - `npm run test:model`: the in-browser model against the official baseline;
   run it after any change to `src/sim/`, `scripts/sync_model.py` or the
   submodule pin.

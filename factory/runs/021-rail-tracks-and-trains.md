@@ -20,10 +20,19 @@ How:
 
 ### Tried
 
+- Trees and bushes were first left where `build_details.py` had scattered them: they stood in the station yard and trains drove through them, so tracks now block decoration within 3.5 m (258 trees moved).
+
 ## Status
 
-in progress: plan agreed, building.
+done.
 
 ## Result
 
+- Commits: 358006a plan; 6fb5fe8 `rail_routes.py` with 9 tests; 20b22a2 `build_rails.py`, `rails.json` (387 pieces, 102 km of track; routes 26.9, 26.9 and 18.6 km; about a third of the Brenner routes in tunnels), `npm run data` and `npm run test:data`; 2442397 `railPath.ts` with 6 tests; f7e056c tracks and trains in the scene; 3f3143b decoration kept off the tracks.
+- Checks: `npm test` 45 pass, 0 fail; `npm run test:data` 9 pass; type check passes; `vite build` passes (built into a scratch folder: the full `npm run build` would re-package the model in the shared `public/py` while other sessions use it; nothing in this run touches the model).
+- Seen in headless Chrome (dev server): the station yard with its tracks, a four-coach train passing the station and turning with the track, the valley view with the yard; no console errors. Not checked: phone width, `?low`, and how it runs on a slow machine (about 4,800 extra triangles for the beds and rails per 1,000 track points, 11 moving coaches).
+
 ## Later
+
+- Two trains on one line (a long freight train on the Brenner, or a second regional train) need passing places or timing so they never run through each other.
+- Trains could tilt on slopes and slow down near the station.
