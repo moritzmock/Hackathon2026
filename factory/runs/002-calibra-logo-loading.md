@@ -92,10 +92,39 @@ declared before but never loaded); new tab icon. Recorded in
 check passed; screenshots of the loading screen and of the app with a
 building open.
 
+### Follow-up: radar, logo in the app, not one city
+
+The owner asked to bring back the first loading animation (the C dial whose
+needle swings and settles, "radar"); it now replaces the icon in the loading
+header while loading and is the step spinner. The logo sits at the top left of
+the app above the building list; "Real bills, simulated in your browser" is
+gone. Calibra is not tied to Bolzano: the tagline went (first "Building energy twin", then removed at the owner's request) and
+the list says "Bolzano · 3 buildings" as the city shown for now. The owner
+asked not to push for now, so these changes are not pushed.
+
+### Follow-up: the radar as the logomark
+
+The radar is now the logomark, in the loading screen and at the top left of
+the app, and the tab icon (white on an ink tile); the C tile icon is gone. It
+was redrawn to fit the wordmark: the weight and straight-cut ends of Sora, no
+ticks, and the i's orange tile as its target. The loading screen lost its
+lead sentence ("Lifting the clouds…"). Checked: type check; screenshots of
+both lockups and the tab icon at 48 and 16 pixels. Not pushed (the owner asked
+not to push for now).
+
+Then: the tagline went from the logo and the page title ("Calibra"); the
+orange dot of the i was moved down and made smaller, to sit exactly where
+Sora's own dot would (checked against the real glyph); the "· optimised N"
+line left the building cards, since the owner asked for the optimised score to
+go. `BuildingList.tsx` was emptied by another session's failed script edit at
+00:49 and restored from HEAD with these changes. The radar's orange target then moved into the
+ring: the C's opening narrowed to ±30° and the tile sits on the ring's line,
+as thick as the ring, so it reads as the dial's mark (logomark and tab icon).
+
 ## Later
 
-- The name "Calibra" is on the loading screen and the tab; the building list
-  header and the README still say "Bolzano". The building photo backgrounds
-  keep a faint lilac tint.
+- The README still describes the app as Bolzano only. The building photo
+  backgrounds keep a faint lilac tint.
+- Choosing another city is not built; only Bolzano exists.
 - The logo is only an SVG in code; there is no exported PNG/SVG kit for
   slides yet.

@@ -9,7 +9,7 @@ import { worldLoaded } from "../data/world";
 import { warmUp } from "../sim/client";
 import { renderPortraits } from "../portrait/render";
 import { useStore } from "../store";
-import { CalibraIcon, CalibraLogo } from "./CalibraLogo";
+import { CalibraLogo, CalibraRadar } from "./CalibraLogo";
 
 // Steps in order; weight = share of the progress bar, tau = typical seconds (first visit).
 const STEPS = [
@@ -133,9 +133,8 @@ export function LoadingScreen() {
             transition={{ type: "spring", stiffness: 260, damping: 28 }}
           >
             <h1 className="loading__title">
-              <CalibraLogo spinning={!modelReady && !modelError} />
+              <CalibraLogo loading={!modelReady && !modelError} />
             </h1>
-            <p className="loading__lead">Lifting the clouds: loading the map and the building energy model. Everything runs in your browser.</p>
 
             <div className="loading__bar" aria-hidden="true">
               <i style={{ width: `${modelError ? 100 : pct}%` }} className={modelError ? "is-error" : ""} />
@@ -152,7 +151,7 @@ export function LoadingScreen() {
                   <li key={s.label} className={`is-${state}`}>
                     <span className="loading__icon">
                       {state === "done" ? <Check size={12} strokeWidth={3} />
-                        : state === "active" ? <CalibraIcon size={18} spinning />
+                        : state === "active" ? <CalibraRadar size={18} spinning />
                         : state === "error" ? <TriangleAlert size={12} />
                         : null}
                     </span>

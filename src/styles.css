@@ -69,8 +69,10 @@ kbd, .kbd {
 .list { flex: none; width: 236px; min-height: 0; display: flex; }
 .list__inner { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 0; }
 .list__head { padding: 6px 6px 10px; }
+.list__brand { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.list__brand .calibra-wordmark { font-size: 1.375rem; }
 .list__head h2 { color: var(--ink); font-family: var(--display); font-size: 0.875rem; font-weight: 600; letter-spacing: -0.02em; }
-.list__head p { margin: 1px 0 0; font-size: 0.6875rem; color: var(--muted); }
+.list__head h2 span { font-family: "Inter", system-ui, sans-serif; font-weight: 400; color: var(--muted); letter-spacing: 0; }
 .list__scroll { flex: 1; overflow-y: auto; display: grid; align-content: start; gap: 14px; padding: 0 6px 10px; }
 
 .stay { cursor: pointer; border-radius: 13px; padding: 5px; margin: -5px; transition: background 0.15s; }
@@ -255,8 +257,7 @@ kbd, .kbd {
   /* No box: the content sits straight on the clouds. */
   position: relative; width: min(400px, 100%); padding: 24px;
 }
-.loading h1 { margin: 0 0 12px; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; }
-.loading__lead { margin: 0 0 18px; font-size: 0.8125rem; color: var(--muted); }
+.loading h1 { margin: 0 0 22px; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.02em; }
 .loading__bar { height: 6px; border-radius: 6px; background: rgb(20 30 40 / 0.07); overflow: hidden; }
 .loading__bar i {
   display: block; height: 100%; border-radius: 6px; transition: width 0.4s var(--spring);
@@ -321,36 +322,30 @@ kbd, .kbd {
   35%, 75% { transform: scaleY(1); }
   100% { transform: scaleY(0.25); }
 }
-/* Calibra logo: Sora wordmark with an orange tile for the i's dot; icon is a C on an ink tile.
-   The orange tile drops in from too high and settles: the simulation calibrated onto the bills. */
-.calibra-logo { display: flex; align-items: center; gap: 12px; color: var(--ink); }
-.calibra-logo__tag { display: block; margin-top: 3px; font-weight: 400; font-size: 0.6875rem; color: var(--muted); letter-spacing: 0.02em; }
+/* Calibra logo: the "radar" logomark (a C dial whose orange needle settles on the orange target)
+   and the Sora wordmark with an orange tile for the i's dot. While loading, the needle swings. */
+.calibra-logo { display: flex; align-items: center; gap: 10px; color: var(--ink); }
 .calibra-wordmark { --ls: -0.04em; display: block; font-family: var(--display); font-weight: 600; font-size: 1.75rem; letter-spacing: var(--ls); line-height: 1; color: var(--ink); white-space: nowrap; }
 .calibra-wordmark__i { position: relative; display: inline-block; letter-spacing: 0; margin-right: var(--ls); }
 .calibra-wordmark__dot {
-  position: absolute; left: 50%; top: -0.1em; width: 0.23em; height: 0.23em; margin-left: -0.115em;
-  background: var(--accent); border-radius: 0.085em 0.015em 0.085em 0.085em;
+  /* Sits where Sora's own dot would: a little larger, so it reads as a tile. */
+  position: absolute; left: 50%; top: 0.05em; width: 0.17em; height: 0.17em; margin-left: -0.085em;
+  background: var(--accent); border-radius: 0.063em 0.012em 0.063em 0.063em;
 }
-.calibra-icon { display: block; flex: none; overflow: visible; }
-.calibra-wordmark.is-spinning .calibra-wordmark__dot { animation: calibra-drop 2.8s cubic-bezier(0.4, 0, 0.3, 1) infinite; }
-.calibra-icon.is-spinning .calibra-icon__piece { animation: calibra-slide 2.8s cubic-bezier(0.4, 0, 0.3, 1) infinite; }
-@keyframes calibra-drop {
-  0% { transform: translateY(-0.55em); }
-  22% { transform: translateY(0.06em); }
-  38% { transform: translateY(-0.035em); }
-  52% { transform: translateY(0.014em); }
-  64%, 100% { transform: translateY(0); }
-}
-@keyframes calibra-slide {
-  0% { transform: translate(10px, -10px); }
-  22% { transform: translate(-2px, 2px); }
-  38% { transform: translate(1px, -1px); }
-  52% { transform: translate(-0.4px, 0.4px); }
-  64%, 100% { transform: translate(0, 0); }
+.calibra-radar { display: block; flex: none; overflow: visible; }
+.calibra-radar__needle { transform-origin: 24px 24px; }
+.calibra-radar.is-spinning .calibra-radar__needle { animation: calibra-swing 2.6s cubic-bezier(0.4, 0, 0.3, 1) infinite; }
+@keyframes calibra-swing {
+  0% { transform: rotate(-150deg); }
+  22% { transform: rotate(48deg); }
+  38% { transform: rotate(-26deg); }
+  52% { transform: rotate(13deg); }
+  64% { transform: rotate(-6deg); }
+  74%, 100% { transform: rotate(0deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skyline span, .loading__bar i, .puff span, .calibra-wordmark__dot, .calibra-icon__piece { animation: none !important; }
+  .skyline span, .loading__bar i, .puff span, .calibra-radar__needle { animation: none !important; }
 }
 
 

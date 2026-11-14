@@ -6,6 +6,7 @@ import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 import { useStore } from "../store";
 import { buildingName } from "./buildingName";
+import { CalibraRadar, CalibraWordmark } from "./CalibraLogo";
 import { ModelStatus } from "./ModelStatus";
 
 const ids = challenge.buildings.map((b) => b.id);
@@ -45,8 +46,14 @@ export function BuildingList() {
             transition={{ type: "spring", stiffness: 240, damping: 30, delay: 0.5 }}
           >
             <header className="list__head">
-              <h2>3 buildings in Bolzano</h2>
-              <p>Real bills, simulated in your browser</p>
+              <span className="list__brand">
+                <CalibraRadar size={26} />
+                <CalibraWordmark />
+              </span>
+              {/* Calibra is not tied to one city; Bolzano is the one shown for now. */}
+              <h2>
+                Bolzano <span>· {challenge.buildings.length} buildings</span>
+              </h2>
             </header>
             <div className="list__scroll">
               {challenge.buildings.map((b, i) => (
