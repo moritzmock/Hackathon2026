@@ -6,4 +6,6 @@
 
 One page per product feature: what it does, the rules that must hold, where it
 lives in each product, the decisions behind it, what is checked and what is
-open. None yet.
+open.
+
+- [Browser simulation](browser-simulation.md): live energy results and parallel thermal regimes.
