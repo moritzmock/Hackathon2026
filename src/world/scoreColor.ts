@@ -1,19 +1,19 @@
 // Colour for how well a building's current settings match its bills (score 0–100):
-// a single teal scale, grey when far off and deep teal when very close (log
+// a single violet scale, grey when far off and deep violet when very close (log
 // scale near 100). Used for the outline, glow, score label and score card.
 import * as THREE from "three";
 import type { ChallengeBuilding, SimRow } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 
-// One hue, the teal of the optimised result: grey when far off, deepening into that
-// teal as the settings get closer to the bills. The app's colours are then just
-// ink, orange (your settings, selection) and teal (optimised, how good it is).
+// One hue, the violet of the optimised result: grey when far off, deepening into that
+// violet as the settings get closer to the bills. The app's colours are then just
+// ink, orange (your settings, selection) and violet (optimised, how good it is).
 // Stops along a 0–1 "closeness" scale (see closeness() below).
 const STOPS: [number, THREE.Color][] = [
   [0, new THREE.Color("#a9adb8")], // far off: neutral grey
-  [0.45, new THREE.Color("#8cc9cf")], // about 90: pale teal
-  [0.72, new THREE.Color("#2f9aa8")], // about 97: teal
-  [1, new THREE.Color("#1f7a86")], // matches the bills: the optimised teal
+  [0.45, new THREE.Color("#c9b1d6")], // about 90: pale violet
+  [0.72, new THREE.Color("#9068a8")], // about 97: violet
+  [1, new THREE.Color("#6e4281")], // matches the bills: the optimised violet
 ];
 
 /**

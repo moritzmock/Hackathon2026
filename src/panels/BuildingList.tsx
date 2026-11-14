@@ -6,7 +6,6 @@ import type { ChallengeBuilding } from "../data/types";
 import { useStore } from "../store";
 import { buildingName, buildingNumber } from "./buildingName";
 import { CalibraMark, CalibraWordmark } from "../brand/CalibraLogo";
-import { ModelStatus } from "./ModelStatus";
 
 const ids = challenge.buildings.map((b) => b.id);
 
@@ -68,7 +67,6 @@ export function BuildingList() {
                 </motion.div>
               ))}
             </div>
-            <ModelStatus />
           </motion.div>
         )}
       </AnimatePresence>
