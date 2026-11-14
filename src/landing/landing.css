@@ -1,8 +1,8 @@
-/* The landing page as a window on the city: the 3D map's picture, one sentence, the three buildings. */
+/* The landing page: one sentence and the way in, then a window on the city and the three buildings. */
 
 /* The city window */
-.landing-window { position: relative; margin: 8px 0 0; overflow: hidden; border-radius: 24px; background: var(--panel-card); }
-.landing-window img { display: block; width: 100%; height: auto; aspect-ratio: 1600 / 1080; object-fit: cover; }
+.landing-window { position: relative; margin: 64px 0 0; overflow: hidden; border-radius: 24px; background: var(--panel-card); }
+.landing-window img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 7; object-fit: cover; }
 .landing-window__label {
   position: absolute; transform: translate(20px, -50%); display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 12px; border-radius: 999px; background: #fff; color: var(--heading);
@@ -13,8 +13,8 @@
 .landing-window__label--building_01 { transform: translate(calc(-100% - 20px), -50%); }
 
 /* The sentence and the way in */
-.landing-intro { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 48px; align-items: end; padding-block: 48px 8px; }
-.landing-intro h1 { margin: 0; color: var(--heading); font: 600 clamp(2rem, 3.6vw, 3.1rem)/1.1 var(--display); letter-spacing: -0.04em; }
+.landing-intro { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); gap: 56px; align-items: end; padding-block: clamp(48px, 9vh, 104px) 0; }
+.landing-intro h1 { margin: 0; color: var(--heading); font: 600 clamp(2.3rem, 4.6vw, 4rem)/1.06 var(--display); letter-spacing: -0.045em; }
 .landing-intro p { margin: 0 0 24px; color: var(--ink); font-size: 1.0625rem; line-height: 1.6; }
 .landing-intro__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
 
@@ -54,6 +54,7 @@
 }
 @media (max-width: 600px) {
   .landing-window { border-radius: 16px; }
+  .landing-window { margin-top: 40px; }
   .landing-window img { aspect-ratio: 4 / 3; object-position: 40% 50%; }
   .landing-window__label { display: none; }
   .landing-intro p { font-size: 1rem; }

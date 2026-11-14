@@ -29,6 +29,10 @@ done.
 
 - Reading the pin positions from the HTML pins: the map draws its pins inside the 3D scene (`PIN_STYLE = "scene"`), so there are none in the page; the 3D pins are projected through the camera instead.
 
+## Follow-up: text above the fold (2026-11-14)
+
+The owner: "the banner is too much... keep the above the fold with text". The sentence and buttons now open the page, larger, with room around them; the city picture follows below as a wide 16:7 strip instead of the full 1600×1080 picture, and the labels' heights are re-measured against the visible part (`stripTop` in `LandingPage.tsx`). Checks: `npm test` 49 pass, 0 fail; type check passes; headless Chrome at 1360 px and 390 px, no sideways scrolling, labels on their pins.
+
 ## Later
 
 - The pictures are a snapshot: re-run `node scripts/capture_landing_images.mjs` (dev server running) after the city, the buildings or the opening view change. It assumes Chrome at the macOS path unless `CHROME` is set.

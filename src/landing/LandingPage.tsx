@@ -16,6 +16,12 @@ const buildings = ["building_01", "building_02", "building_03"] as const;
 type BuildingId = (typeof buildings)[number];
 const fmt = (score: number) => score.toFixed(2);
 
+// The city picture is 1600×1080 and shown as a wide strip (16:7), cut evenly at the top and the
+// bottom, so the pins' heights are re-measured against the visible part.
+const PICTURE = 1080 / 1600;
+const STRIP = 7 / 16;
+const stripTop = (pinY: number) => (100 * ((pinY / 100) * PICTURE - (PICTURE - STRIP) / 2)) / STRIP;
+
 /**
  * The 3D city at its opening view, taken from the app (scripts/capture_landing_images.mjs),
  * with each building's name next to its pin.
@@ -30,7 +36,7 @@ function CityWindow() {
         alt="The 3D city of Bolzano in its valley, with the three challenge buildings marked by pins."
       />
       {buildings.map((id) => (
-        <span key={id} className={`landing-window__label landing-window__label--${id}`} style={{ left: `${cityPins[id].x}%`, top: `${cityPins[id].y}%` }}>
+        <span key={id} className={`landing-window__label landing-window__label--${id}`} style={{ left: `${cityPins[id].x}%`, top: `${stripTop(cityPins[id].y)}%` }}>
           <b>{buildingNumber(id)}</b> {buildingName(id)}
         </span>
       ))}
@@ -68,8 +74,6 @@ export function LandingPage() {
     <div className="site">
       <SiteHeader current="landing" />
       <main>
-        <CityWindow />
-
         <section className="landing-intro" aria-labelledby="landing-title">
           <h1 id="landing-title">Three buildings, their real heating bills, and a simulation tuned to meet them.</h1>
           <div>
@@ -80,6 +84,8 @@ export function LandingPage() {
             </div>
           </div>
         </section>
+
+        <CityWindow />
 
         <section className="landing-section" aria-labelledby="landing-buildings-title">
           <div className="landing-section__head">
