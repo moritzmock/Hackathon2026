@@ -1,12 +1,12 @@
-import { useEffect } from "react";
-import { Building2, Clock, Info, RotateCcw, Sparkles, Thermometer } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Building2, Clock, Info, Sparkles, Thermometer } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { challenge } from "../data/challenge";
 import { optimisedFor } from "../data/optimised";
 import { useStore } from "../store";
-import { RunOverlay } from "./RunOverlay";
+import { RunOverlay, type LastMove } from "./RunOverlay";
 
 const AUTO_RUN_DELAY_MS = 600;
 
@@ -58,15 +58,22 @@ const GROUPS: { title: string; icon: LucideIcon; items: { name: string; label: s
 ];
 
 const specs = Object.fromEntries(challenge.parameters.map((p) => [p.name, p]));
+const LABELS: Record<string, string> = Object.fromEntries(GROUPS.flatMap((g) => g.items.map((it) => [it.name, it.label])));
 export const same = (a: Record<string, number>, b: Record<string, number>) => challenge.parameters.every((p) => a[p.name] === b[p.name]);
 
 export function WhatIf({ id }: { id: string }) {
   const params = useStore((s) => s.params[id]);
   const run = useStore((s) => s.runs[id]);
-  const { setParam, setParams, resetParams, run: start } = useStore.getState();
+  const { setParam, setParams, run: start } = useStore.getState();
   const running = run?.status === "running";
   const optimised = optimisedFor(id);
   const changed = challenge.parameters.filter((p) => params[p.name] !== p.default).length;
+  // The setting moved last and its value before the move, so the overlay can say what changed.
+  const [lastMove, setLastMove] = useState<LastMove | null>(null);
+  const move = (name: string, value: number) => {
+    setLastMove((m) => (m?.name === name ? m : { name, from: params[name] }));
+    setParam(id, name, value);
+  };
 
   // Run on its own shortly after the settings stop changing. While a run is
   // going the settings are locked under the overlay, so nothing queues up.
@@ -80,8 +87,8 @@ export function WhatIf({ id }: { id: string }) {
 
   return (
     <section className="pcard settings relative">
-      <RunOverlay id={id} />
-      {/* Header row: title, then the two shortcuts (optimised values, back to defaults). */}
+      <RunOverlay id={id} lastMove={lastMove} label={(name) => LABELS[name] ?? name} format={(name, v) => fmt(v, specs[name].unit)} />
+      {/* Header row: title, then the shortcut back to the optimised values. */}
       <div className="flex items-center gap-2">
         <h3 className="pcard__title flex-1">Settings</h3>
         <button
@@ -89,19 +96,9 @@ export function WhatIf({ id }: { id: string }) {
           className="settings-action settings-action--optimised"
           disabled={running || !optimised || same(params, optimised.params)}
           title="Set the sliders back to the optimised values (the ticks)"
-          onClick={() => optimised && setParams(id, optimised.params)}
+          onClick={() => { setLastMove(null); if (optimised) setParams(id, optimised.params); }}
         >
           <Sparkles size={13} /> Use optimised
-        </button>
-        <button
-          type="button"
-          className="settings-action settings-action--icon"
-          disabled={running || !changed}
-          onClick={() => resetParams(id)}
-          title="Back to the defaults"
-          aria-label="Back to the defaults"
-        >
-          <RotateCcw size={13} />
         </button>
       </div>
 
@@ -130,7 +127,7 @@ export function WhatIf({ id }: { id: string }) {
                 </div>
                 <div className="relative">
                   <Slider disabled={running} min={p.lower} max={p.upper} step={(p.upper - p.lower) / 100} value={[v]}
-                    onValueChange={([nv]) => setParam(id, p.name, nv)} aria-label={it.label} />
+                    onValueChange={([nv]) => move(p.name, nv)} aria-label={it.label} />
                   {opt !== undefined && (
                     <i className="setrow__opt" title="Optimised value"
                       style={{ left: tickLeft((opt - p.lower) / (p.upper - p.lower)) }} />

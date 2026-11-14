@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import type { MonthlyRecord, SimRow } from "../data/types";
 import type { DayKey } from "../weather/conditions";
 import { WeatherStrip } from "./WeatherStrip";
@@ -39,6 +39,7 @@ export function CompareLines({
   onPickDay?: (d: DayKey | null) => void;
 }) {
   const [tip, setTip] = useState<string | null>(null);
+  const revealId = `reveal${useId().replace(/:/g, "")}`;
   const at = (rows: SimRow[] | undefined, r: MonthlyRecord) => rows?.find((s) => s.year === r.year && s.month === r.month)?.kwh;
   const visibleSeries = SERIES.filter((s) => s.key !== "yours" || Boolean(yours));
   const values: Record<Key, (number | undefined)[]> = {
@@ -93,6 +94,9 @@ export function CompareLines({
         {onPickDay && focus && (
           <WeatherStrip month={focus} left={0} width={W} top={H - mb + 30} day={day} onPickDay={onPickDay} />
         )}
+        {/* The lines draw in from the left when the chart first shows. */}
+        <defs><clipPath id={revealId}><rect className="chart__reveal" x={0} y={0} width={W} height={H} /></clipPath></defs>
+        <g clipPath={`url(#${revealId})`}>
         {visibleSeries.map((s) => {
           const pts = values[s.key].map((v, i) => (v === undefined ? null : [x(i), y(v)] as const));
           if (pts.some((p) => p === null)) return null;
@@ -109,6 +113,7 @@ export function CompareLines({
             </g>
           );
         })}
+        </g>
       </svg>
       {strip && (
         <div className="wlegend" aria-hidden="true">

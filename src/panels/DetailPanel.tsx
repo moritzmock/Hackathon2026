@@ -13,6 +13,7 @@ import { scoreColor } from "../world/scoreColor";
 import { RunOutcome } from "./RunOutcome";
 import { resultPending } from "./resultPending";
 import { ScoreLegend } from "./ScoreLegend";
+import { AnimatedScore } from "./AnimatedScore";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useWeather } from "../weather/focus";
 
@@ -54,7 +55,7 @@ function Content({ b }: { b: ChallengeBuilding }) {
         <div className="ptile">
           <div className="ptile__text">
             <span className="ptile__label">{onOptimised ? "Optimised settings" : "Your settings"}</span>
-            <b className={`ptile__value score-value${pending ? " is-pending" : ""}`} style={{ color: yoursColor }}>{yours.toFixed(2)}<small>/ 100</small></b>
+            <AnimatedScore value={yours} pending={pending} color={yoursColor} />
           </div>
           <span className="ptile__icon" style={{ color: yoursColor, background: `color-mix(in srgb, ${yoursColor} 12%, var(--surface))` }}><Gauge size={20} /></span>
         </div>
