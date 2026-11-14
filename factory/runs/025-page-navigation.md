@@ -51,6 +51,8 @@ Checks: `npm test` under Node 24 passed 49/49 tests; `npm run typecheck`, direct
 
 Review: the change uses the existing HTML links and shared page addresses, with no new routing code or dependency. The All runs header keeps its separate visual style; the map still has one outgoing page link. No structural change is needed. The feature reference pages now describe the current links. The documented `npx software-factory check-docs` check is unavailable locally (no installed executable); changed Markdown links and paths were checked directly.
 
+Implementation commit: `361f24e`. The built site can be tried locally at `http://127.0.0.1:4173/approaches.html` while the preview server is running. No hosted deployment was made.
+
 ## Later
 
 - The map intentionally has only its All runs page link, as the owner specified. [Run 024](024-landing-page.md) records the older idea of adding a direct map-to-landing link; do not implement that under this plan.
