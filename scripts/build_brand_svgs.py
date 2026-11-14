@@ -1,11 +1,13 @@
 # Writes the Calibra logo files in public/brand as SVG: the mark, the full logo with the name as outlines,
 # white versions and the app icon. Run: uv run --no-project --with fonttools python scripts/build_brand_svgs.py "$PWD" public/brand
 # The PNG and PDF files and calibra-corporate-identity.pdf were rendered from these SVGs in a browser.
+# The logo PNGs (2000 x 477, transparent) and PDFs (300 pt high) are each one headless-Chrome render of the SVG.
 import sys
 from fontTools.ttLib import TTFont
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.pens.boundsPen import BoundsPen
+from fontTools.pens.recordingPen import DecomposingRecordingPen
 
 root, out = sys.argv[1], sys.argv[2]
 VIOLET, ORANGE = "#4f256e", "#f26e26"
@@ -21,29 +23,38 @@ gs, cmap, upm = font.getGlyphSet(), font.getBestCmap(), font["head"].unitsPerEm
 hmtx = font["hmtx"]
 
 def wordmark(ink, size):
-    """'Calibra' in Sora 600 at `size` px, letter spacing -0.04em, the i dotless with an orange tile as its dot."""
+    """'Calibra' in Sora 600 at `size` px, letter spacing -0.04em; the dot of the i is Sora's own, in orange."""
     scale = size / upm
     track = -0.04 * size
     x = 0.0
-    paths, i_box = [], None
-    for ch in "Calıbra":
+    paths, dot = [], ""
+    for ch in "Calibra":
         name = cmap[ord(ch)]
         pen = SVGPathPen(gs)
-        gs[name].draw(TransformPen(pen, (scale, 0, 0, -scale, x, size * 0.8)))
+        where = (scale, 0, 0, -scale, x, size * 0.8)
+        if ch == "i":
+            # The stem in ink, the dot in orange: split the glyph's outlines at the x-height.
+            rec = DecomposingRecordingPen(gs)
+            gs[name].draw(rec)
+            contours, cur = [], []
+            for op, args in rec.value:
+                cur.append((op, args))
+                if op in ("closePath", "endPath"):
+                    contours.append(cur)
+                    cur = []
+            xh = font["OS/2"].sxHeight
+            dot_pen = SVGPathPen(gs)
+            for c in contours:
+                low = min(pt[1] for _, args in c for pt in args if pt is not None)
+                target = TransformPen(dot_pen if low > xh else pen, where)
+                for op, args in c:
+                    getattr(target, op)(*args)
+            dot = f'<path fill="{ORANGE}" d="{dot_pen.getCommands()}"/>'
+        else:
+            gs[name].draw(TransformPen(pen, where))
         paths.append(pen.getCommands())
-        if ch == "ı":
-            bp = BoundsPen(gs); gs[name].draw(bp)
-            i_box = (x + bp.bounds[0] * scale, x + bp.bounds[2] * scale)
-        x += hmtx[name][0] * scale + (track if ch != "ı" else 0)
+        x += hmtx[name][0] * scale + (track if ch != "i" else 0)
     width = x - track
-    # The dot: where Sora's own dot would sit, a little larger (as in the app's CSS).
-    d = 0.17 * size
-    cx = (i_box[0] + i_box[1]) / 2
-    top = size * 0.8 - 0.75 * size + 0.05 * size  # cap height ≈ 0.75em above the baseline
-    r1, r2 = 0.063 * size, 0.012 * size
-    dot = (f'<path fill="{ORANGE}" d="M{cx-d/2+r1:.2f} {top:.2f} H{cx+d/2-r2:.2f} Q{cx+d/2:.2f} {top:.2f} {cx+d/2:.2f} {top+r2:.2f} '
-           f'V{top+d-r1:.2f} Q{cx+d/2:.2f} {top+d:.2f} {cx+d/2-r1:.2f} {top+d:.2f} H{cx-d/2+r1:.2f} Q{cx-d/2:.2f} {top+d:.2f} {cx-d/2:.2f} {top+d-r1:.2f} '
-           f'V{top+r1:.2f} Q{cx-d/2:.2f} {top:.2f} {cx-d/2+r1:.2f} {top:.2f} Z"/>')
     return f'<path fill="{ink}" d="{" ".join(paths)}"/>{dot}', width
 
 def svg(w, h, body, view=None):
