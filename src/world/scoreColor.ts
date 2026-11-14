@@ -7,10 +7,10 @@ import { baselineWape, score, simLookup, wape } from "../metrics";
 
 // Stops along a 0–1 "closeness" scale (see closeness() below).
 const STOPS: [number, THREE.Color][] = [
-  [0, new THREE.Color("#e5484d")], // far off
-  [0.45, new THREE.Color("#f59e0b")], // about 90
-  [0.72, new THREE.Color("#b5c933")], // about 97
-  [1, new THREE.Color("#22b26b")], // matches the bills
+  [0, new THREE.Color("#ff1a3c")], // far off
+  [0.45, new THREE.Color("#ff8800")], // about 90
+  [0.72, new THREE.Color("#c8e600")], // about 97
+  [1, new THREE.Color("#00d65c")], // matches the bills
 ];
 
 /**
@@ -32,6 +32,13 @@ export function scoreColor(value: number, out = new THREE.Color()): THREE.Color 
     }
   }
   return out.copy(STOPS[STOPS.length - 1][1]);
+}
+
+/** Dark or white text, whichever reads better on this colour. */
+export function textOn(c: THREE.Color): string {
+  const hex = c.getHex(); // sRGB
+  const lum = 0.299 * ((hex >> 16) & 255) + 0.587 * ((hex >> 8) & 255) + 0.114 * (hex & 255);
+  return lum > 150 ? "#1b1530" : "#ffffff";
 }
 
 /** The building's current score: the last finished run, or the untuned model. */

@@ -51,7 +51,7 @@ function Target({ b }: { b: ChallengeBuilding }) {
       edges.current?.material.color.copy(color);
       glow.color.copy(color); // the material keeps its own copy of the colour
     }
-    glow.opacity = running ? 0.18 + 0.14 * (0.5 + 0.5 * Math.sin(clock.elapsedTime * 3)) : selected ? 0.34 : 0.26;
+    glow.opacity = running ? 0.25 + 0.25 * (0.5 + 0.5 * Math.sin(clock.elapsedTime * 3)) : selected ? 0.5 : 0.4;
     if (settling || running) invalidate(); // frameloop is "demand"
   });
 
