@@ -5,9 +5,8 @@ import { YEARS } from "../sim/client";
 import { useStore } from "../store";
 import { CalibraMark } from "./CalibraLogo";
 import { runEstimate } from "./runEstimate";
+import { SETUP_LABELS } from "./setupLabels";
 
-// The first-time setup steps in plain words, same order as SETUP_STEPS in sim/client.
-const SETUP_LABELS = ["Downloading Python", "Loading the maths libraries", "Installing the building model", "Preparing the simulation"];
 
 const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
@@ -100,7 +99,7 @@ function OverlayContent({ id, lastMove, label, format }: Props) {
         <li className="is-next">
           <span className="run-steps__dot"><i /></span>
           <div>
-            <b>Then: the new score</b>
+            <b>The new score</b>
             <span className="run-steps__change">How close the simulated heating comes to the gas bills over the four months. Instant once both winters are done.</span>
           </div>
         </li>

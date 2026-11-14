@@ -94,6 +94,8 @@ interface State {
   setParam: (id: string, name: string, value: number) => void;
   setParams: (id: string, values: Record<string, number>) => void;
   resetParams: (id: string) => void;
+  /** Back on the optimised settings: show the saved optimised result instead of running. */
+  useSaved: (id: string) => void;
   run: (id: string) => Promise<void>;
   toggleLayer: (layer: keyof Layers) => void;
   setLayersOpen: (open: boolean) => void;
@@ -122,6 +124,7 @@ export const useStore = create<State>((set, get) => ({
   setParam: (id, name, value) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], [name]: value } } })),
   setParams: (id, values) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], ...values } } })),
   resetParams: (id) => set((s) => ({ params: { ...s.params, [id]: defaultParams() } })),
+  useSaved: (id) => set((s) => { const saved = presetRuns()[id]; return saved ? { runs: { ...s.runs, [id]: saved } } : {}; }),
   run: async (id) => {
     const params = { ...get().params[id] };
     const startedAt = performance.now();

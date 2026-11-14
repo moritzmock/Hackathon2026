@@ -3,10 +3,11 @@ import { Building2, Clock, Info, Sparkles, Thermometer } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { challenge } from "../data/challenge";
+import { challenge, defaultParams } from "../data/challenge";
 import { optimisedFor } from "../data/optimised";
 import { useStore } from "../store";
 import { RunOverlay, type LastMove } from "./RunOverlay";
+import { nextRun } from "./nextRun";
 
 const AUTO_RUN_DELAY_MS = 600;
 
@@ -64,10 +65,9 @@ export const same = (a: Record<string, number>, b: Record<string, number>) => ch
 export function WhatIf({ id }: { id: string }) {
   const params = useStore((s) => s.params[id]);
   const run = useStore((s) => s.runs[id]);
-  const { setParam, setParams, run: start } = useStore.getState();
+  const { setParam, setParams, useSaved, run: start } = useStore.getState();
   const running = run?.status === "running";
   const optimised = optimisedFor(id);
-  const changed = challenge.parameters.filter((p) => params[p.name] !== p.default).length;
   // The setting moved last and its value before the move, so the overlay can say what changed.
   const [lastMove, setLastMove] = useState<LastMove | null>(null);
   const move = (name: string, value: number) => {
@@ -75,15 +75,15 @@ export function WhatIf({ id }: { id: string }) {
     setParam(id, name, value);
   };
 
-  // Run on its own shortly after the settings stop changing. While a run is
-  // going the settings are locked under the overlay, so nothing queues up.
+  // Run on its own shortly after the settings stop changing; back on the optimised settings,
+  // show the saved result at once. While a run is going the settings are locked under the overlay.
   useEffect(() => {
-    if (running) return;
-    const needsRun = run ? !same(run.params, params) : changed > 0;
-    if (!needsRun) return;
+    const next = nextRun(run, params, optimised?.params, defaultParams());
+    if (next === "saved") { useSaved(id); return; }
+    if (next !== "run") return;
     const t = setTimeout(() => start(id), AUTO_RUN_DELAY_MS);
     return () => clearTimeout(t);
-  }, [params, running, run, changed, id, start]);
+  }, [params, run, optimised, id, start, useSaved]);
 
   return (
     <section className="pcard settings relative">
