@@ -1,7 +1,8 @@
-// Main-thread client: a small pool of model workers. One building = one task
-// per weather year, run in parallel (the organizer's own split).
+// Main-thread client: two weather years and two thermal regimes per year run
+// as independent jobs on a small pool of model workers.
 import type { SimRow } from "../data/types";
-import type { FromWorker, ToWorker } from "./protocol";
+import { combineRegimes } from "./combine.ts";
+import type { FromWorker, RegimeResult, ToWorker } from "./protocol";
 
 export const YEARS = [2018, 2019];
 
@@ -9,13 +10,13 @@ export const YEARS = [2018, 2019];
 export const SETUP_STEPS = ["Downloading Python runtime", "Loading scientific Python", "Installing building model", "Preparing simulation"];
 const POOL_SIZE = Math.max(1, Math.min(YEARS.length * 2, Math.floor((navigator.hardwareConcurrency || 2) / 2)));
 
-type Pending = { resolve: (rows: SimRow[]) => void; reject: (e: Error) => void };
+type Pending = { resolve: (data: RegimeResult) => void; reject: (e: Error) => void };
 interface Slot { worker: Worker; busy: boolean }
 
 let slots: Slot[] = [];
 let nextId = 1;
 const pending = new Map<number, Pending>();
-const queue: { msg: Extract<ToWorker, { type: "run" }>; p: Pending }[] = [];
+const queue: { msg: Extract<ToWorker, { type: "run_regime" }>; p: Pending }[] = [];
 let statusListener: (s: string) => void = () => {};
 let errorDetailListener: (detail: string) => void = () => {};
 
@@ -44,7 +45,7 @@ function ensurePool() {
       const id = m.id as number; // results and run errors always carry their run id
       const p = pending.get(id);
       pending.delete(id);
-      if (m.type === "result") p?.resolve(m.rows);
+      if (m.type === "result") p?.resolve(m.data);
       else {
         if (m.detail) console.error(`Model run failed\n${m.detail}`);
         p?.reject(new Error(m.message));
@@ -87,10 +88,10 @@ function pump() {
   }
 }
 
-function runYear(buildingId: string, params: Record<string, number>, year: number): Promise<SimRow[]> {
+function runRegime(buildingId: string, params: Record<string, number>, year: number, reduced: boolean): Promise<RegimeResult> {
   ensurePool();
   return new Promise((resolve, reject) => {
-    queue.push({ msg: { type: "run", id: nextId++, buildingId, params, year }, p: { resolve, reject } });
+    queue.push({ msg: { type: "run_regime", id: nextId++, buildingId, params, year, reduced }, p: { resolve, reject } });
     pump();
   });
 }
@@ -112,7 +113,15 @@ export async function simulate(
   onYearDone?: (year: number) => void,
 ): Promise<SimRow[]> {
   const perYear = await Promise.all(
-    YEARS.map((y) => runYear(buildingId, params, y).then((rows) => (onYearDone?.(y), rows))),
+    YEARS.map(async (year) => {
+      const [normal, reduced] = await Promise.all([
+        runRegime(buildingId, params, year, false),
+        runRegime(buildingId, params, year, true),
+      ]);
+      const rows = combineRegimes(normal, reduced);
+      onYearDone?.(year);
+      return rows;
+    }),
   );
   return perYear.flat().sort((a, b) => a.year - b.year || a.month - b.month);
 }

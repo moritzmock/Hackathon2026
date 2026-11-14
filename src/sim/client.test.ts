@@ -33,7 +33,7 @@ test("one building runs four year and regime jobs and blends their hourly heat",
   try {
     const { simulate } = await import(`./client.ts?four-regimes=${Date.now()}`);
     const yearsDone: number[] = [];
-    const rows = await simulate("building_01", { occupied_heating_setpoint_c: 21 }, (year) => yearsDone.push(year));
+    const rows = await simulate("building_01", { occupied_heating_setpoint_c: 21 }, (year: number) => yearsDone.push(year));
     assert.equal(calls.length, 4);
     assert.deepEqual(calls.map(({ year, reduced, type }) => [year, reduced, type]), [
       [2018, false, "run_regime"], [2018, true, "run_regime"],
