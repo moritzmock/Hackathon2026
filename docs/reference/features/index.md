@@ -12,4 +12,4 @@ open.
 - [Score colour](score-colour.md): the selected building's score colours and 0–100 legend.
 - [Explored approaches](explored-approaches.md): the 52 recorded calibration runs and their scores.
 - [Calibration chart](calibration-chart.md): when measured, optimised and custom heating lines appear.
-- [Railway and trains](railway.md): the real tracks across the valley and the decorative trains on them.
+- [Railway and trains](railway.md): the real tracks and bridges across the valley and the decorative trains on them.

@@ -14,10 +14,19 @@ The owner, after the railway (run 021): "the bridges are also not really there".
 
 ### Tried
 
+- The first Brenner bridge screenshot showed a beige band across the sky: the camera had been placed inside a hill, not a fault in the bridges (no deck in the data spans an odd height; the view from above the river is right).
+
 ## Status
 
-in progress: building.
+done.
 
 ## Result
 
+- Commits: acef3f9 plan; e64faee draping moved into `scripts/drape.py` (no change: `rails.json` rebuilt identical); f3e6a1c deck heights and pillars with tests; 324e1da bridges in the data and on the map (72 railway bridges with 47 pillars, 26 road bridges in the detail zone with 178 pillars; 314 trees and 27 parked cars moved off decks).
+- Checks: `npm test` 49 pass, 0 fail; `npm run test:data` 15 pass; type check passes; `vite build` passes (into a scratch folder, as in run 021).
+- Seen in headless Chrome: the Brenner bridge over the Isarco by the station with its deck, parapets and pillars in the river and a train crossing it; Ponte Loreto behind it; Ponte Talvera with pillars in the river; the A22 motorway viaduct as a low deck along the river. Where road bridges cross the railway the deck is about 16 m above the track. No console errors.
+
 ## Later
+
+- Bridge heights are invented (OpenStreetMap has none): real bridges are often higher, the A22 viaduct most of all. The `layer` tag (1–3) could raise decks that are known to stand over other roads.
+- Road tunnels still lie on the terrain (only railway tunnels are hidden).
