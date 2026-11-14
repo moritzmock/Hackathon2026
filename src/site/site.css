@@ -46,6 +46,11 @@
 }
 .site-footer a { color: var(--heading); text-decoration: none; }
 .site-footer a:hover { text-decoration: underline; }
+.site-footer__pages { display: flex; flex-wrap: wrap; gap: 4px 20px; }
+.site-footer__pages a[aria-current="page"] { color: var(--muted); }
+/* The closing band at the end of a page, after the last band */
+.site-closing-wrap { padding-block: 64px 8px; }
+.site-closing-wrap .site-closing { margin-top: 0; }
 
 /* Full-width bands with the content in a centred column */
 .site main.site-bands { max-width: none; padding-inline: 0; }

@@ -6,7 +6,7 @@ import { SearchReplay } from "../searchReplay/SearchReplay";
 import { buildingName, buildingNumber } from "../panels/buildingName";
 import { OpenCity } from "../site/OpenCity";
 import { PageBand } from "../site/PageBand";
-import { pages } from "../site/pages";
+import { cityAt, pageNames, pages } from "../site/pages";
 import { SiteFooter } from "../site/SiteFooter";
 import { SiteHeader } from "../site/SiteHeader";
 import { CORNER_TILES, Tiles } from "../site/Tiles";
@@ -63,13 +63,16 @@ function BuildingCard({ id }: { id: BuildingId }) {
         <strong>{fmt(score)}</strong>
         <span>{fmt(100 - score)}% from the bills</span>
       </div>
+      <a className="landing-building__open" href={cityAt(id)} aria-label={`Open ${buildingNumber(id)} ${buildingName(id)} in the city`}>
+        Open in the city <ArrowRight size={16} aria-hidden="true" />
+      </a>
     </li>
   );
 }
 
 const MORE = [
-  { href: pages.methods, icon: ChartScatter, title: "Compare the search methods", text: `${methodCount} methods, every run on one score line.` },
-  { href: pages.runs, icon: Table2, title: `All ${results.length} runs`, text: "Each run's method, settings and building scores." },
+  { href: pages.methods, icon: ChartScatter, title: pageNames.methods, text: `The ${methodCount} search methods compared, every run on one score line.` },
+  { href: pages.runs, icon: Table2, title: pageNames.runs, text: `All ${results.length} runs in a table: method, settings and building scores.` },
 ];
 
 export function LandingPage() {
@@ -129,7 +132,7 @@ export function LandingPage() {
           </div>
         </section>
       </main>
-      <SiteFooter />
+      <SiteFooter current="landing" />
     </div>
   );
 }

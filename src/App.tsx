@@ -8,11 +8,13 @@ import { LayersControl } from "./panels/LayersControl";
 import { LoadingScreen } from "./panels/LoadingScreen";
 import { OverviewButton } from "./panels/OverviewButton";
 import { pages } from "./site/pages";
+import { useLinkedBuilding } from "./panels/useLinkedBuilding";
 import { useStore } from "./store";
 import { WeatherSign } from "./weather/WeatherSign";
 import { Scene } from "./world/Scene";
 
 export function App() {
+  useLinkedBuilding();
   const [dpr, setDprState] = useState(() => Math.min(1.5, window.devicePixelRatio));
   const dprRef = useRef(dpr);
   const setDpr = (value: number) => {
@@ -41,7 +43,7 @@ export function App() {
           <div className="map-top-controls">
             <LayersControl />
             <OverviewButton />
-            <a className="approaches-map-link" href={pages.runs}>Show approaches</a>
+            <a className="approaches-map-link" href={pages.runs}>All runs</a>
             <WeatherSign />
           </div>
           <BuildingStrip />
