@@ -1,19 +1,20 @@
 import { AnimatePresence, motion } from "framer-motion";
+import { Building, Building2, School } from "lucide-react";
 import { useEffect } from "react";
 import { challenge } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
 import { useStore } from "../store";
-import { buildingName } from "./buildingName";
-import { CalibraRadar, CalibraWordmark } from "./CalibraLogo";
+import { buildingName, buildingNumber } from "./buildingName";
+import { CalibraMark, CalibraWordmark } from "./CalibraLogo";
 import { ModelStatus } from "./ModelStatus";
 
 const ids = challenge.buildings.map((b) => b.id);
 
 /**
  * Slim sidebar: one row per building, a small photo taken from the 3D scene next to
- * its name and facts. While a building is open the list folds down to just
- * the photos, leaving the map more room. Click a row to fly there and open its
- * details; ↑ / ↓ step through, Esc goes back. Slides in after the first-load clouds
+ * its number, name and facts. While a building is open the list folds to a
+ * thin column of the logo and one icon with its number per building, leaving the
+ * map more room. Click a row to fly there and open its details; ↑ / ↓ step through, Esc goes back. Slides in after the first-load clouds
  * have parted.
  */
 export function BuildingList() {
@@ -47,7 +48,7 @@ export function BuildingList() {
           >
             <header className="list__head">
               <span className="list__brand">
-                <CalibraRadar size={34} />
+                <CalibraMark size={34} />
                 <CalibraWordmark />
               </span>
               {/* Calibra is not tied to one city; Bolzano is the one shown for now. */}
@@ -84,6 +85,8 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
   // Only say something while the model is busy or failed.
   const tag = run?.status === "running" ? "Simulating…" : run?.status === "error" ? "Model error" : undefined;
   const name = buildingName(b.id);
+  const number = buildingNumber(b.id);
+  const TypeIcon = TYPE_ICON[String(f.building_typology)] ?? Building;
 
   return (
     <article
@@ -95,12 +98,16 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
       aria-label={name}
       title={`${name} · ${String(f.construction_year)}`}
     >
+      <div className="stay__mini" aria-hidden="true">
+        <TypeIcon size={18} />
+        <small>{number}</small>
+      </div>
       <div className="stay__photo">
         {photo ? <img src={photo} alt="" draggable={false} /> : <div className="stay__placeholder" />}
       </div>
       <div className="stay__text">
         <div className="stay__title">
-          <b>{name}</b>
+          <b><span className="stay__number">{number}</span> {name}</b>
         </div>
         <p className="stay__line">{String(f.construction_year)} · {String(f.floors_above_ground)} floors · {Math.round(f.gross_floor_area_m2 as number).toLocaleString("en-US")} m²</p>
         {tag && <p className="stay__tag">{tag}</p>}
@@ -108,4 +115,11 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
     </article>
   );
 }
+
+/** Icon for each building type, shown in the folded list. */
+const TYPE_ICON: Record<string, typeof Building> = {
+  "administrative office": Building2,
+  "secondary school": School,
+  "administrative office complex": Building,
+};
 

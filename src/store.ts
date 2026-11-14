@@ -4,6 +4,9 @@ import { optimisedFor } from "./data/optimised";
 import type { SimRow } from "./data/types";
 import { onModelErrorDetail, onModelStatus, SETUP_STEPS, simulate, YEARS } from "./sim/client";
 
+// `?low` in the address starts the map without the costly effects (for slow machines and demos).
+const lowGraphicsRequested = () => typeof location !== "undefined" && new URLSearchParams(location.search).has("low");
+
 // People who ask their system for less motion start with the moving things off.
 const prefersReducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -45,6 +48,8 @@ export interface Layers {
   pins: boolean;
   miniature: boolean;
   motion: boolean;
+  /** Soft contact shadows, colour touch-up and blur (the miniature look needs it). Costly on weak graphics cards. */
+  effects: boolean;
 }
 
 export const LAYER_LABELS: Record<keyof Layers, string> = {
@@ -55,6 +60,7 @@ export const LAYER_LABELS: Record<keyof Layers, string> = {
   pins: "Pins",
   miniature: "Miniature effect",
   motion: "Moving things",
+  effects: "Detailed lighting",
 };
 
 interface State {
@@ -91,6 +97,7 @@ interface State {
   run: (id: string) => Promise<void>;
   toggleLayer: (layer: keyof Layers) => void;
   setLayersOpen: (open: boolean) => void;
+  setLayer: (layer: keyof Layers, on: boolean) => void;
 }
 
 export const useStore = create<State>((set, get) => ({
@@ -106,7 +113,7 @@ export const useStore = create<State>((set, get) => ({
   modelLog: [],
   readyAt: undefined,
   lastWarmSeconds: undefined,
-  layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true, motion: !prefersReducedMotion() },
+  layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true, motion: !prefersReducedMotion(), effects: !lowGraphicsRequested() },
   layersOpen: false,
   revealed: false,
   snapshots: undefined,
@@ -141,6 +148,7 @@ export const useStore = create<State>((set, get) => ({
   },
   toggleLayer: (layer) => set((s) => ({ layers: { ...s.layers, [layer]: !s.layers[layer] } })),
   setLayersOpen: (layersOpen) => set({ layersOpen }),
+  setLayer: (layer, on) => set((s) => ({ layers: { ...s.layers, [layer]: on } })),
 }));
 
 onModelStatus((modelStatus) =>

@@ -71,7 +71,7 @@ export function Scene() {
         {layers.pins && (PIN_STYLE === "scene" ? <BuildingLabels3D /> : <BuildingPins />)}
         <StaticShadows version={JSON.stringify(layers)} />
       </Suspense>
-      <Effects tiltShift={layers.miniature} />
+      <Effects enabled={layers.effects} tiltShift={layers.miniature} />
     </>
   );
 }

@@ -1,7 +1,8 @@
-// Which weather the map shows: the month clicked on the chart, or Bolzano now.
+// Which weather the map shows: a day clicked on the chart, or Bolzano now. Picking a month does
+// not change the map's weather; the sign shows that month's averages instead.
 import { useMemo } from "react";
 import { create } from "zustand";
-import { dayConditions, liveConditions, monthConditions, type Conditions, type DayKey, type MonthKey } from "./conditions";
+import { dayConditions, liveConditions, type Conditions, type DayKey, type MonthKey } from "./conditions";
 import { useStore } from "../store";
 import { fetchLiveWeather, type LiveWeather } from "./live";
 
@@ -52,13 +53,10 @@ export function startLiveWeather() {
   setInterval(refresh, REFRESH_MS);
 }
 
-/** The conditions the map shows, or undefined: no month in focus and no live data. */
+/** The conditions the map shows, or undefined: no day in focus and no live data. A month in focus
+ *  keeps the live weather; only a single day changes the scene. */
 export function useConditions(): Conditions | undefined {
-  const focus = useWeather((s) => s.focus);
   const day = useWeather((s) => s.day);
   const live = useWeather((s) => s.live);
-  return useMemo(
-    () => (day ? dayConditions(day) : focus ? monthConditions(focus) : live ? liveConditions(live) : undefined),
-    [focus, day, live],
-  );
+  return useMemo(() => (day ? dayConditions(day) : live ? liveConditions(live) : undefined), [day, live]);
 }

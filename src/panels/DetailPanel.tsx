@@ -31,6 +31,8 @@ function Content({ b }: { b: ChallengeBuilding }) {
   const optScore = opt ? score(wape(b.records, simLookup(opt.rows))) : undefined;
   const weatherFocus = useWeather((s) => s.focus);
   const setWeatherFocus = useWeather((s) => s.setFocus);
+  const day = useWeather((s) => s.day);
+  const setDay = useWeather((s) => s.setDay);
   const f = b.facts;
   return (
     <>
@@ -56,7 +58,9 @@ function Content({ b }: { b: ChallengeBuilding }) {
           </Card>
         )}
       </div>
-      <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"} focus={weatherFocus} onPickMonth={setWeatherFocus} />
+      {/* Click a month, or a day in the strip under it, to show its weather on the map. */}
+      <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"}
+        focus={weatherFocus} onPickMonth={setWeatherFocus} day={day} onPickDay={(d) => (d ? (setWeatherFocus({ year: d.year, month: d.month }), setDay(d)) : setDay(null))} />
         <RunProgress id={b.id} />
       </div>
       <WhatIf id={b.id} />

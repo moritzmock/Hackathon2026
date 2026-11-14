@@ -1,6 +1,7 @@
 import { useFrame } from "@react-three/fiber";
 import { useMemo } from "react";
 import * as THREE from "three";
+import { EDGE_COLOR } from "./edgeFade";
 import { theme } from "./theme";
 
 const RADIUS = 30000;
@@ -42,9 +43,10 @@ export function SkyDome() {
   useFrame(({ scene, camera }) => {
     const u = material.uniforms;
     const fog = scene.fog?.color;
-    if (fog) (u.uHorizon.value as THREE.Color).copy(fog);
-    // Overhead: the same hue shifted toward toy blue, darker at night with the horizon.
-    const lum = (u.uHorizon.value as THREE.Color).getHSL({ h: 0, s: 0, l: 0 }).l;
+    // The horizon is the page background, like the map's faded edge, so they meet without a line.
+    (u.uHorizon.value as THREE.Color).copy(EDGE_COLOR);
+    // Overhead: toy blue, darker at night (follows the weather's sky colour).
+    const lum = (fog ?? EDGE_COLOR).getHSL({ h: 0, s: 0, l: 0 }).l;
     (u.uZenith.value as THREE.Color).copy(top).multiplyScalar(Math.min(1, lum / 0.9)).lerp(u.uHorizon.value as THREE.Color, 0.15);
     mesh.position.copy(camera.position);
   });

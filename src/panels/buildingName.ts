@@ -12,3 +12,8 @@ export function buildingName(id: string): string {
   const type = String(buildingsById[id]?.facts.building_typology ?? id);
   return SHORT[type] ?? type.charAt(0).toUpperCase() + type.slice(1);
 }
+
+/** "building_02" → "02": the number, shown with the name and in the folded list. */
+export function buildingNumber(id: string): string {
+  return id.replace(/^building_/, "");
+}
