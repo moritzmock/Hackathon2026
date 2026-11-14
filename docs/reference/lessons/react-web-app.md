@@ -13,6 +13,12 @@
   as passed. In [run 003](../../../factory/runs/003-normalize-git-authors.md),
   the npm package resolved by the documented command has no check-docs
   subcommand; direct local-link validation covers only part of the check.
+- When comparing Git archive exports with a Linux runner's output, disable
+  inherited automatic line-ending conversion in the temporary verification
+  repository. A local core.autocrlf=input setting changes CRLF files during
+  staging and can produce a false tree mismatch.
+  [Run 006](../../../factory/runs/006-sync-on-push.md) checks both exports
+  with line-ending conversion disabled.
 - Generated runtime assets need a production build step and an output
   check. A local build can hide missing assets because ignored files still
   exist locally. Never delete served assets before replacement downloads

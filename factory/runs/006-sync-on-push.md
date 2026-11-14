@@ -28,7 +28,8 @@ behavior, in addition to syntax and existing product checks.
 
 ## Status
 
-in progress: plan recorded; updating the workflow triggers and documentation.
+done: both triggers are published and verified through automatic GitHub
+runs and remote snapshot comparisons.
 
 ## Result
 
@@ -43,10 +44,29 @@ in progress: plan recorded; updating the workflow triggers and documentation.
   permissions are preserved. No actionable findings.
 - Factory docs validation was attempted; the CLI still reports unknown
   command check-docs. Full factory documentation checks remain unverified.
-- Publishing and live trigger verification remain in progress.
+- Frontend published as 6a06105. Its push starts author normalization,
+  followed automatically by a successful workflow_run sync:
+  https://github.com/moritzmock/Hackathon2026/actions/runs/43531271536.
+- Backend published as b058225. Its push starts a successful push-event sync:
+  https://github.com/moritzmock/integrates/actions/runs/43531244527.
+- Verified team-17 frontend and backend trees exactly match the published
+  committed-file archives. Root README.md and LICENSE are unchanged.
+- The first archive comparison inherited the local core.autocrlf=input
+  setting and normalized one CRLF JSON file. Repeating the comparison with
+  core.autocrlf=false, matching the Linux runner, passes for both exports.
+- To use it: commit and push to main in either source repository. No timed
+  schedule remains. Manual workflow dispatch is retained.
+- No app or simulation behavior changed; browser/model execution is outside
+  this trigger-only change. Full factory docs validation remains unavailable.
 
 ## Later
 
 - The factory documentation checker is unavailable in the npm CLI used by
   this checkout, as recorded in run 003; validate changed links directly
   and keep full factory documentation validation marked unverified.
+- The pre-existing git-archive export omits submodule contents, including
+  frontend vendor/integrates. A separate sync-content change can address
+  shipping submodule source if the submission needs it.
+- Factory core suggestion: expected Git export comparisons should isolate
+  platform-specific Git configuration, especially automatic line-ending
+  normalization, so local verification matches the delivery runner.
