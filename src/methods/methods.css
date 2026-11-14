@@ -1,7 +1,5 @@
 /* The methods page: every run of every search method on one score line. The band, overlap and
    tiles are the shared ones in src/site/site.css. */
-.methods-closing { padding-block: 64px 8px; }
-.methods-closing .site-closing { margin-top: 0; }
 .site-overlap .method-chart { border: 0; border-radius: 20px 20px 20px 0; }
 
 /* Method chart */

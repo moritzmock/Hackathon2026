@@ -24,6 +24,8 @@
 .landing-building__score { display: flex; align-items: baseline; gap: 10px; margin: 16px 6px 0; padding-top: 14px; border-top: 1px solid var(--line); }
 .landing-building__score strong { color: var(--optimised); font: 600 1.75rem/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
 .landing-building__score span { color: var(--muted); font-size: 0.8125rem; }
+.landing-building__open { display: inline-flex; align-items: center; gap: 6px; margin: 14px 6px 0; color: var(--brand-violet); font-size: 0.875rem; font-weight: 600; text-decoration: none; }
+.landing-building__open:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* Links to the detail pages, on a grey band (.site-grey) */
 .site-bands .landing-more__title { margin-bottom: 24px; }

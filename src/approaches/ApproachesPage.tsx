@@ -1,4 +1,5 @@
 import { ArrowDown, ArrowRight } from "lucide-react";
+import { CityInvite } from "../site/CityInvite";
 import { PageBand } from "../site/PageBand";
 import { pages } from "../site/pages";
 import { SiteFooter } from "../site/SiteFooter";
@@ -92,13 +93,13 @@ export function ApproachesPage() {
         <section id="all-runs" className="site-grey" aria-labelledby="approaches-results-title">
           <div className="site-wrap">
             <div className="site-section__head">
-              <h2 id="approaches-results-title">All {results.length} combinations</h2>
+              <h2 id="approaches-results-title">All {results.length} runs</h2>
               <p>Ordered by overall score, highest first.</p>
             </div>
             <p className="approaches-swipe">Swipe the table sideways to see all building scores and the overall score.</p>
             <div className="approaches-table-wrap">
               <table className="approaches-table">
-                <caption className="sr-only">Scores for all {results.length} recorded approaches</caption>
+                <caption className="sr-only">Scores for all {results.length} runs</caption>
                 <thead><tr>
                   <th scope="col">Rank</th><th scope="col">Search method</th><th scope="col">Parameter group</th><th scope="col">Variant code</th>
                   <th scope="col">Building 01</th><th scope="col">Building 02</th><th scope="col">Building 03</th><th scope="col">Overall / 100</th>
@@ -109,8 +110,11 @@ export function ApproachesPage() {
             <p className="approaches-note">These are the {results.length} complete runs in the calibration backend, not every possible combination. All run IDs share the recorded tags <code>budget48</code>, <code>2018+2019</code>, <code>b01+b02+b03</code> and <code>w12</code>. The overall value is the mean of the three building scores shown here. Variant codes are preserved exactly as recorded.</p>
           </div>
         </section>
+        <div className="site-wrap site-closing-wrap">
+          <CityInvite />
+        </div>
       </main>
-      <SiteFooter />
+      <SiteFooter current="runs" />
     </div>
   );
 }
