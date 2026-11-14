@@ -1,13 +1,11 @@
-import { useFrame, useThree } from "@react-three/fiber";
-import type CameraControlsImpl from "camera-controls";
+import { useThree } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { readWorld } from "../data/world";
 import { useConditions } from "../weather/focus";
-import { focusCenter as C } from "./focus";
 import { setSeason } from "./season";
-import { sameShadowBox, shadowBox, type ShadowBox } from "./shadowBox";
 import { theme } from "./theme";
+import { useShadowArea } from "./useShadowArea";
 
 const SUN_DISTANCE = 3000;
 const RAD = Math.PI / 180;
@@ -20,7 +18,6 @@ const SKY = {
 /** Without weather: low winter sun from the south-south-west, early afternoon. */
 const DEFAULT_SUN = new THREE.Vector3(-2700, 1350, 1500);
 const SHADOW_MAP = 3072; // pixels across the shadow picture
-const _target = new THREE.Vector3();
 
 /** Sun, sky, fog and season for the weather in focus (a chart month, or Bolzano now). */
 export function WeatherLights() {
@@ -33,32 +30,11 @@ export function WeatherLights() {
   const sky = useMemo(() => new THREE.Color(), []);
   const minAltitude = readWorld().city.terrain.min;
   const sunOffset = useMemo(() => DEFAULT_SUN.clone(), []); // from the shadow area's centre to the sun
-  const box = useRef<ShadowBox | null>(null); // the area the shadow picture covers now
+  const placeShadowsAgain = useShadowArea(sun, sunOffset);
 
   useEffect(() => {
     scene.add(sun.current!.target);
   }, [scene]);
-
-  // Closer in, the shadow picture covers a smaller area around where the camera looks, so shadows
-  // stay sharp; it is redrawn only when that area changes (see shadowBox).
-  useFrame(({ camera, controls }) => {
-    const light = sun.current!;
-    const c = controls as unknown as CameraControlsImpl | null;
-    if (c?.getTarget) c.getTarget(_target, false); // where it looks now, not where a move will end (fast zooms)
-    else _target.set(C.x, C.y, C.z);
-    const next = shadowBox(_target, camera.position.distanceTo(_target), C, box.current);
-    if (sameShadowBox(box.current, next)) return;
-    box.current = next;
-    light.target.position.set(next.x, next.y, next.z);
-    light.target.updateMatrixWorld();
-    light.position.set(next.x + sunOffset.x, next.y + sunOffset.y, next.z + sunOffset.z);
-    const cam = light.shadow.camera;
-    cam.left = cam.bottom = -next.half;
-    cam.right = cam.top = next.half;
-    cam.updateProjectionMatrix();
-    light.shadow.normalBias = (0.6 * next.half) / 1800; // about the same share of a pixel at every size
-    gl.shadowMap.needsUpdate = true;
-  });
 
   useEffect(() => {
     if (!c) {
@@ -83,12 +59,12 @@ export function WeatherLights() {
     }
     if (scene.background instanceof THREE.Color) scene.background.copy(sky);
     if (scene.fog) scene.fog.color.copy(sky);
-    box.current = null; // place the sun again around the shadow area (useFrame above)
+    placeShadowsAgain(); // place the sun again around the shadow area
     gl.shadowMap.needsUpdate = true; // the shadow map is rendered on demand (StaticShadows)
     invalidate();
-  }, [c, scene, gl, invalidate, sky, minAltitude, sunOffset]);
+  }, [c, scene, gl, invalidate, sky, minAltitude, sunOffset, placeShadowsAgain]);
 
-  const d = 1800; // the whole city; useFrame narrows it closer in
+  const d = 1800; // the whole city; useShadowArea narrows it closer in
   return (
     <>
       <hemisphereLight ref={hemi} args={["#eef4ff", "#b9a98c", 1.0]} />

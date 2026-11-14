@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { COVER_PER_DISTANCE, SHADOW_HALVES, sameShadowBox, shadowBox } from "./shadowBox.ts";
+import { COVER_PER_DISTANCE, SHADOW_HALVES, keepWhileMoving, sameShadowBox, shadowBox } from "./shadowBox.ts";
 
 const home = { x: 100, y: 260, z: -50 };
 
@@ -29,12 +29,24 @@ test("small camera moves keep the same area, so the shadows are not redrawn", ()
   assert.ok(!sameShadowBox(null, b));
 });
 
-test("a camera settling just past a step keeps the smaller area, so the shadows do not flip", () => {
-  const small = shadowBox({ x: 0, y: 0, z: 0 }, 150, home);
-  assert.equal(small.half, 400);
-  const justPast = 410 / COVER_PER_DISTANCE; // needs 410 m: a little more than 400
-  assert.equal(shadowBox({ x: 0, y: 0, z: 0 }, justPast, home, small).half, 400);
-  assert.equal(shadowBox({ x: 0, y: 0, z: 0 }, justPast, home).half, 800);
-  const wellPast = 500 / COVER_PER_DISTANCE;
-  assert.equal(shadowBox({ x: 0, y: 0, z: 0 }, wellPast, home, small).half, 800);
+test("zooming in from far keeps the whole-city area until the camera rests", () => {
+  const full = shadowBox({ x: 0, y: 0, z: 0 }, 3600, home);
+  for (const d of [2000, 800, 200, 40]) assert.equal(keepWhileMoving(full, { x: 300, y: 0, z: -200 }, d, home), full);
+});
+
+test("while moving close in, the area stays until the view leaves it, then follows", () => {
+  const near = shadowBox({ x: 0, y: 0, z: 0 }, 100, home);
+  assert.equal(keepWhileMoving(near, { x: 40, y: 0, z: 30 }, 100, home), near);
+  const moved = keepWhileMoving(near, { x: 600, y: 0, z: 0 }, 100, home);
+  assert.ok(moved !== near);
+  assert.ok(Math.abs(moved.x - 600) <= moved.half * 0.125);
+  const zoomedOut = keepWhileMoving(near, { x: 0, y: 0, z: 0 }, 400, home);
+  assert.ok(zoomedOut.half > near.half);
+});
+
+test("an area just fitted at rest counts as covering, so it is not redrawn at once", () => {
+  for (const [x, d] of [[37, 150], [180, 300], [-260, 520]]) {
+    const fitted = shadowBox({ x, y: 0, z: x }, d, home);
+    assert.equal(keepWhileMoving(fitted, { x, y: 0, z: x }, d, home), fitted);
+  }
 });

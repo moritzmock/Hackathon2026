@@ -22,17 +22,12 @@ export const COVER_PER_DISTANCE = 2.5;
 /** The centre moves in steps of this share of the half-width. */
 const SNAP = 0.25;
 
-/** Keep a smaller area until the view needs this much more than it covers (no flipping between two sizes). */
+/** While moving, an area still counts as covering the view up to this much beyond its edge. */
 const KEEP = 1.15;
 
-/**
- * The shadow area for a camera looking at `target` from `distance` metres; `home` is the city's
- * centre, `previous` the area drawn now.
- */
-export function shadowBox(target: Point, distance: number, home: Point, previous: ShadowBox | null = null): ShadowBox {
-  const need = distance * COVER_PER_DISTANCE;
-  let half = SHADOW_HALVES.find((h) => h >= need) ?? FULL;
-  if (previous && previous.half < half && previous.half * KEEP >= need) half = previous.half;
+/** The shadow area for a camera looking at `target` from `distance` metres; `home` is the city's centre. */
+export function shadowBox(target: Point, distance: number, home: Point): ShadowBox {
+  const half = SHADOW_HALVES.find((h) => h >= distance * COVER_PER_DISTANCE) ?? FULL;
   if (half === FULL) return { x: home.x, y: home.y, z: home.z, half };
   const step = half * SNAP;
   const snap = (v: number) => Math.round(v / step) * step;
@@ -41,3 +36,16 @@ export function shadowBox(target: Point, distance: number, home: Point, previous
 
 export const sameShadowBox = (a: ShadowBox | null, b: ShadowBox) =>
   !!a && a.x === b.x && a.y === b.y && a.z === b.z && a.half === b.half;
+
+/**
+ * While the camera moves: keep the area drawn now as long as it still covers the view, so shadows
+ * are not redrawn (and do not jump) mid-move; only a view that outgrows it gets a new area.
+ */
+export function keepWhileMoving(current: ShadowBox | null, target: Point, distance: number, home: Point): ShadowBox {
+  if (!current) return shadowBox(target, distance, home);
+  if (current.half === FULL) return current;
+  const need = distance * COVER_PER_DISTANCE;
+  const reach = current.half * KEEP;
+  const covers = Math.abs(target.x - current.x) + need <= reach && Math.abs(target.z - current.z) + need <= reach;
+  return covers ? current : shadowBox(target, distance, home);
+}
