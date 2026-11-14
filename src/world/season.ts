@@ -1,6 +1,7 @@
-// The season on the terrain: snow down to a snow line, and duller grass in the
-// cold. Tints on top of the ground texture (theme colours stay the base). The mountain
-// forest stays green all year (the owner's choice, run 031); only the trees and bushes turn.
+// The season on the terrain: snow down to a snow line, duller grass in the cold, and the forest
+// turning with the city's trees: in autumn a smooth wash of leaf colours (gold, orange, rust) with
+// soft green areas of pines, and a light straw-gold touch on meadows; bare grey-brown in winter. Tints on top of the ground texture (theme
+// colours stay the base).
 import * as THREE from "three";
 import { SUMMER, type Foliage } from "../weather/foliage";
 
@@ -9,6 +10,14 @@ export const seasonUniforms = {
   uWinter: { value: 0 },
   /** 0 … 1: snow lying in the valley and on the roofs. */
   uCitySnow: { value: 0 },
+  /** Where larches and spruce take over from the broadleaf woods, metres above the lowest terrain point. */
+  uLarchFrom: { value: 1000 },
+  // The forest's autumn colours: softer and darker than the single trees', so the slopes stay calm.
+  uWoodGold: { value: new THREE.Color("#c79a3e") },
+  uWoodOrange: { value: new THREE.Color("#c27a36") },
+  uWoodRust: { value: new THREE.Color("#a35a36") },
+  uWoodLarch: { value: new THREE.Color("#d2a843") },
+  uWoodBare: { value: new THREE.Color("#8f7b6a") },
 };
 
 /** The leafy trees and bushes: how full the crowns are, how far autumn has turned them, spring freshness. */
@@ -30,6 +39,7 @@ export function setSeason(snowLine: number, winter: number, citySnow: number, mi
   seasonUniforms.uSnowY.value = snowLine - minAltitude;
   seasonUniforms.uWinter.value = winter;
   seasonUniforms.uCitySnow.value = citySnow;
+  seasonUniforms.uLarchFrom.value = 1000 - minAltitude; // larches grow from about 1000 m in South Tyrol
   foliageUniforms.uLeaves.value = f.leaves;
   foliageUniforms.uAutumn.value = f.autumn;
   foliageUniforms.uFresh.value = f.fresh;
@@ -40,7 +50,7 @@ export function withSeason<M extends THREE.Material>(material: M): M {
   const previous = material.onBeforeCompile.bind(material);
   material.onBeforeCompile = (shader, renderer) => {
     previous(shader, renderer);
-    Object.assign(shader.uniforms, seasonUniforms);
+    Object.assign(shader.uniforms, seasonUniforms, { uLeaves: foliageUniforms.uLeaves, uAutumn: foliageUniforms.uAutumn });
     shader.vertexShader = shader.vertexShader
       .replace("#include <common>", "#include <common>\nvarying float vSeasonY;\nvarying float vSeasonUp;\nvarying vec2 vSeasonXZ;")
       .replace(
@@ -48,11 +58,61 @@ export function withSeason<M extends THREE.Material>(material: M): M {
         "#include <begin_vertex>\nvec4 seasonWorld = modelMatrix * vec4(transformed, 1.0);\nvSeasonY = seasonWorld.y;\nvSeasonXZ = seasonWorld.xz;\nvSeasonUp = normalize(mat3(modelMatrix) * objectNormal).y;",
       );
     shader.fragmentShader = shader.fragmentShader
-      .replace("#include <common>", "#include <common>\nvarying float vSeasonY;\nvarying float vSeasonUp;\nvarying vec2 vSeasonXZ;\nuniform float uSnowY;\nuniform float uWinter;\nuniform float uCitySnow;")
+      .replace("#include <common>", `#include <common>
+        varying float vSeasonY;
+        varying float vSeasonUp;
+        varying vec2 vSeasonXZ;
+        uniform float uSnowY;
+        uniform float uWinter;
+        uniform float uCitySnow;
+        uniform float uLeaves;
+        uniform float uAutumn;
+        uniform float uLarchFrom;
+        uniform vec3 uWoodGold;
+        uniform vec3 uWoodOrange;
+        uniform vec3 uWoodRust;
+        uniform vec3 uWoodLarch;
+        uniform vec3 uWoodBare;
+        // smooth value noise, 0 … 1: soft, without the lines and repeats of sine waves
+        float seasonHash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        float seasonNoise(vec2 p) {
+          vec2 i = floor(p);
+          vec2 f = fract(p);
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(mix(seasonHash(i), seasonHash(i + vec2(1.0, 0.0)), u.x), mix(seasonHash(i + vec2(0.0, 1.0)), seasonHash(i + vec2(1.0, 1.0)), u.x), u.y);
+        }`)
       .replace(
         "#include <map_fragment>",
         `#include <map_fragment>
         {
+          // the forest (the ground picture paints it one colour, found by its low red and green lead)
+          vec3 ground = diffuseColor.rgb;
+          float wood = smoothstep(0.21, 0.17, ground.r) * smoothstep(0.03, 0.10, ground.g - max(ground.r, ground.b));
+          if (wood > 0.0) {
+            vec2 q = vSeasonXZ;
+            float hue = seasonNoise(q / 150.0) * 0.6 + seasonNoise(q / 55.0 + 7.3) * 0.3 + seasonNoise(q / 22.0 + 3.1) * 0.1;
+            float pines = seasonNoise(q / 110.0 + 19.7) * 0.75 + seasonNoise(q / 40.0 + 4.2) * 0.25;
+            float high = smoothstep(uLarchFrom - 200.0, uLarchFrom + 200.0, vSeasonY);
+            // broadleaf woods: rust, orange and gold flowing into each other; larches above lean to gold
+            vec3 leaf = mix(uWoodRust, uWoodOrange, smoothstep(0.25, 0.5, hue));
+            leaf = mix(leaf, uWoodGold, smoothstep(0.5, 0.75, hue));
+            leaf = mix(leaf, uWoodLarch, high * 0.7);
+            // pines and spruce stay green (about a quarter below, more above)
+            float evergreen = smoothstep(0.52, 0.66, pines + high * 0.08);
+            // each place turns at its own time, then goes bare as the leaves fall
+            float turned = smoothstep(hue * 0.4, hue * 0.4 + 0.6, uAutumn);
+            leaf = mix(leaf, uWoodBare, (1.0 - uLeaves) * 0.85);
+            float broadleaf = max(turned, 1.0 - uLeaves);
+            diffuseColor.rgb = mix(ground, leaf, wood * (1.0 - evergreen) * broadleaf);
+          }
+          // the lighter greens (meadows, lawns, vineyards, scrub) take a light straw-gold touch in autumn
+          float grass = (1.0 - wood) * smoothstep(0.03, 0.10, ground.g - max(ground.r, ground.b));
+          if (grass > 0.0) {
+            float touch = seasonNoise(vSeasonXZ / 90.0 + 11.1) * 0.7 + seasonNoise(vSeasonXZ / 30.0 + 5.7) * 0.3;
+            float l = dot(ground, vec3(0.3, 0.59, 0.11));
+            vec3 straw = vec3(1.45, 1.05, 0.35) * l;
+            diffuseColor.rgb = mix(diffuseColor.rgb, straw, grass * uAutumn * uLeaves * mix(0.15, 0.5, touch));
+          }
           float lum = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11));
           vec3 dull = mix(vec3(lum), vec3(0.66, 0.58, 0.44) * lum * 1.5, 0.55);
           diffuseColor.rgb = mix(diffuseColor.rgb, dull, uWinter * 0.5);
