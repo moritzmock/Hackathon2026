@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { Info, RotateCcw, Sparkles } from "lucide-react";
+import { Building2, Clock, Info, RotateCcw, Sparkles, Thermometer } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { challenge } from "../data/challenge";
@@ -22,9 +23,10 @@ const THUMB_PX = 12; // size-3 in components/ui/slider.tsx
 const tickLeft = (t: number) => `calc(${t * 100}% + ${(THUMB_PX / 2) * (1 - 2 * t)}px)`;
 
 // The 12 settings in three topics, each with a plain label and a hint.
-const GROUPS: { title: string; items: { name: string; label: string; hint: string }[] }[] = [
+const GROUPS: { title: string; icon: LucideIcon; items: { name: string; label: string; hint: string }[] }[] = [
   {
     title: "When it heats",
+    icon: Clock,
     items: [
       { name: "weekday_heating_hours", label: "Hours on weekdays", hint: "How long rooms are kept warm on a working day." },
       { name: "weekday_start_hour", label: "Starts at", hint: "Time of day the warm period begins on weekdays." },
@@ -34,6 +36,7 @@ const GROUPS: { title: string; items: { name: string; label: string; hint: strin
   },
   {
     title: "How warm",
+    icon: Thermometer,
     items: [
       { name: "occupied_heating_setpoint_c", label: "Room temperature", hint: "Kept during the warm hours." },
       { name: "night_setback_temperature_c", label: "Night temperature", hint: "Kept outside the warm hours. Its energy counts too." },
@@ -43,6 +46,7 @@ const GROUPS: { title: string; items: { name: string; label: string; hint: strin
   },
   {
     title: "The building",
+    icon: Building2,
     items: [
       { name: "normally_heated_area_fraction", label: "Fully heated share", hint: "Part of the floor area that follows the normal schedule; the rest is heated less." },
       { name: "air_exchange_multiplier", label: "Fresh air and draughts", hint: "More air exchange means more heat lost. 1 = as audited." },
@@ -74,7 +78,7 @@ export function WhatIf({ id }: { id: string }) {
   }, [params, running, run, changed, id, start]);
 
   return (
-    <section className="pcard space-y-4">
+    <section className="pcard settings">
       {/* Header row: title, then the two shortcuts (optimised values, back to defaults). */}
       <div className="flex items-center gap-2">
         <h3 className="pcard__title flex-1">Settings</h3>
@@ -100,8 +104,8 @@ export function WhatIf({ id }: { id: string }) {
       </div>
 
       {GROUPS.map((g) => (
-        <div key={g.title} className="space-y-2">
-          <h3 className="text-[0.7rem] font-semibold uppercase tracking-wider text-muted-foreground">{g.title}</h3>
+        <div key={g.title} className="setgroup">
+          <h4 className="setgroup__title"><g.icon size={14} aria-hidden="true" />{g.title}</h4>
           {g.items.map((it) => {
             const p = specs[it.name];
             const v = params[p.name];
@@ -109,25 +113,32 @@ export function WhatIf({ id }: { id: string }) {
             // Highlight only what was moved away from the starting values (the optimised ones when there are).
             const isChanged = v !== (opt ?? p.default);
             return (
-              <div key={p.name} className="grid grid-cols-[11.5rem_1fr_3.8rem] items-center gap-3">
-                <span className={`flex items-center gap-1 text-[0.8rem] ${isChanged ? "font-semibold text-[var(--whatif)]" : ""}`}>
-                  {it.label}
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="size-3 shrink-0 text-muted-foreground" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-56">{it.hint}</TooltipContent>
-                  </Tooltip>
-                </span>
+              <div key={p.name} className={`setrow${isChanged ? " is-changed" : ""}`}>
+                <div className="setrow__head">
+                  <span className="setrow__label">
+                    {it.label}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="setrow__info" aria-label={it.hint} />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-56">{it.hint}</TooltipContent>
+                    </Tooltip>
+                  </span>
+                  <span className="setrow__value">{fmt(v, p.unit)}</span>
+                </div>
                 <div className="relative">
                   <Slider min={p.lower} max={p.upper} step={(p.upper - p.lower) / 100} value={[v]}
                     onValueChange={([nv]) => setParam(id, p.name, nv)} aria-label={it.label} />
                   {opt !== undefined && (
-                    <i className="pointer-events-none absolute top-0 h-3 w-0.5 -translate-x-1/2 rounded bg-[var(--optimised)]"
+                    <i className="setrow__opt" title="Optimised value"
                       style={{ left: tickLeft((opt - p.lower) / (p.upper - p.lower)) }} />
                   )}
                 </div>
-                <span className="text-right text-[0.8rem] tabular-nums">{fmt(v, p.unit)}</span>
+                {/* The range the challenge allows for this setting. */}
+                <div className="setrow__range" aria-hidden="true">
+                  <span>{fmt(p.lower, p.unit)}</span>
+                  <span>{fmt(p.upper, p.unit)}</span>
+                </div>
               </div>
             );
           })}

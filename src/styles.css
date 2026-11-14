@@ -558,3 +558,19 @@ body { background: #fff; }
     transition: none !important; animation: none !important; transform: none !important;
   }
 }
+
+/* Settings: three groups, each with an icon and a title; one row per setting with the name
+   and value on top and a full-width slider under them. A changed value turns orange. */
+.settings { display: grid; gap: 14px; }
+.setgroup { display: grid; gap: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.setgroup__title { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 0.75rem; font-weight: 600; color: var(--heading); }
+.setgroup__title svg { color: var(--muted); }
+.setrow { display: grid; gap: 4px; }
+.setrow__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.setrow__label { display: inline-flex; align-items: center; gap: 4px; min-width: 0; font-size: 0.8125rem; color: var(--ink); }
+.setrow__info { width: 12px; height: 12px; flex: none; color: var(--muted); opacity: 0.7; }
+.setrow__value { flex: none; padding: 1px 7px; border-radius: 999px; font-size: 0.8125rem; font-weight: 500; color: var(--heading); font-variant-numeric: tabular-nums; transition: background 0.2s, color 0.2s; }
+.setrow.is-changed .setrow__label { color: var(--heading); font-weight: 500; }
+.setrow.is-changed .setrow__value { background: var(--brand-orange-soft); color: var(--accent-deep); }
+.setrow__opt { position: absolute; top: 50%; width: 2px; height: 12px; border-radius: 1px; background: var(--optimised); transform: translate(-50%, -50%); pointer-events: none; }
+.setrow__range { display: flex; justify-content: space-between; margin-top: -1px; font-size: 0.6875rem; color: var(--muted); font-variant-numeric: tabular-nums; }
