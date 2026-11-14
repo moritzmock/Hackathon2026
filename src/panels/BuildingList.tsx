@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { challenge } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
-import { baselineWape, score, simLookup, wape } from "../metrics";
+import { simLookup, wape } from "../metrics";
 import { useStore } from "../store";
 import { buildingName } from "./buildingName";
 import { CalibraRadar, CalibraWordmark } from "./CalibraLogo";
@@ -12,7 +12,7 @@ const ids = challenge.buildings.map((b) => b.id);
 
 /**
  * Slim sidebar: one row per building, a small photo taken from the 3D scene next to
- * its name, facts and score. While a building is open the list folds down to just
+ * its name and facts. While a building is open the list folds down to just
  * the photos, leaving the map more room. Click a row to fly there and open its
  * details; ↑ / ↓ step through, Esc goes back. Slides in after the first-load clouds
  * have parted.
@@ -82,7 +82,6 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
   const photo = useStore((s) => s.snapshots?.[b.id]?.[0]);
   const { select, hover } = useStore.getState();
   const w = run?.rows ? wape(b.records, simLookup(run.rows)) : undefined;
-  const yours = score(w ?? baselineWape(b.records))!;
   const f = b.facts;
   const tag = run?.status === "running" ? "Simulating…" : run?.status === "error" ? "Model error" : w !== undefined ? "Your settings" : "Untuned model";
   const name = buildingName(b.id);
@@ -95,7 +94,7 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
       onPointerLeave={() => hover(null)}
       aria-current={active}
       aria-label={name}
-      title={`${name} · ${String(f.construction_year)} · score ${yours.toFixed(0)}`}
+      title={`${name} · ${String(f.construction_year)}`}
     >
       <div className="stay__photo">
         {photo ? <img src={photo} alt="" draggable={false} /> : <div className="stay__placeholder" />}
@@ -103,9 +102,6 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
       <div className="stay__text">
         <div className="stay__title">
           <b>{name}</b>
-          <span className="stay__rating" title="Score: 100 − error against the heating bills">
-            <Gauge /> {yours.toFixed(0)}
-          </span>
         </div>
         <p className="stay__line">{String(f.construction_year)} · {String(f.floors_above_ground)} floors · {Math.round(f.gross_floor_area_m2 as number).toLocaleString("en-US")} m²</p>
         <p className="stay__tag">{tag}</p>
@@ -114,12 +110,3 @@ function Stay({ b, active }: { b: ChallengeBuilding; active: boolean }) {
   );
 }
 
-/** Tiny gauge glyph for the score (like the star next to a rating). */
-function Gauge() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M3 15a9 9 0 0 1 18 0" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-      <path d="M12 15l4.5-5" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
