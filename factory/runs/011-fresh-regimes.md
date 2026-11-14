@@ -30,7 +30,8 @@ worker cap; smaller pools retain the original calculation path.
 
 ## Status
 
-done on `perf/fresh-regimes`.
+Merged into `main` after the branch evaluation and a clean merge with the
+updated `origin/main`.
 
 ## Result
 
@@ -79,6 +80,17 @@ three buildings and both years to the official baseline (maximum relative
 difference 7.2×10⁻¹⁶). Review found the app's small orchestration copy is
 needed because the pinned model exposes no single-regime entry point. The
 solver and model data remain untouched.
+
+After merging the updated `origin/main` into local `main`, the simulation
+files were identical to the evaluated optimization branch. `npm test` passed
+11/11, `npm run test:deployment` passed 7/7, and `npm run build` verified the
+six packaged wheels in `dist/py`. `npm run test:regimes` again matched the
+official baseline for all three buildings and both weather years (maximum
+relative difference 2.2×10⁻¹⁵). A production Chromium UI run on the merged
+tree changed Room temperature to 21.5 °C, reset the settings to defaults,
+then changed Room temperature to 21.5 °C again. All three runs completed four
+regime jobs without page errors; the warm runs took 6.97 s and 6.66 s. The
+score changed on screen after each run.
 
 The required `npx software-factory check-docs` could not run: the installed
 CLI reports `unknown command 'check-docs'`. Local links in changed docs were

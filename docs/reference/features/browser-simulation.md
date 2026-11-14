@@ -2,7 +2,7 @@
 
 [Knowledge base](../../index.md) · [Features](index.md)
 
-**Type:** Reference · Answers: how does this branch run a fresh building simulation?
+**Type:** Reference · Answers: how does the app run a fresh building simulation?
 
 `simulate(buildingId, params)` in `src/sim/client.ts` submits a normal and
 reduced thermal-regime job for each weather year when four worker slots are
