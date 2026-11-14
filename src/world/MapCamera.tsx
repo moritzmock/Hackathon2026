@@ -10,6 +10,7 @@ import { buildingsById } from "../data/challenge";
 import { useStore } from "../store";
 import { EDGE } from "./edgeFade";
 import { buildingAnchor, focusCenter } from "./focus";
+import { framing } from "./framing";
 
 const ACTION = CameraControlsImpl.ACTION;
 const MIN_DISTANCE = 35;
@@ -18,12 +19,19 @@ const ZOOM_PER_PIXEL = 0.0035; // wheel sensitivity: one mouse notch ≈ 30% clo
 const C = focusCenter;
 const HOME = { pos: new THREE.Vector3(C.x + 250, C.y + 1700, C.z + 3200), target: new THREE.Vector3(C.x + 200, C.y, C.z - 250) };
 const FAR = HOME.target.clone().add(HOME.pos.clone().sub(HOME.target).multiplyScalar(1.8));
+// Letting a building go steps back a little from where you are, instead of flying home.
+const STEP_BACK = 2.5; // times the current distance
+const STEP_BACK_MAX = 2500; // metres from the look-at point, at most
 
 export function MapCamera() {
   const ref = useRef<CameraControls>(null);
   const selected = useStore((s) => s.selected);
+  const hadBuilding = useRef(false);
+  const wentHome = useRef(false);
   const revealed = useStore((s) => s.revealed);
   const { gl, camera, scene, invalidate } = useThree();
+  const viewWidth = useThree((s) => s.size.width);
+  const viewHeight = useThree((s) => s.size.height);
 
   // Wheel zoom toward the cursor: move camera and target toward the ground point P
   // under the cursor by the same factor, so P stays under the cursor.
@@ -75,7 +83,7 @@ export function MapCamera() {
     return () => area.removeEventListener("wheel", onWheel);
   }, [gl, camera, scene, invalidate]);
 
-  // Fly to the selected building (or back home).
+  // Fly to the selected building; when it is let go, step back a little (first load: home).
   useEffect(() => {
     const c = ref.current;
     if (!c) return;
@@ -90,22 +98,49 @@ export function MapCamera() {
         c.setLookAt(FAR.x, FAR.y, FAR.z, HOME.target.x, HOME.target.y, HOME.target.z, false);
         return;
       }
-      c.setLookAt(HOME.pos.x, HOME.pos.y, HOME.pos.z, HOME.target.x, HOME.target.y, HOME.target.z, true);
-      invalidate();
+      if (hadBuilding.current) {
+        // A building was just let go (closed, or zoomed out of): keep looking at the same spot
+        // and step back a little, so you stay where you were in the city.
+        hadBuilding.current = false;
+        const pos = new THREE.Vector3(), target = new THREE.Vector3();
+        c.getPosition(pos, true);
+        c.getTarget(target, true);
+        const away = pos.sub(target);
+        away.setLength(Math.min(STEP_BACK_MAX, Math.max(away.length() * STEP_BACK, away.length())));
+        const to = target.clone().add(away);
+        c.setLookAt(to.x, to.y, to.z, target.x, target.y, target.z, true);
+        invalidate();
+        return;
+      }
+      // Once, as the clouds part: glide down to the city. Afterwards a change of the view's size
+      // (the list unfolding, a resized window) leaves the camera where it is.
+      if (!wentHome.current) {
+        wentHome.current = true;
+        c.setLookAt(HOME.pos.x, HOME.pos.y, HOME.pos.z, HOME.target.x, HOME.target.y, HOME.target.z, true);
+        invalidate();
+      }
       return;
     }
+    hadBuilding.current = true;
+    wentHome.current = true;
     const { centroid: [x, y], base, height, facts } = building;
     // Close up: the building fills a good part of the view (camera ends up ~1.5 r away).
     const r = Math.max(55, Math.sqrt(facts.footprint_area_m2 as number) * 1.6 + height * 1.5);
     const target = new THREE.Vector3(x, base + height * 0.4, -y);
     const pos = new THREE.Vector3(x + r * 0.8, base + height + r * 0.75, -y + r);
-    // Slide the view sideways so the building sits left of the detail panel.
-    const right = new THREE.Vector3().subVectors(target, pos).cross(camera.up).normalize().multiplyScalar(r * 0.32);
-    pos.add(right);
-    target.add(right);
+    // Move the building out from under its card: left of the side panel, or above the phone's bottom sheet.
+    const frame = framing(viewWidth, viewHeight);
+    pos.sub(target).multiplyScalar(frame.distance).add(target);
+    const forward = new THREE.Vector3().subVectors(target, pos);
+    const right = forward.clone().cross(camera.up).normalize();
+    const screenUp = right.clone().cross(forward).normalize();
+    const halfView = forward.length() * Math.tan(THREE.MathUtils.degToRad((camera as THREE.PerspectiveCamera).fov / 2));
+    const shift = right.multiplyScalar(r * frame.side).add(screenUp.multiplyScalar(-frame.up * halfView));
+    pos.add(shift);
+    target.add(shift);
     c.setLookAt(pos.x, pos.y, pos.z, target.x, target.y, target.z, true);
     invalidate();
-  }, [selected, camera, revealed, invalidate]);
+  }, [selected, camera, revealed, invalidate, viewWidth, viewHeight]);
 
   return (
     <CameraControls

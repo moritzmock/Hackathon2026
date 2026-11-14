@@ -2,6 +2,7 @@ import { PerformanceMonitor } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useRef, useState } from "react";
 import { BuildingList } from "./panels/BuildingList";
+import { BuildingStrip } from "./panels/BuildingStrip";
 import { DetailPanel } from "./panels/DetailPanel";
 import { LayersControl } from "./panels/LayersControl";
 import { LoadingScreen } from "./panels/LoadingScreen";
@@ -41,6 +42,7 @@ export function App() {
             <a className="approaches-map-link" href={pages.runs}>Show approaches</a>
             <WeatherSign />
           </div>
+          <BuildingStrip />
           <DetailPanel />
         </main>
         <LoadingScreen />

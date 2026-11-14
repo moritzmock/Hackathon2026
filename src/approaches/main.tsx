@@ -4,7 +4,10 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/sora/600.css";
+import "../index.css";
 import "../styles.css";
+import "../brand/brand.css";
+import "../site/site.css";
 import "./approaches.css";
 import { ApproachesPage } from "./ApproachesPage";
 

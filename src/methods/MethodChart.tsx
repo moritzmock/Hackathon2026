@@ -18,11 +18,18 @@ function RunDot({ row, metric, floor, best }: { row: Run; metric: Metric; floor:
   const score = row[metric];
   const below = score < floor;
   const d = describeApproach(row.run);
+  // Radix opens a tooltip on hover and keyboard focus only, and closes it on a click; here a click
+  // (a tap on a phone) opens it. preventDefault stops Radix's own click handler from closing it again.
+  const [open, setOpen] = useState(false);
   return (
-    <Tooltip>
+    <Tooltip open={open} onOpenChange={setOpen}>
       <TooltipTrigger asChild>
         <button
           type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            setOpen(true);
+          }}
           className={`method-dot${best ? " is-best" : ""}${below ? " is-below" : ""}`}
           style={{ left: below ? 0 : `${position(score, floor)}%` }}
           aria-label={`${d.method}, ${d.group}${d.variant ? `, variant ${d.variant}` : ""}: ${fmt(score)}`}
