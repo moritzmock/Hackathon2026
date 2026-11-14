@@ -239,8 +239,6 @@ kbd, .kbd {
 .legend { flex-wrap: wrap; gap: 0.25rem 0.9rem; }
 .legend span { white-space: nowrap; }
 .legend--off { opacity: 0.45; }
-.line--running { opacity: 0.35; animation: pulse 1.2s ease-in-out infinite; }
-@keyframes pulse { 50% { opacity: 0.15; } }
 
 /* shadcn tokens mapped to the app's warm palette */
 :root {
