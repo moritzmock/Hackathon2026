@@ -51,7 +51,7 @@ Chosen: a **Sora wordmark** and the **gauge** logomark (a C with a flame), in vi
   orange (kept by the owner on 2026-11-14). It is Sora's own round dot, coloured,
   not a drawn tile: an earlier tile with one sharp corner looked skewed.
 - **Tab icon:** the same mark, white line work and an orange flame on a violet tile (`public/favicon.svg`).
-- **Brand files:** `public/brand/` holds the mark, the logo with the name as outlines, white versions and the app icon, each as SVG, PNG (transparent) and PDF, and `calibra-corporate-identity.pdf` (logo, colours, type, interface rules). `scripts/build_brand_svgs.py` writes the SVGs.
+- **Brand files:** `public/brand/` holds the mark, the logo with the name as outlines, white versions and the app icon, each as SVG, PNG (transparent) and PDF, and `calibra-corporate-identity.pdf` (logo, colours, type, interface rules). `scripts/build_brand_svgs.py` writes the SVGs; the identity PDF is printed from `scripts/brand/corporate-identity.html` with `node scripts/print_brand_identity.mjs`, and `calibra-brand-kit.zip` holds all of them. After a change to the logo, rebuild all three.
 - **Not one city:** no tagline, and no city in the name. Calibra is meant for
   any city; Bolzano is the one shown for now, named under the logo at the top
   left ("Bolzano · 3 buildings").
