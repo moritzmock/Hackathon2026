@@ -578,7 +578,7 @@ body { background: #fff; }
 @keyframes bar-sheen { to { background-position: -200% 0; } }
 @media (prefers-reduced-motion: reduce) { .run-overlay__card .run-overlay__bar > i { animation: none; } }
 /* The Calibra searching animation in the settings overlays. */
-.run-overlay__head .run-overlay__anim { width: 56px; flex: none; }
+.run-overlay__head .calibra-mark { flex: none; }
 .mdl .mdl__anim { width: 120px; justify-self: center; margin: 2px 0 -2px; }
 .mdl.run-overlay__card { gap: 10px; }
 /* The open building in the folded strip: a soft orange tile. */

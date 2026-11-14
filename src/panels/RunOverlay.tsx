@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { YEARS } from "../sim/client";
 import { useStore } from "../store";
-import { SearchAnimation } from "../brand/SearchAnimation";
+import { CalibraMark } from "../brand/CalibraLogo";
 import { runEstimate } from "./runEstimate";
 import { SETUP_LABELS } from "./setupLabels";
 
@@ -69,7 +69,8 @@ function OverlayContent({ id, moves, label, format }: Props) {
   return (
     <motion.div className="run-overlay__card" initial={{ y: 8, scale: 0.98 }} animate={{ y: 0, scale: 1 }} transition={{ type: "spring", stiffness: 380, damping: 30 }}>
       <div className="run-overlay__head">
-        <SearchAnimation className="run-overlay__anim" flame={false} />
+        {/* One run, no search: the radar sweep settling on its blip, not the Bayesian search. */}
+        <CalibraMark size={44} spinning />
         <div>
           <p className="run-overlay__title">{e.stage === "setup" ? "Setting up the model" : "Simulating your settings"}</p>
           <p className="run-overlay__time">{clock(e.elapsed)} of about {clock(e.expected)}</p>
