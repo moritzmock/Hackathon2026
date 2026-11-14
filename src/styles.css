@@ -311,9 +311,9 @@ kbd, .kbd {
 .calibra-wordmark { display: block; font-family: var(--display); font-weight: 600; font-size: 1.75rem; letter-spacing: -0.04em; line-height: 1; color: var(--brand-violet); white-space: nowrap; }
 .calibra-wordmark__i { position: relative; display: inline-block; letter-spacing: 0; margin-right: -0.04em; }
 .calibra-wordmark__dot {
-  /* The orange tile as the dot of the i: sits where Sora's own dot would, a little larger. */
-  position: absolute; left: 50%; top: 0.05em; width: 0.17em; height: 0.17em; margin-left: -0.085em;
-  background: var(--accent); border-radius: 0.063em 0.012em 0.063em 0.063em;
+  /* Sora's own dot of the i, in orange: an orange "i" laid exactly over the violet dotless "ı",
+     cut off below the dot (in a line box of height 1em, the dot ends at 0.23 em and the stem starts at 0.30 em). */
+  position: absolute; left: 0; top: 0; color: var(--accent); clip-path: inset(0 0 calc(100% - 0.265em) 0);
 }
 .calibra-mark { display: block; flex: none; overflow: visible; }
 .calibra-mark__needle { transform-origin: 24px 24px; }

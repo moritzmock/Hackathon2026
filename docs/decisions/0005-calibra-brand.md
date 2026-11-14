@@ -47,8 +47,9 @@ Chosen: a **Sora wordmark** and the **gauge** logomark (a C with a flame), in vi
 - **Optimised:** the "Use optimised" button carries the Calibra mark, its
   line work in the button's text colour and the flame orange ("use optimised
   should show our logo"); sparkles suggested AI magic.
-- **Wordmark:** "Calibra" in Sora 600, violet, with an orange tile as the dot
-  on the i (kept by the owner on 2026-11-14).
+- **Wordmark:** "Calibra" in Sora 600, violet, with the dot on the i in
+  orange (kept by the owner on 2026-11-14). It is Sora's own round dot, coloured,
+  not a drawn tile: an earlier tile with one sharp corner looked skewed.
 - **Tab icon:** the same mark, white line work and an orange flame on a violet tile (`public/favicon.svg`).
 - **Brand files:** `public/brand/` holds the mark, the logo with the name as outlines, white versions and the app icon, each as SVG, PNG (transparent) and PDF, and `calibra-corporate-identity.pdf` (logo, colours, type, interface rules). `scripts/build_brand_svgs.py` writes the SVGs.
 - **Not one city:** no tagline, and no city in the name. Calibra is meant for

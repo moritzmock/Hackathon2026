@@ -27,14 +27,14 @@ export function CalibraMark({ size = 40, spinning = false, tone = "brand" }: { s
   );
 }
 
-/** The name, set in Sora, with an orange tile as the dot of the i. */
+/** The name, set in Sora, with the dot of the i in orange. */
 export function CalibraWordmark() {
   return (
     <span className="calibra-wordmark" aria-label="Calibra">
       <span aria-hidden="true">
         Cal
         <span className="calibra-wordmark__i">
-          ı<span className="calibra-wordmark__dot" />
+          ı<span className="calibra-wordmark__dot">i</span>
         </span>
         bra
       </span>
