@@ -42,11 +42,12 @@ OUT_PUBLIC = ROOT / "public" / "data"
 OUT_SRC = ROOT / "src" / "data"
 
 ORIGIN = (46.4983, 11.3548)          # Bolzano centre (Waltherplatz)
-HALF = 12000.0                       # terrain half-extent, metres
-GRID = 601                           # terrain samples per side (40 m spacing)
-TEX = 6144                           # ground texture size, px (~3.9 m/px)
+HALF = 5000.0                        # terrain half-extent, metres (10 km across; small for performance)
+GRID = 251                           # terrain samples per side (40 m spacing)
+TEX = 2560                           # ground texture size, px (~3.9 m/px)
 DEM_ZOOM = 13
-BUILDING_BBOX = (46.4395, 11.270, 46.5571, 11.4396)  # s, w, n, e (about ±6.5 km around the centre)
+BUILDING_BBOX = (46.4395, 11.270, 46.5571, 11.4396)  # s, w, n, e (about ±6.5 km around the centre; the cached download)
+BUILDING_RADIUS = 2600.0             # city buildings kept within this distance of the centre, metres
 MIN_IOU = 0.95
 USER_AGENT = "hackathon2026-world-builder/0.1"
 OVERPASS_SERVERS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"]
@@ -512,7 +513,7 @@ def main() -> None:
         if (e["type"], e["id"]) in matched_ids:
             continue
         c = poly.centroid
-        if abs(c.x) > lim or abs(c.y) > lim:
+        if abs(c.x) > lim or abs(c.y) > lim or math.hypot(c.x, c.y) > BUILDING_RADIUS:
             continue
         tags = e.get("tags", {})
         h = building_height(tags, poly.area, f"{e['type']}{e['id']}")

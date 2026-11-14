@@ -3,13 +3,13 @@
 import * as THREE from "three";
 import { focusCenter } from "./focus";
 
-export const EDGE = { start: 6300, end: 11000 };
+export const EDGE = { start: 2600, end: 4500 };
 
 /** The page background behind the map: the map's edge fades into it (and the sky's horizon). */
 export const EDGE_COLOR = new THREE.Color("#ffffff");
 
-const CLOUD_SCALE = 900; // metres per noise cell
-const CLOUD_WOBBLE = 1800; // how far the cloud border reaches in and out, metres
+const CLOUD_SCALE = 450; // metres per noise cell
+const CLOUD_WOBBLE = 800; // how far the cloud border reaches in and out, metres
 
 // Value noise + fBm, small enough to inline into three's shaders.
 const CLOUD_NOISE = `

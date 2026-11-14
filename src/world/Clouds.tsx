@@ -8,7 +8,7 @@ import { motionTime } from "./motion";
 import { theme } from "./theme";
 
 const COUNT = 14;
-const RANGE = 4200; // clouds drift within this distance of the centre, then wrap round
+const RANGE = 3000; // clouds drift within this distance of the centre, then wrap round
 const WIND = 9; // metres per second, toward the east
 const NEAR_FADE = [700, 1600]; // camera distance where clouds fade out (so they never block a close look)
 
