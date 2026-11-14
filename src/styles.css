@@ -79,7 +79,8 @@ kbd, .kbd {
 .list.is-collapsed .list__head { padding: 4px 0 10px; display: grid; justify-items: center; }
 .list.is-collapsed .list__brand { margin: 0; }
 .list.is-collapsed .list__brand .calibra-wordmark, .list.is-collapsed .list__head h2 { display: none; }
-.list__brand { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.list__brand { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; color: inherit; text-decoration: none; border-radius: 10px; }
+.list__brand:focus-visible { outline: 2px solid var(--heading); outline-offset: 4px; }
 .list__brand .calibra-wordmark { font-size: 1.75rem; }
 .list__head h2 { color: var(--heading); font-family: var(--display); font-size: 0.875rem; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; }
 .list__head h2 span { font-family: "Inter", system-ui, sans-serif; font-weight: 400; color: var(--muted); letter-spacing: 0; }
@@ -390,7 +391,7 @@ body { background: #fff; }
 .map-top-controls { transition: left 0.35s var(--spring); }
 .list:not(.is-collapsed) ~ .stage .map-top-controls { left: 260px; }
 .list.is-collapsed { width: 72px; padding: 22px 8px 12px; }
-.list__scroll { grid-template-columns: 1fr; gap: 18px; padding: 2px 2px 14px; scrollbar-width: thin; scrollbar-color: rgb(20 24 30 / 0.12) transparent; }
+.list__scroll { grid-template-columns: 1fr; gap: 4px; padding: 2px 2px 14px; scrollbar-width: thin; scrollbar-color: rgb(20 24 30 / 0.12) transparent; }
 .list.is-collapsed .list__scroll { grid-template-columns: 1fr; gap: 10px; }
 
 .stay {

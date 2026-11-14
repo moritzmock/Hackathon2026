@@ -6,6 +6,7 @@ import type { ChallengeBuilding } from "../data/types";
 import { useStore } from "../store";
 import { buildingName, buildingNumber } from "./buildingName";
 import { CalibraMark, CalibraWordmark } from "../brand/CalibraLogo";
+import { pages } from "../site/pages";
 
 const ids = challenge.buildings.map((b) => b.id);
 
@@ -46,10 +47,11 @@ export function BuildingList() {
             transition={{ type: "spring", stiffness: 240, damping: 30, delay: 0.5 }}
           >
             <header className="list__head">
-              <span className="list__brand">
+              {/* The logo always leads back to the landing page, as on the other pages. */}
+              <a className="list__brand" href={pages.landing} aria-label="Calibra, home">
                 <CalibraMark size={34} />
                 <CalibraWordmark />
-              </span>
+              </a>
               {/* Calibra is not tied to one city; Bolzano is the one shown for now. */}
               <h2>
                 Bolzano <span>· {challenge.buildings.length} buildings</span>
