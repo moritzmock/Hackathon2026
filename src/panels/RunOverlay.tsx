@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useStore } from "../store";
-import { CalibraMark } from "./CalibraLogo";
+import { CalibraMark } from "../brand/CalibraLogo";
 import { runEstimate } from "./runEstimate";
 
 // The first-time setup steps in plain words, same order as SETUP_STEPS in sim/client.

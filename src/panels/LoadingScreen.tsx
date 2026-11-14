@@ -9,7 +9,7 @@ import { worldLoaded } from "../data/world";
 import { warmUp } from "../sim/client";
 import { renderPortraits } from "../portrait/render";
 import { useStore } from "../store";
-import { CalibraLogo, CalibraMark } from "./CalibraLogo";
+import { CalibraLogo, CalibraMark } from "../brand/CalibraLogo";
 
 // Steps in order; weight = share of the progress bar, tau = typical seconds (first visit).
 const STEPS = [
