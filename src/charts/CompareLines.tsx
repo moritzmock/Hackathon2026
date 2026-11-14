@@ -5,8 +5,9 @@ import { WeatherStrip } from "./WeatherStrip";
 import { fmtKwh, MONTHS } from "../metrics";
 
 type Key = "measured" | "yours" | "optimised";
+// The bills are monthly totals, so they are bars; the two model results are lines over them.
 const SERIES: { key: Key; label: string; color: string; dash?: string }[] = [
-  { key: "measured", label: "Measured", color: "var(--measured)" },
+  { key: "measured", label: "Measured (bills)", color: "var(--measured)" },
   { key: "yours", label: "Your settings", color: "var(--whatif)", dash: "5 4" },
   { key: "optimised", label: "Optimised", color: "var(--optimised)" },
 ];
@@ -52,7 +53,8 @@ export function CompareLines({
   const all = Object.values(values).flat().filter((v): v is number => v !== undefined);
   const step = niceStep(Math.max(...all) / 4);
   const yMax = step * Math.ceil(Math.max(...all) / step);
-  const x = (i: number) => ml + ((W - ml - mr) * i) / (records.length - 1);
+  const pad = 18; // room for the first and last bar inside the axes
+  const x = (i: number) => ml + pad + ((W - ml - mr - 2 * pad) * i) / (records.length - 1);
   const y = (v: number) => mt + (H - mt - mb) * (1 - v / yMax);
   const ticks = Array.from({ length: Math.round(yMax / step) + 1 }, (_, i) => i * step);
 
@@ -61,7 +63,11 @@ export function CompareLines({
       <div className="legend">
         {visibleSeries.map((s) => (
           <span key={s.key} className={s.key === "optimised" && !optimised ? "legend--off" : undefined}>
-            <svg className="legend__line" viewBox="0 0 18 8" aria-hidden="true"><line x1="1" x2="17" y1="4" y2="4" stroke={s.color} strokeWidth={2} strokeDasharray={s.dash} strokeLinecap="round" /></svg>
+            {s.key === "measured" ? (
+              <svg className="legend__line" viewBox="0 0 18 8" aria-hidden="true"><rect x="3" y="0" width="12" height="8" rx="1.5" className="chart__bar" /><line x1="3" x2="15" y1="1" y2="1" className="chart__bar-top" /></svg>
+            ) : (
+              <svg className="legend__line" viewBox="0 0 18 8" aria-hidden="true"><line x1="1" x2="17" y1="4" y2="4" stroke={s.color} strokeWidth={2.5} strokeDasharray={s.dash} strokeLinecap="round" /></svg>
+            )}
             {s.label}
             {s.key === "optimised" && !optimised && <small> (none yet)</small>}
           </span>
@@ -94,18 +100,27 @@ export function CompareLines({
         {onPickDay && focus && (
           <WeatherStrip month={focus} left={0} width={W} top={H - mb + 30} day={day} onPickDay={onPickDay} />
         )}
+        {/* Measured bills: one bar per month, its top edge darker so the exact value reads. */}
+        <g className="chart__bars">
+          {values.measured.map((v, i) => v === undefined ? null : (
+            <g key={`bar${i}`} onMouseEnter={() => setTip(`${MONTHS[records[i].month]} ${records[i].year} · Measured: ${fmtKwh(v)} kWh`)} onMouseLeave={() => setTip(null)}>
+              <rect className="chart__bar" x={x(i) - 13} y={y(v)} width={26} height={y(0) - y(v)} rx={4} />
+              <line className="chart__bar-top" x1={x(i) - 13} x2={x(i) + 13} y1={y(v) + 1} y2={y(v) + 1} />
+            </g>
+          ))}
+        </g>
         {/* The lines draw in from the left when the chart first shows. */}
         <defs><clipPath id={revealId}><rect className="chart__reveal" x={0} y={0} width={W} height={H} /></clipPath></defs>
         <g clipPath={`url(#${revealId})`}>
-        {visibleSeries.map((s) => {
+        {visibleSeries.filter((s) => s.key !== "measured").map((s) => {
           const pts = values[s.key].map((v, i) => (v === undefined ? null : [x(i), y(v)] as const));
           if (pts.some((p) => p === null)) return null;
           const d = pts.map((p, i) => `${i ? "L" : "M"}${p![0]},${p![1]}`).join(" ");
           return (
             <g key={s.key} className="line">
-              <path d={d} fill="none" stroke={s.color} strokeWidth={2} strokeDasharray={s.dash} strokeLinejoin="round" style={{ transition: "d 0.6s ease" }} />
+              <path d={d} fill="none" stroke={s.color} strokeWidth={2.5} strokeDasharray={s.dash} strokeLinejoin="round" style={{ transition: "d 0.6s ease" }} />
               {pts.map((p, i) => (
-                <circle key={i} cx={p![0]} cy={p![1]} r={3} fill={s.key === "yours" ? "var(--surface)" : s.color} stroke={s.key === "yours" ? s.color : "var(--surface)"} strokeWidth={s.key === "yours" ? 2 : 1.5}
+                <circle key={i} cx={p![0]} cy={p![1]} r={3.5} fill={s.key === "yours" ? "var(--surface)" : s.color} stroke={s.key === "yours" ? s.color : "var(--surface)"} strokeWidth={s.key === "yours" ? 2 : 1.5}
                   style={{ transition: "cy 0.6s ease" }}
                   onMouseEnter={() => setTip(`${MONTHS[records[i].month]} ${records[i].year} · ${s.label}: ${fmtKwh(values[s.key][i]!)} kWh`)}
                   onMouseLeave={() => setTip(null)} />

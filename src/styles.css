@@ -409,11 +409,11 @@ kbd, .kbd {
 .wlegend { display: flex; flex-wrap: wrap; gap: 2px 10px; margin-top: 2px; color: var(--muted); font-size: 0.6875rem; }
 .wlegend span { display: flex; align-items: center; gap: 3px; }
 .wlegend i { width: 8px; height: 8px; border-radius: 2px; }
-.wlegend .is-sun, .chart .wstrip--sunny rect { background: #e2b26a; fill: #e2b26a; }
-.wlegend .is-cloud, .chart .wstrip--some-sun rect, .chart .wstrip--overcast rect { background: #c3c7cc; fill: #c3c7cc; }
-.wlegend .is-rain, .chart .wstrip--rain rect { background: #5d8fd0; fill: #5d8fd0; }
-.wlegend .is-snow { background: #fff; box-shadow: inset 0 0 0 1px #9fb3c8; }
-.chart .wstrip--snow rect { fill: #fff; stroke: #9fb3c8; stroke-width: 0.8; }
+.wlegend .is-sun, .chart .wstrip--sunny rect { background: #f0c987; fill: #f0c987; }
+.wlegend .is-cloud, .chart .wstrip--some-sun rect, .chart .wstrip--overcast rect { background: #d3d7de; fill: #d3d7de; }
+.wlegend .is-rain, .chart .wstrip--rain rect { background: #93a9c9; fill: #93a9c9; }
+.wlegend .is-snow { background: #fff; box-shadow: inset 0 0 0 1px #b6c2d2; }
+.chart .wstrip--snow rect { fill: #fff; stroke: #b6c2d2; stroke-width: 0.8; }
 .chart .wstrip__day { cursor: pointer; }
 .chart .wstrip__day.is-on rect { stroke: var(--ink); stroke-width: 1.5; }
 .loading__card:has(.loading__debug[open]) { width: min(680px, 100%); }
@@ -626,3 +626,12 @@ body { background: #fff; }
 @media (prefers-reduced-motion: reduce) {
   .run-steps li.is-active .run-steps__dot i, .run-winters__w.is-running > i, .stay.is-active, .chart__reveal, .setrow.is-changed .setrow__value, .ptile { animation: none !important; transition: none !important; transform: none !important; }
 }
+
+/* Chart: the bills as soft grey bars with a darker top edge; the model results as lines over them. */
+.chart .chart__bar { fill: #d5d9df; transition: y 0.6s ease, height 0.6s ease; }
+.chart .chart__bar-top { stroke: #6b707b; stroke-width: 2; stroke-linecap: round; }
+.chart__bars > g { transform-box: fill-box; transform-origin: bottom; animation: bar-grow 0.7s var(--spring) both; }
+.chart__bars > g:nth-child(2) { animation-delay: 0.05s; } .chart__bars > g:nth-child(3) { animation-delay: 0.1s; } .chart__bars > g:nth-child(4) { animation-delay: 0.15s; }
+@keyframes bar-grow { from { transform: scaleY(0); } }
+.chart rect.chart__bar:hover { opacity: 0.8; }
+@media (prefers-reduced-motion: reduce) { .chart__bars > g { animation: none !important; } }

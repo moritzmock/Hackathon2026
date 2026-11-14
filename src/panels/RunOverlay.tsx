@@ -24,7 +24,7 @@ interface Props {
 /**
  * Lies over the settings while the model runs and explains it in three steps that follow
  * the real run: your change, the two winters simulated hour by hour (each ticks off when the
- * model reports it done), then the comparison with the bills.
+ * model reports it done), then what follows: the score against the bills, which is instant.
  */
 export function RunOverlay(props: Props) {
   const { id } = props;
@@ -97,11 +97,11 @@ function OverlayContent({ id, lastMove, label, format }: Props) {
             </span>
           </div>
         </li>
-        <li className={allDone ? "is-active" : ""}>
+        <li className="is-next">
           <span className="run-steps__dot"><i /></span>
           <div>
-            <b>Comparing with the bills</b>
-            <span className="run-steps__change">The score updates when it is done</span>
+            <b>Then: the new score</b>
+            <span className="run-steps__change">How close the simulated heating comes to the gas bills over the four months. Instant once both winters are done.</span>
           </div>
         </li>
       </ol>
