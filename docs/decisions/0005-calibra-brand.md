@@ -26,21 +26,26 @@ orange, greys). The owner found the violet too heavy and asked for a rebrand.
 
 Chosen: a **Sora wordmark** and the **radar** logomark, in near-black ink and orange.
 
-- **Wordmark:** "Calibra" in Sora 600, ink `#241a2e`. The dot of the i is an
-  orange tile (`#f26e26`), a rounded square with one sharp corner.
-- **Logomark, "radar":** a C-shaped dial drawn with the wordmark's weight and
-  straight-cut ends, the same orange tile as its target in the opening, and an
-  orange needle pointing at it. While the app loads, the needle swings past the
-  target, back, and settles on it: before calibration the model is off, and
-  calibration brings it onto the bills. This is the loading animation.
-- **Tab icon:** the same dial in white on an ink tile (`public/favicon.svg`).
+- **Logomark:** the INTEGRATES **Performa** tool icon (integratesproject.eu/#tools),
+  cut down and adapted to buildings: a violet gauge ring with round caps, two
+  ticks, a ring hub and a needle, and a solid orange house in the ring's gap
+  where Performa has its lightning bolt. The ring stops short of the house so
+  they never touch. While the app loads, the needle swings past its mark, back,
+  and settles: before calibration the model is off, and calibration brings it
+  onto the bills. Earlier versions (an ink "radar" dial, a building in a loop,
+  a house with a gauge inside) were dropped.
+- **Wordmark:** "Calibra" in Sora 600, violet, with no extra detail (the
+  orange dot on the i was dropped).
+- **Tab icon:** the same mark, white gauge and orange house on a violet tile (`public/favicon.svg`).
 - **Not one city:** no tagline, and no city in the name. Calibra is meant for
   any city; Bolzano is the one shown for now, named under the logo at the top
   left ("Bolzano · 3 buildings").
-- **Interface:** Sora for the name and headings, Inter for text (both bundled
-  with `@fontsource`). Ink for text and the selected building, orange for the
-  simulation and your settings, teal `#1f7a86` for the optimised result. No
-  violet. The orange and the brand tile shape stay from INTEGRATES.
+- **Interface:** the INTEGRATES colour tokens: violet `#4f256e` for headings,
+  the brand, the selected building and measured data; neutral grey `#4b4f58`
+  for text; orange `#f26e26` for the simulation and your settings; light violet
+  `#ba86bb` for the optimised result. Type stays Calibra's own: Sora for the
+  name and headings, Inter for text (both bundled with `@fontsource`), not the
+  site's Aptos.
 
 The code is in `src/panels/CalibraLogo.tsx` and the tokens at the top of
 `src/styles.css`.

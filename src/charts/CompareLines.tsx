@@ -1,5 +1,7 @@
 import { useState } from "react";
 import type { MonthlyRecord, SimRow } from "../data/types";
+import type { DayKey } from "../weather/conditions";
+import { WeatherStrip } from "./WeatherStrip";
 import { fmtKwh, MONTHS } from "../metrics";
 
 type Key = "measured" | "yours" | "optimised";
@@ -14,7 +16,7 @@ function niceStep(v: number) {
   return [1, 2, 2.5, 5, 10].map((s) => s * p).find((s) => s >= v)!;
 }
 
-/** Measured vs your settings vs optimised, over the four scored months. */
+/** Measured vs your settings vs optimised, over the four scored months; under a picked month's column, its days and their weather. */
 export function CompareLines({
   records,
   yours,
@@ -22,6 +24,8 @@ export function CompareLines({
   running,
   focus,
   onPickMonth,
+  day = null,
+  onPickDay,
 }: {
   records: MonthlyRecord[];
   yours: SimRow[] | undefined; // undefined: organiser defaults (the baseline)
@@ -31,6 +35,10 @@ export function CompareLines({
   focus?: { year: number; month: number } | null;
   /** Clicking a month's column; clicking the focused month again clears it. */
   onPickMonth?: (m: { year: number; month: number } | null) => void;
+  /** The day the map shows, marked in the weather strip. */
+  day?: DayKey | null;
+  /** Clicking a day in the weather strip; clicking it again clears it. */
+  onPickDay?: (d: DayKey | null) => void;
 }) {
   const [tip, setTip] = useState<string | null>(null);
   const at = (rows: SimRow[] | undefined, r: MonthlyRecord) => rows?.find((s) => s.year === r.year && s.month === r.month)?.kwh;
@@ -39,7 +47,8 @@ export function CompareLines({
     yours: records.map((r) => (yours ? at(yours, r) : r.baseline_kwh)),
     optimised: records.map((r) => at(optimised, r)),
   };
-  const W = 360, H = 230, ml = 44, mr = 16, mt = 24, mb = 40;
+  const strip = Boolean(onPickDay && focus);
+  const W = 360, H = strip ? 264 : 230, ml = 44, mr = 16, mt = 24, mb = strip ? 74 : 40;
   const all = Object.values(values).flat().filter((v): v is number => v !== undefined);
   const step = niceStep(Math.max(...all) / 4);
   const yMax = step * Math.ceil(Math.max(...all) / step);
@@ -83,6 +92,9 @@ export function CompareLines({
             {MONTHS[r.month]} {r.year}
           </text>
         ))}
+        {onPickDay && focus && (
+          <WeatherStrip month={focus} left={0} width={W} top={H - mb + 30} day={day} onPickDay={onPickDay} />
+        )}
         {SERIES.map((s) => {
           const pts = values[s.key].map((v, i) => (v === undefined ? null : [x(i), y(v)] as const));
           if (pts.some((p) => p === null)) return null;
@@ -100,6 +112,14 @@ export function CompareLines({
           );
         })}
       </svg>
+      {strip && (
+        <div className="wlegend" aria-hidden="true">
+          <span><i className="is-sun" />sunny</span>
+          <span><i className="is-cloud" />cloudy</span>
+          <span><i className="is-rain" />rain</span>
+          <span><i className="is-snow" />snow</span>
+        </div>
+      )}
       {tip && <figcaption className="tip">{tip}</figcaption>}
     </figure>
   );

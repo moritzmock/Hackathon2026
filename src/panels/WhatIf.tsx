@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Info, RotateCcw, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { challenge } from "../data/challenge";
@@ -16,6 +15,11 @@ const fmt = (v: number, unit: string) => {
   if (unit === "fraction") return `${Math.round(v * 100)} %`;
   return `× ${v.toFixed(2)}`;
 };
+
+// Where the slider draws its handle for a value (0 … 1): the handle is kept inside the
+// track, so it is shifted in by up to half its width at the ends. Marks use the same.
+const THUMB_PX = 12; // size-3 in components/ui/slider.tsx
+const tickLeft = (t: number) => `calc(${t * 100}% + ${(THUMB_PX / 2) * (1 - 2 * t)}px)`;
 
 // The 12 settings in three topics, each with a plain label and a hint.
 const GROUPS: { title: string; items: { name: string; label: string; hint: string }[] }[] = [
@@ -71,15 +75,28 @@ export function WhatIf({ id }: { id: string }) {
 
   return (
     <section className="space-y-4 border-t pt-4">
-      <div className="flex items-center justify-end gap-2">
-        <div className="flex gap-1">
-          <Button size="sm" variant="outline" disabled={!optimised} title="Copy the optimised settings (the purple ticks on the sliders)" onClick={() => optimised && setParams(id, optimised.params)}>
-            <Sparkles /> Use optimised
-          </Button>
-          <Button size="sm" variant="ghost" disabled={!changed} onClick={() => resetParams(id)} aria-label="Reset to defaults">
-            <RotateCcw />
-          </Button>
-        </div>
+      {/* Header row: title, then the two shortcuts (optimised values, back to defaults). */}
+      <div className="flex items-center gap-2">
+        <h3 className="flex-1 text-sm font-semibold">Settings</h3>
+        <button
+          type="button"
+          className="settings-action settings-action--optimised"
+          disabled={!optimised || same(params, optimised.params)}
+          title="Set the sliders back to the optimised values (the ticks)"
+          onClick={() => optimised && setParams(id, optimised.params)}
+        >
+          <Sparkles size={13} /> Use optimised
+        </button>
+        <button
+          type="button"
+          className="settings-action settings-action--icon"
+          disabled={!changed}
+          onClick={() => resetParams(id)}
+          title="Back to the defaults"
+          aria-label="Back to the defaults"
+        >
+          <RotateCcw size={13} />
+        </button>
       </div>
 
       {GROUPS.map((g) => (
@@ -89,7 +106,8 @@ export function WhatIf({ id }: { id: string }) {
             const p = specs[it.name];
             const v = params[p.name];
             const opt = optimised?.params[p.name];
-            const isChanged = v !== p.default;
+            // Highlight only what was moved away from the starting values (the optimised ones when there are).
+            const isChanged = v !== (opt ?? p.default);
             return (
               <div key={p.name} className="grid grid-cols-[11.5rem_1fr_3.8rem] items-center gap-3">
                 <span className={`flex items-center gap-1 text-[0.8rem] ${isChanged ? "font-semibold text-[var(--whatif)]" : ""}`}>
@@ -105,8 +123,8 @@ export function WhatIf({ id }: { id: string }) {
                   <Slider min={p.lower} max={p.upper} step={(p.upper - p.lower) / 100} value={[v]}
                     onValueChange={([nv]) => setParam(id, p.name, nv)} aria-label={it.label} />
                   {opt !== undefined && (
-                    <i className="pointer-events-none absolute -top-1.5 h-3 w-0.5 -translate-x-1/2 rounded bg-[var(--optimised)]"
-                      style={{ left: `${((opt - p.lower) / (p.upper - p.lower)) * 100}%` }} />
+                    <i className="pointer-events-none absolute top-0 h-3 w-0.5 -translate-x-1/2 rounded bg-[var(--optimised)]"
+                      style={{ left: tickLeft((opt - p.lower) / (p.upper - p.lower)) }} />
                   )}
                 </div>
                 <span className="text-right text-[0.8rem] tabular-nums">{fmt(v, p.unit)}</span>

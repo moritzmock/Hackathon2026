@@ -150,12 +150,29 @@ const RAIN_DATA = Object.values(weather.years).some((y) => "rainDaily" in y);
 /** Whether the baked data has daily rain (it needs a build with internet). */
 export const hasRainData = RAIN_DATA;
 
-/** A month in focus: mid-month, early afternoon, with the month's average weather. */
+/**
+ * A month in focus: mid-month, early afternoon, with the month's average weather.
+ * A cold month is drawn clearly wintry, so it reads as cold at a glance: snow
+ * falling, the city white and the snow line down to the valley, scaled by how
+ * cold the month was (about 2 °C mean → full winter, 8 °C → none).
+ */
 export function monthConditions(m: MonthKey): Conditions {
   const s = monthSummary(m);
   const sun = sunPosition(weather.lat, weather.lon, weather.utcOffset, m.year, m.month, 15, 13.5);
-  const citySnow = Math.min(1, s.snowDays / 6);
-  return { source: "month", temp: s.temp, sun, clear: s.clear, sky: skyOf(s.clear, 0, false), season: seasonOf(m.month, 15), ...look(s.temp), citySnow };
+  const cold = 1 - smooth(s.temp, 2, 8);
+  const base = look(s.temp);
+  const citySnow = Math.max(Math.min(1, s.snowDays / 6), cold);
+  return {
+    source: "month",
+    temp: s.temp,
+    sun,
+    clear: cold > 0.5 ? Math.min(s.clear, 0.35) : s.clear,
+    sky: cold > 0.5 ? "snow" : skyOf(s.clear, 0, false),
+    season: seasonOf(m.month, 15),
+    snowLine: Math.min(base.snowLine, 1100 - 850 * cold),
+    winter: Math.max(base.winter, cold),
+    citySnow,
+  };
 }
 
 /** One day in focus: early afternoon, with that day's weather. */

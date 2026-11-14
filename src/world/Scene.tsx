@@ -37,7 +37,7 @@ export function Scene() {
   return (
     <>
       <color attach="background" args={[SKY]} />
-      <fog attach="fog" args={[SKY, 6000, 18000]} />
+      <fog attach="fog" args={[SKY, 9000, 27000]} />
       <SkyDome />
       <WeatherLights />
       <Precipitation />
@@ -71,7 +71,7 @@ export function Scene() {
         {layers.pins && (PIN_STYLE === "scene" ? <BuildingLabels3D /> : <BuildingPins />)}
         <StaticShadows version={JSON.stringify(layers)} />
       </Suspense>
-      <Effects tiltShift={layers.miniature} />
+      <Effects enabled={layers.effects} tiltShift={layers.miniature} />
     </>
   );
 }

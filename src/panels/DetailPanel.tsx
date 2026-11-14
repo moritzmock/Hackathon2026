@@ -7,7 +7,8 @@ import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 import { useStore } from "../store";
 import { buildingName } from "./buildingName";
-import { WhatIf } from "./WhatIf";
+import { same, WhatIf } from "./WhatIf";
+import { scoreColor } from "../world/scoreColor";
 import { RunProgress } from "./RunProgress";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,8 +22,17 @@ function Content({ b }: { b: ChallengeBuilding }) {
   const rows = run?.rows;
   const base = baselineWape(b.records);
   const w = rows ? wape(b.records, simLookup(rows)) : undefined;
+  // How good the current settings are, on the same red → green scale as the glow on the map.
+  const params = useStore((s) => s.params[b.id]);
+  const onOptimised = !!opt && same(params, opt.params);
+  const yours = score(w ?? base)!;
+  const yoursColor = `#${scoreColor(yours).getHexString()}`;
+  // Scored here like yours (all four months), not taken from the file.
+  const optScore = opt ? score(wape(b.records, simLookup(opt.rows))) : undefined;
   const weatherFocus = useWeather((s) => s.focus);
   const setWeatherFocus = useWeather((s) => s.setFocus);
+  const day = useWeather((s) => s.day);
+  const setDay = useWeather((s) => s.setDay);
   const f = b.facts;
   return (
     <>
@@ -31,19 +41,26 @@ function Content({ b }: { b: ChallengeBuilding }) {
           <h2>{buildingName(b.id)}</h2>
           <p className="muted small">{String(f.building_typology)} · built {String(f.construction_year)}</p>
         </div>
-        <kbd className="kbd">esc</kbd>
         <button className="icon-btn" onClick={() => select(null)} aria-label="Close"><X size={16} /></button>
       </header>
 
-      {/* Scores, chart and progress stay in view while the settings scroll. */}
-      <div className="detail__pinned sticky -top-5 z-10 -mx-5 mb-2 px-5 pt-1 pb-2">
-      <div className="mb-3 grid gap-2">
-        <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${w === undefined ? "" : "bg-[color-mix(in_srgb,var(--whatif)_12%,var(--paper))]"}`}>
-          <span className="text-[0.7rem] text-muted-foreground">Your settings</span>
-          <b className="text-2xl tabular-nums text-[var(--whatif)]">{score(w ?? base)!.toFixed(0)}<small className="ml-1 text-xs font-normal text-muted-foreground">/ 100</small></b>
+      <div className="mb-2">
+      {/* One box while on the optimised settings; it splits in two once you change something. */}
+      <div className={`mb-3 grid gap-2 ${onOptimised ? "" : "grid-cols-2"}`}>
+        <Card className="gap-0 rounded-xl border-0 px-3 py-2 shadow-none" style={{ background: `color-mix(in srgb, ${yoursColor} 12%, var(--paper))` }}>
+          <span className="text-[0.7rem] text-muted-foreground">{onOptimised ? "Optimised settings" : "Your settings"}</span>
+          <b className="text-2xl tabular-nums" style={{ color: yoursColor }}>{yours.toFixed(2)}<small className="ml-1 text-xs font-normal text-muted-foreground">/ 100</small></b>
         </Card>
+        {!onOptimised && (
+          <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${opt ? "bg-[color-mix(in_srgb,var(--optimised)_10%,var(--paper))]" : ""}`}>
+            <span className="text-[0.7rem] text-muted-foreground">Optimised</span>
+            <b className={`text-2xl tabular-nums ${opt ? "text-[var(--optimised)]" : "text-[var(--line)]"}`}>{optScore !== undefined ? optScore.toFixed(2) : "–"}<small className="ml-1 text-xs font-normal text-muted-foreground">{opt ? "/ 100" : "no result yet"}</small></b>
+          </Card>
+        )}
       </div>
-      <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"} focus={weatherFocus} onPickMonth={setWeatherFocus} />
+      {/* Click a month, or a day in the strip under it, to show its weather on the map. */}
+      <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"}
+        focus={weatherFocus} onPickMonth={setWeatherFocus} day={day} onPickDay={(d) => (d ? (setWeatherFocus({ year: d.year, month: d.month }), setDay(d)) : setDay(null))} />
         <RunProgress id={b.id} />
       </div>
       <WhatIf id={b.id} />

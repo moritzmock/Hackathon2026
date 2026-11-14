@@ -10,9 +10,12 @@ import * as THREE from "three";
 import interUrl from "@fontsource/inter/files/inter-latin-600-normal.woff?url";
 import { challenge } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
+import { optimisedFor } from "../data/optimised";
 import { buildingName } from "../panels/buildingName";
+import { same } from "../panels/WhatIf";
 import { useStore } from "../store";
 import { buildingAnchor } from "../world/focus";
+import { currentScore, scoreColor, textOn } from "../world/scoreColor";
 import { theme } from "../world/theme";
 import { useNear } from "./useNear";
 
@@ -114,7 +117,7 @@ function Label3D({ b }: { b: ChallengeBuilding }) {
     group.current.scale.setScalar(THREE.MathUtils.clamp(9 * Math.pow(d / 400, 0.65), 4, 60));
   });
 
-  if (selected) return null;
+  if (selected) return <ScoreLabel b={b} />;
   const showName = hovered || near;
   const events = {
     onClick: (e: { stopPropagation: () => void }) => {
@@ -144,6 +147,40 @@ function Label3D({ b }: { b: ChallengeBuilding }) {
           </Text>
         </Billboard>
       )}
+    </group>
+  );
+}
+
+/**
+ * Over the open building: its current score in the colour scale, and whether that
+ * is the optimised settings or yours. Follows the last finished run.
+ */
+function ScoreLabel({ b }: { b: ChallengeBuilding }) {
+  const anchor = useMemo(() => buildingAnchor(b, 0.5), [b]);
+  const group = useRef<THREE.Group>(null);
+  const rows = useStore((s) => s.runs[b.id]?.rows);
+  const params = useStore((s) => s.params[b.id]);
+  const opt = optimisedFor(b.id);
+  const value = currentScore(b, rows);
+  const color = useMemo(() => scoreColor(value), [value]);
+  const ink = textOn(color);
+  const label = `${opt && same(params, opt.params) ? "Optimised settings" : "Your settings"}  ${value.toFixed(2)}`;
+  const geo = useMemo(() => pill(label.length * 0.54 * FONT_SIZE + 2 * PAD_X, FONT_SIZE + 2 * PAD_Y), [label]);
+  const material = useMemo(() => new THREE.MeshBasicMaterial({ color, toneMapped: false }), [color]);
+  useFrame(({ camera }) => {
+    if (!group.current) return;
+    const d = camera.position.distanceTo(_p.set(...anchor));
+    group.current.scale.setScalar(THREE.MathUtils.clamp(9 * Math.pow(d / 400, 0.65), 4, 60));
+  });
+  return (
+    <group ref={group} position={anchor} userData={{ noSnapshot: true }}>
+      <mesh geometry={stemGeo} material={material} scale={[1, STEM, 1]} />
+      <Billboard position={[0, STEM + FONT_SIZE / 2 + PAD_Y, 0]}>
+        <mesh geometry={geo} material={material} />
+        <Text font={interUrl} fontSize={FONT_SIZE} color={ink} anchorX="center" anchorY="middle" position={[0, 0.02, 0.01]}>
+          {label}
+        </Text>
+      </Billboard>
     </group>
   );
 }

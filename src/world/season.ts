@@ -42,7 +42,9 @@ export function withSeason<M extends THREE.Material>(material: M): M {
           float snow = smoothstep(uSnowY - 80.0, uSnowY + 80.0, vSeasonY + wobble) * smoothstep(0.45, 0.75, vSeasonUp);
           // a patchy cover on flat ground in the valley after a cold spell
           float patches = 0.5 + 0.5 * sin(vSeasonXZ.x * 0.05 + sin(vSeasonXZ.y * 0.043) * 2.0) * sin(vSeasonXZ.y * 0.061);
-          snow = max(snow, uCitySnow * smoothstep(0.2, 0.55, patches) * smoothstep(0.85, 0.97, vSeasonUp) * 0.85);
+          // the more snow, the more of the flat ground it covers (almost all of it when uCitySnow = 1)
+          float cover = smoothstep(0.55 - 0.65 * uCitySnow, 0.8 - 0.55 * uCitySnow, patches);
+          snow = max(snow, uCitySnow * cover * smoothstep(0.85, 0.97, vSeasonUp) * 0.92);
           diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.95, 0.96, 0.98), snow * 0.92);
         }`,
       );
