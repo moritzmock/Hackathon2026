@@ -12,12 +12,16 @@ When a building is selected, show the orange “Your settings” graph line only
 
 ## Status
 
-in progress: cause found and scope recorded; test, implementation and browser check remain.
+done: the chart condition, tests, browser journey and feature reference are complete.
 
 ## Result
 
-Pending.
+- The chart no longer substitutes the baseline for the orange series. `src/charts/visibleCustomRows.ts` supplies orange rows only after a completed calculation matches the selected building's current custom settings. The orange legend entry follows the same condition. The measured and optimised lines still show as before.
+- The test was first run without its implementation and failed because the selector did not exist. After implementation, `npm test` passed 16/16 tests, TypeScript passed and `npm run build` completed, including model asset verification.
+- Browser check at `http://127.0.0.1:4174/?low`: selecting the first building showed only the measured and optimised legend entries and SVG paths. Changing the room-temperature slider produced an orange entry and path after calculation. “Use optimised” and “Back to the defaults” each removed them; they stayed absent after the reset settled. Browser page errors were empty.
+- The documented `npx software-factory check-docs` command returned `unknown command 'check-docs'`. A direct check of the changed feature-page links passed. `git diff --check` passed. The implementation and reference page were committed as `11f47da`.
 
 ## Later
 
-None.
+- The current score card still uses the previous run's value while a changed setting is calculating; the chart now hides that previous orange line. If this causes confusion, the score card's pending state can be addressed separately.
+- The installed factory CLI does not provide its documented `check-docs` command.
