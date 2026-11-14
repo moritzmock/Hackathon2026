@@ -1,6 +1,6 @@
-// The search replay's timeline, epoch by epoch (an epoch is one of the method's batches). Each epoch
-// starts with a short pause (longer when a new phase starts), then its tries appear one by one.
-// After the last epoch it holds briefly. The data is baked from the best run's evaluation trace by scripts/bake_search_replay.py.
+// The search replay's timeline, epoch by epoch (an epoch is one of the method's batches): each phase
+// starts with a short pause, then the tries of its epochs appear one by one. After the last epoch it
+// holds briefly. The data is baked from the best run's evaluation trace by scripts/bake_search_replay.py.
 
 export type StageName = "spread" | "focus" | "fine";
 export type Try = { score: number; final: boolean };
@@ -13,7 +13,7 @@ export type Stage = { stage: StageName; start: number; end: number; held: number
 export type Epoch = { start: number; end: number; proposed?: number; repeats?: number };
 export type BuildingReplay = { exact: boolean; tries: Try[]; stages: Stage[]; epochs: Epoch[] };
 
-export const TIMING = { stagePause: 1800, epochPause: 900, perTry: 380, endHold: 1200 };
+export const TIMING = { stagePause: 1800, perTry: 380, endHold: 1200 };
 
 type Beat = { kind: "pause" | "tries" | "end"; epoch: number; start: number; duration: number };
 export type Timeline = { beats: Beat[]; duration: number };
@@ -34,7 +34,7 @@ export function planTimeline(replay: BuildingReplay): Timeline {
   };
   replay.epochs.forEach((e, i) => {
     const newStage = i === 0 || stageOf(replay, e.start) !== stageOf(replay, replay.epochs[i - 1].start);
-    add("pause", i, newStage ? TIMING.stagePause : TIMING.epochPause);
+    if (newStage) add("pause", i, TIMING.stagePause);
     add("tries", i, (e.end - e.start) * TIMING.perTry);
   });
   add("end", replay.epochs.length - 1, TIMING.endHold);
@@ -53,8 +53,11 @@ export function frameAt(timeline: Timeline, replay: BuildingReplay, ms: number):
   return { shown, stage: stageOf(replay, Math.min(e.start, replay.tries.length - 1)), epoch: beat.epoch, beat: beat.kind, progress, done: time >= timeline.duration };
 }
 
-/** When epoch `epoch` starts (its pause), in milliseconds. */
-export const epochStart = (timeline: Timeline, epoch: number) => timeline.beats.find((b) => b.kind === "pause" && b.epoch === epoch)?.start ?? 0;
+/** When phase `stage` starts (its pause), in milliseconds. */
+export function stageStart(timeline: Timeline, replay: BuildingReplay, stage: number) {
+  const epoch = replay.epochs.findIndex((e) => e.start === replay.stages[stage].start);
+  return timeline.beats.find((b) => b.kind === "pause" && b.epoch === epoch)?.start ?? 0;
+}
 
 /** The index of the highest-scoring try among the first `shown`, or −1 when none is shown. */
 export function bestSoFar(tries: Try[], shown: number): number {

@@ -1,11 +1,11 @@
-// "Our best run, epoch by epoch": the phases and epochs on top (PhaseStrip) with one sentence on the
-// current phase, then the score of each of the real run's 48 tries, with the best so far as a
-// rising line. It plays epoch by epoch (replayTimeline.ts).
+// "How the search found the settings": the three phases on top (PhaseStrip) with one sentence on the
+// current phase, then the score of each of the real run's 48 tries, with the best so far as a rising
+// line and the phases shaded behind (replayTimeline.ts).
 import { useMemo, useRef, useState } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import { buildingName, buildingNumber } from "../panels/buildingName";
 import { PhaseStrip } from "./PhaseStrip";
-import { bestSoFar, epochStart, frameAt, planTimeline, type BuildingReplay, type StageName } from "./replayTimeline";
+import { bestSoFar, frameAt, planTimeline, stageStart, type BuildingReplay, type StageName } from "./replayTimeline";
 import replay from "./searchReplay.json";
 import { usePlayClock } from "./usePlayClock";
 
@@ -13,11 +13,11 @@ const BUILDINGS = ["building_01", "building_02", "building_03"] as const;
 type BuildingId = (typeof BUILDINGS)[number];
 const data = replay.buildings as Record<BuildingId, BuildingReplay>;
 
-const TITLES: Record<StageName, string> = { spread: "Spread out", focus: "Focus", fine: "Fine-tune" };
+const TITLES: Record<StageName, string> = { spread: "Initial phase", focus: "Focus phase", fine: "Full phase" };
 const TEXTS: Record<StageName, string> = {
   spread: "Try 1 is the model's defaults; the next tries are spread evenly over all settings.",
   focus: "Only the 6 settings that matter most are changed; the other 6 stay at the best try's values.",
-  fine: "All settings are free again. Each epoch, the method tries where its guess expects the most gain.",
+  fine: "All 12 settings are free again. Batch by batch, the method tries where it expects the most gain.",
 };
 
 const W = 1000;
@@ -61,7 +61,7 @@ export function SearchReplay() {
         </div>
       </div>
 
-      <PhaseStrip replay={b} frame={frame} titles={TITLES} onEpoch={(i) => clock.seek(epochStart(timeline, i))} />
+      <PhaseStrip replay={b} frame={frame} titles={TITLES} onPhase={(i) => clock.seek(stageStart(timeline, b, i))} />
       <p className="replay__phase">
         {clock.done && best >= 0 ? `Done: the best of ${n} tries is try ${best + 1}, with ${b.tries[best].score.toFixed(2)}.` : TEXTS[stage.stage]}
       </p>
@@ -70,9 +70,6 @@ export function SearchReplay() {
           <svg className="replay-main" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Score of each try for ${buildingName(id)}, try 1 to ${n}.`}>
             {b.stages.map((s, i) => (
               <rect key={s.stage} className={`replay-stage${i === frame.stage ? " is-current" : ""}`} x={edge(s.start) + 1} y={PAD.top} width={edge(s.end) - edge(s.start) - 2} height={H - PAD.top - PAD.bottom} rx={6} />
-            ))}
-            {b.epochs.slice(1).map((e) => (
-              <line key={e.start} className="replay-epoch" x1={edge(e.start)} x2={edge(e.start)} y1={PAD.top} y2={H - PAD.bottom} />
             ))}
             {[0, 25, 50, 75, 100].map((s) => (
               <g key={s} className="replay-grid">
@@ -111,7 +108,7 @@ export function SearchReplay() {
           value={Math.round(clock.time)}
           onChange={(e) => clock.seek(Number(e.target.value))}
           aria-label="Replay position"
-          aria-valuetext={`Epoch ${frame.epoch + 1} of ${b.epochs.length}, try ${frame.shown} of ${n}, ${TITLES[stage.stage]}`}
+          aria-valuetext={`Try ${frame.shown} of ${n}, phase ${frame.stage + 1}, ${TITLES[stage.stage]}`}
         />
         <span className="replay__count">Try {frame.shown} of {n}</span>
       </div>

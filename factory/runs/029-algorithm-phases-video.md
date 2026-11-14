@@ -28,8 +28,8 @@ The run's `evaluation_trace.csv` records every try: 48 per building × 3 buildin
 ### UX/UI (agreed, after several rounds)
 
 - The owner's data: `~/Downloads/evaluation_trace.csv` ("evaluation trace for our best algorithm"), byte-identical to the backend's trace for the best run; the score on the y-axis, `is_final_candidate` marks each building's best try, grouped by `building_id`.
-- The owner's direction, in order: real data only; "remove the flame"; "it should have this animation where it approximates the real data" (the textbook picture of a Bayesian search); "shouldn't it work across epochs, together with the one below, and killing the bar chart"; "make it more fluent as an animation"; expected improvement as its own panel is not needed; "what did you mean night temperature?"; "show me the epochs and phases, show both graphs"; "style this a bit easier, right now it's hard to read, just simplify it in general"; "what do you mean with: up close: one setting, night temperature"; "let's just do the right graph, with the phases".
-- The section: a building switch and the best score so far; one track with the three phase names over the epochs (clickable) and one sentence on the current phase; the real run's 48 tries (score on the y-axis, best so far, phases shaded, epochs as dashed borders); play, pause and a position slider. It plays epoch by epoch.
+- The owner's direction, in order: real data only; "remove the flame"; "it should have this animation where it approximates the real data" (the textbook picture of a Bayesian search); "shouldn't it work across epochs, together with the one below, and killing the bar chart"; "make it more fluent as an animation"; expected improvement as its own panel is not needed; "what did you mean night temperature?"; "show me the epochs and phases, show both graphs"; "style this a bit easier, right now it's hard to read, just simplify it in general"; "what do you mean with: up close: one setting, night temperature"; "let's just do the right graph, with the phases"; "show me just the phases, give the last one a better name"; "Initial phase → focus phase → full phase"; "focus phase doesn't fit".
+- The section: a building switch and the best score so far; the three phases (Initial phase, Focus phase, Full phase: the owner's names), clickable, each as wide as its share of the tries and at least as wide as its name; one sentence on the current phase; the real run's 48 tries (score on the y-axis, best so far, phases shaded); play, pause and a position slider. Epochs set the pace but are not drawn.
 - Starts by itself once scrolled into view, once; still and finished with reduced motion (the factory's choice). Placed after "The three buildings".
 
 ### Architecture (the factory's choices, at hackathon pace)
@@ -56,6 +56,8 @@ The run's `evaluation_trace.csv` records every try: 48 per building × 3 buildin
 - The one-setting search as single tries, synced to the stages: the owner wanted it to work across the real run's epochs. Replaced by batches per epoch.
 - Expected improvement as its own panel with diamonds: the owner asked whether it was needed; the picks are ringed on the guess instead.
 - The one-setting search ("up close"): the same method on one setting against the real model's score at 17–18 points (54 model runs), the guess fitted through the tries, in the real run's epochs; all three buildings ended on the true top. The owner did not find the one-setting idea clear and chose the real run's chart alone. Committed in 6d87744–92ce60a, removed with `scripts/bake_slice_truth.ts`, `scripts/bake_slice_search.py` and their data.
+- Epochs shown as a track under the phases and as dashed borders in the chart: the owner asked for just the phases.
+- The phase names Spread out / Focus / Fine-tune, then Close in for the last: the owner chose Initial phase / Focus phase / Full phase.
 - A big text box per phase (held settings, epoch details), two-row phase and epoch strips, four legends and long notes: the owner found it hard to read; simplified to one track, one sentence, two short legends and one note.
 - A video file: the owner chose the landing page.
 
@@ -65,10 +67,10 @@ done.
 
 ## Result
 
-- Landing page: "How the search found the settings": the phase and epoch track, one sentence per phase, the real run's tries with the best score so far, play, pause and a slider, for each building.
+- Landing page: "How the search found the settings": the three phases, one sentence per phase, the real run's tries with the best score so far, play, pause and a slider, for each building.
 - Epochs of the real run: building 01 13 · 6 (of 12 picked) · 10 · 12 · 7; building 03 13 · 8 · 12 · 11 · 4 (exact replays); building 02 13 · 6 · then Fine-tune cut into 3 equal parts.
 - Best tries: building 01 try 30 (96.44), 02 try 29 (99.41), 03 try 39 (96.81), the scores on the building cards.
-- Commits along the way: c7130bf (12-slice charts), d5d1523 (bills), 6d87744 (one-setting search), c9b3382 (epochs, fluent), 92ce60a (simplified, side by side), and this one (the real run's chart alone, with the phases).
+- Commits along the way: c7130bf (12-slice charts), d5d1523 (bills), 6d87744 (one-setting search), c9b3382 (epochs, fluent), 92ce60a (simplified, side by side), a0cadfa (the real run's chart alone), and this one (just the phases, the owner's names).
 - Checks: `npm test` 76 pass, 0 fail; type check passes; `npm run build` passes (model assets verified). Headless Chrome: the landing page at 1360 px and 390 px plays to try 48, no console errors, no sideways scrolling. `npx software-factory check-docs` passes.
 - Docs: [Search replay](../../docs/reference/features/search-replay.md), the features index, the landing page's page, the blueprint (structure, Open).
 

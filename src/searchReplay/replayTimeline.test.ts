@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import challenge from "../data/challenge.json" with { type: "json" };
 import replay from "./searchReplay.json" with { type: "json" };
-import { bestSoFar, epochStart, frameAt, planTimeline, type BuildingReplay } from "./replayTimeline.ts";
+import { bestSoFar, frameAt, planTimeline, stageStart, type BuildingReplay } from "./replayTimeline.ts";
 
 const buildings = replay.buildings as Record<string, BuildingReplay>;
 const ids = ["building_01", "building_02", "building_03"];
@@ -64,7 +64,7 @@ test("the epochs are the method's batches: they cover every try in order and nev
   }
 });
 
-test("the timeline starts empty, plays epoch by epoch, only moves forward and ends on every try", () => {
+test("the timeline starts empty, pauses only when a phase starts, only moves forward and ends on every try", () => {
   for (const id of ids) {
     const b = buildings[id];
     const timeline = planTimeline(b);
@@ -76,6 +76,7 @@ test("the timeline starts empty, plays epoch by epoch, only moves forward and en
       const f = frameAt(timeline, b, ms);
       assert.ok(f.shown >= previous.shown && f.stage >= previous.stage && f.epoch >= previous.epoch);
       assert.ok(f.progress >= 0 && f.progress <= 1);
+      if (f.beat === "pause") assert.equal(f.shown, b.stages[f.stage].start);
       // The tries on screen reach into this epoch, never past it.
       const e = b.epochs[f.epoch];
       assert.ok(f.shown >= e.start && f.shown <= e.end);
@@ -84,13 +85,13 @@ test("the timeline starts empty, plays epoch by epoch, only moves forward and en
   }
 });
 
-test("jumping to an epoch lands on its start, before any of its tries", () => {
+test("jumping to a phase lands on its start, before any of its tries", () => {
   for (const id of ids) {
     const b = buildings[id];
     const timeline = planTimeline(b);
-    b.epochs.forEach((e, i) => {
-      const f = frameAt(timeline, b, epochStart(timeline, i));
-      assert.deepEqual([f.epoch, f.beat, f.shown], [i, "pause", e.start]);
+    b.stages.forEach((s, i) => {
+      const f = frameAt(timeline, b, stageStart(timeline, b, i));
+      assert.deepEqual([f.stage, f.beat, f.shown], [i, "pause", s.start]);
     });
   }
 });

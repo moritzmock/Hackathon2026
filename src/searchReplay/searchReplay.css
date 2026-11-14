@@ -1,4 +1,4 @@
-/* The landing page's replay of our best run: phases and epochs, then each try's score in violet. */
+/* The landing page's replay of our best run: its three phases, then each try's score in violet. */
 
 /* Shared: legend, play button */
 .replay-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 0.75rem; }
@@ -27,7 +27,6 @@
 .replay-axis .replay-axis__name { fill: var(--heading); font-weight: 600; }
 .replay-stage { fill: var(--panel-card); transition: fill 0.4s; }
 .replay-stage.is-current { fill: var(--brand-violet-soft); fill-opacity: 0.55; }
-.replay-epoch { stroke: rgb(31 34 40 / 0.22); stroke-dasharray: 3 3; }
 .replay-best { fill: none; stroke: var(--brand-violet); stroke-width: 2.5; stroke-linejoin: round; }
 .replay-dots circle { fill: var(--brand-violet-4); }
 .replay-dots circle.is-best { fill: var(--brand-violet); stroke: #fff; stroke-width: 2; }
@@ -35,21 +34,18 @@
 @keyframes replay-drop { from { opacity: 0; } to { opacity: 1; } }
 
 
-/* The phases and epochs, above both charts: phase names over one track of epochs */
+/* The three phases, above the chart */
 .phase-strip { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
-.phase-strip > li { display: grid; grid-template-columns: minmax(0, 1fr); flex-basis: 0; gap: 6px; min-width: 0; }
-.phase-strip__name { overflow: hidden; color: var(--muted); font-size: 0.8125rem; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
-.phase-strip > li.is-current .phase-strip__name { color: var(--brand-violet); }
-.phase-strip__epochs { display: flex; gap: 3px; }
-.phase-strip__epochs button {
-  position: relative; flex-basis: 0; min-width: 0; height: 26px; overflow: hidden; padding: 0; border: 0; border-radius: 6px;
-  background: var(--paper); color: var(--muted); font: 500 0.6875rem "Inter", sans-serif; cursor: pointer;
+.phase-strip > li { flex-basis: 0; min-width: max-content; } /* at least as wide as its name */
+.phase-strip button {
+  position: relative; display: block; width: 100%; height: 40px; overflow: hidden; padding: 0; border: 0; border-radius: 10px;
+  background: var(--paper); color: var(--muted); font: 600 0.875rem "Inter", sans-serif; text-align: left; cursor: pointer;
 }
-.phase-strip__epochs button i { position: absolute; inset: 0 auto 0 0; background: var(--brand-violet-soft); }
-.phase-strip__epochs button.is-current i { background: var(--brand-violet-4); }
-.phase-strip__epochs button.is-current { color: var(--heading); }
-.phase-strip__epochs button span { position: relative; padding: 0 6px; white-space: nowrap; }
-.phase-strip__epochs button:hover { color: var(--heading); }
+.phase-strip button i { position: absolute; inset: 0 auto 0 0; background: var(--brand-violet-soft); }
+.phase-strip button.is-current { color: var(--brand-violet); box-shadow: inset 0 0 0 1.5px var(--brand-violet-4); }
+.phase-strip button span { position: relative; display: block; padding: 0 12px; white-space: nowrap; }
+.phase-strip button b { margin-right: 4px; }
+.phase-strip button:hover { color: var(--heading); }
 .replay__phase { min-height: 1.5em; margin: -6px 0 0; color: var(--ink); font-size: 0.9375rem; }
 
 .replay__timeline { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; }
@@ -58,8 +54,8 @@
 
 @media (max-width: 600px) {
   .replay { padding: 14px; }
-  .phase-strip__name { font-size: 0.6875rem; }
-  .phase-strip__word { display: none; }
+  .phase-strip button { height: 34px; font-size: 0.75rem; }
+  .phase-strip button span { padding: 0 8px; }
   .replay__timeline { grid-template-columns: auto minmax(0, 1fr); }
   .replay__count { grid-column: 1 / -1; }
 }
