@@ -109,7 +109,7 @@ export function LandingPage() {
           <div className="site-wrap">
             <div className="site-section__head">
               <h2 id="landing-replay-title">How the search found the settings</h2>
-              <p>Our best run, replayed from its log: 48 tries per building, a Bayesian search in three stages. The score is out of 100, as above.</p>
+              <p>Our best run, replayed from its log: 48 tries per building in three stages, and the simulation closing in on the real bills after each stage.</p>
             </div>
             <div className="site-panel"><SearchReplay /></div>
           </div>

@@ -15,8 +15,7 @@ const BAND = 1.3; // the band reaches this many spreads above and below the curv
 const STEP_MS = 950;
 const HOLD_MS = 2400;
 const EASE_MS = 500;
-/** The Calibra flame, centred on 0 0, about 12 units tall. */
-export const FLAME = "M0.5 -7 C1 -3.5 6 -1.5 6 2.8 C6 5.8 3.4 7.5 0 7.5 C-3.4 7.5 -6 5.6 -6 2.6 C-6 0.2 -4.6 -1.3 -3.6 -3.2 C-2.6 -1.4 -1.6 -0.6 -0.6 -0.4 C-1.2 -3 -0.6 -5.2 0.5 -7 Z";
+const FLAME = "M0.5 -7 C1 -3.5 6 -1.5 6 2.8 C6 5.8 3.4 7.5 0 7.5 C-3.4 7.5 -6 5.6 -6 2.6 C-6 0.2 -4.6 -1.3 -3.6 -3.2 C-2.6 -1.4 -1.6 -0.6 -0.6 -0.4 C-1.2 -3 -0.6 -5.2 0.5 -7 Z";
 
 /** `flame={false}` draws the best run as a plain dot, without the flame. */
 export function SearchAnimation({ className = "", flame: showFlame = true }: { className?: string; flame?: boolean }) {
