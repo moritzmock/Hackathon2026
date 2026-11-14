@@ -50,6 +50,7 @@ Chosen: a **Sora wordmark** and the **gauge** logomark (a C with a flame), in vi
 - **Wordmark:** "Calibra" in Sora 600, violet, with an orange tile as the dot
   on the i (kept by the owner on 2026-11-14).
 - **Tab icon:** the same mark, white line work and an orange flame on a violet tile (`public/favicon.svg`).
+- **Brand files:** `public/brand/` holds the mark, the logo with the name as outlines, white versions and the app icon, each as SVG, PNG (transparent) and PDF, and `calibra-corporate-identity.pdf` (logo, colours, type, interface rules). `scripts/build_brand_svgs.py` writes the SVGs.
 - **Not one city:** no tagline, and no city in the name. Calibra is meant for
   any city; Bolzano is the one shown for now, named under the logo at the top
   left ("Bolzano · 3 buildings").
