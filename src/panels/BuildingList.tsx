@@ -47,7 +47,7 @@ export function BuildingList() {
           >
             <header className="list__head">
               <span className="list__brand">
-                <CalibraRadar size={26} />
+                <CalibraRadar size={34} />
                 <CalibraWordmark />
               </span>
               {/* Calibra is not tied to one city; Bolzano is the one shown for now. */}
