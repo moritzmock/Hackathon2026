@@ -176,7 +176,7 @@ kbd, .kbd {
 
 /* Building detail card, floating on the map */
 .detail {
-  position: absolute; top: 12px; right: 12px; bottom: 56px; width: min(420px, calc(100% - 24px));
+  position: absolute; top: 12px; right: 12px; bottom: 12px; width: min(420px, calc(100% - 24px));
   background: var(--surface); border: 1px solid var(--line); border-radius: 18px 4px 18px 18px; box-shadow: var(--shadow);
   padding: 1rem 1.25rem 1.5rem; overflow-y: auto; z-index: 30;
 }
@@ -227,7 +227,7 @@ kbd, .kbd {
   .list { display: none; }
   .workspace { padding: 0; border-radius: 0; }
   .stage { border-radius: 0; }
-  .detail { top: auto; left: 8px; right: 8px; bottom: 52px; width: auto; max-height: 62%; }
+  .detail { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 62%; }
 }
 
 /* Loading screen: clouds over the map that part on reveal */
