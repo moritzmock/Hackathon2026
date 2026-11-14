@@ -36,3 +36,10 @@
   across an existing pool can shorten the wait while retaining the same
   pinned solver. Compare full browser time and the model's official outputs,
   as in [run 011](../../../factory/runs/011-fresh-regimes.md).
+- When two agent sessions work in the same folder, they share one Git
+  staging area: `git add` then `git commit` can sweep the other session's
+  staged files into your commit. Commit with explicit paths
+  (`git commit -- <paths>`, after `git add` only for new files), check
+  `git diff --cached --name-only` first, and never rewrite a commit the other
+  session already built on; fix forward. [Run 017](../../../factory/runs/017-ui-redesign.md)
+  hit this while moving the logo.

@@ -26,17 +26,28 @@ orange, greys). The owner found the violet too heavy and asked for a rebrand.
 
 Chosen: a **Sora wordmark** and the **radar** logomark, in near-black ink and orange.
 
-- **Logomark:** the INTEGRATES **Performa** tool icon (integratesproject.eu/#tools),
-  cut down and adapted to buildings: a violet gauge ring with round caps, two
-  ticks, a ring hub and a needle, and a solid orange house in the ring's gap
-  where Performa has its lightning bolt. The ring stops short of the house so
-  they never touch. While the app loads, the needle swings past its mark, back,
-  and settles: before calibration the model is off, and calibration brings it
-  onto the bills. Earlier versions (an ink "radar" dial, a building in a loop,
-  a house with a gauge inside) were dropped.
-- **Wordmark:** "Calibra" in Sora 600, violet, with no extra detail (the
-  orange dot on the i was dropped).
-- **Tab icon:** the same mark, white gauge and orange house on a violet tile (`public/favicon.svg`).
+- **Logomark (redrawn 2026-11-14, [run 017](../../factory/runs/017-ui-redesign.md)):**
+  the INTEGRATES **Performa** tool icon (integratesproject.eu/#tools) made for
+  buildings: a violet dial ring open at the bottom left, four ticks, a hub with
+  a hole and a needle, and a solid orange block of flats with cut-out windows
+  in the ring's gap where Performa has its lightning bolt (the challenge
+  buildings are blocks of flats). The ring is cut away around the block, so
+  they never touch on any background. As a small spinner the needle swings
+  past its mark, back, and settles. The earlier mark (a house as big as the
+  dial, the ring in pieces) looked odd when shown large. Also dropped on the
+  way: an ink "radar" dial, a building in a loop, a house with a gauge inside,
+  and signs that tried to draw the Bayesian optimisation itself (see the run:
+  a chart does not fit a square family icon).
+- **Searching animation:** wherever the app waits for the model, a small, real
+  Bayesian optimisation plays: run dots appear, the fitted curve's band
+  narrows, and an orange flame (the best run so far) settles on the lowest
+  point, the least heating. It searches an example curve, not a building's
+  numbers. With reduced motion it shows the last frame.
+- **Optimised:** the "Use optimised" button carries a small dial with its
+  needle on the mark (the logo's dial without the building), not sparkles.
+- **Wordmark:** "Calibra" in Sora 600, violet, with an orange tile as the dot
+  on the i (kept by the owner on 2026-11-14).
+- **Tab icon:** the same mark, white dial and orange block on a violet tile (`public/favicon.svg`).
 - **Not one city:** no tagline, and no city in the name. Calibra is meant for
   any city; Bolzano is the one shown for now, named under the logo at the top
   left ("Bolzano · 3 buildings").
@@ -47,7 +58,8 @@ Chosen: a **Sora wordmark** and the **radar** logomark, in near-black ink and or
   name and headings, Inter for text (both bundled with `@fontsource`), not the
   site's Aptos.
 
-The code is in `src/panels/CalibraLogo.tsx` and the tokens at the top of
+The code is in `src/brand/` (`CalibraLogo.tsx`, `SearchAnimation.tsx` with
+`bayesSearch.ts`, `OptimisedIcon.tsx`) and the tokens at the top of
 `src/styles.css`.
 
 ### Consequences
