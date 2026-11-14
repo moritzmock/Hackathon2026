@@ -15,6 +15,7 @@ import { buildingName } from "../panels/buildingName";
 import { same } from "../panels/WhatIf";
 import { useStore } from "../store";
 import { buildingAnchor } from "../world/focus";
+import { NARROW } from "../world/framing";
 import { currentScore, scoreColor, textOn } from "../world/scoreColor";
 import { theme } from "../world/theme";
 import { useNear } from "./useNear";
@@ -23,6 +24,12 @@ const FONT_SIZE = 1; // label geometry is built at unit size and scaled per fram
 const PAD_X = 0.75;
 const PAD_Y = 0.45;
 const STEM = 2.6; // stem length in label units
+
+/** A label's size for its distance: it shrinks slower than the distance grows, so far labels look
+ *  smaller (part of the world) while staying readable. In the phone layout the camera stands further
+ *  back (framing.ts) and the view is narrow, so labels are made smaller there to stay narrower than the screen. */
+const labelScale = (distance: number, viewWidth: number) =>
+  THREE.MathUtils.clamp(9 * Math.pow(distance / 400, 0.65), 4, 60) * (viewWidth > NARROW ? 1 : Math.max(0.3, viewWidth / 1200));
 
 function pill(width: number, height: number) {
   const r = height / 2;
@@ -109,12 +116,9 @@ function Label3D({ b }: { b: ChallengeBuilding }) {
   const name = buildingName(b.id);
   const pillGeo = useMemo(() => pill(name.length * 0.56 * FONT_SIZE + 2 * PAD_X, FONT_SIZE + 2 * PAD_Y), [name]);
 
-  // Scale with distance, but slower than the distance grows: far labels look
-  // smaller (part of the world) while staying readable.
-  useFrame(({ camera }) => {
+  useFrame(({ camera, size }) => {
     if (!group.current) return;
-    const d = camera.position.distanceTo(_p.set(...anchor));
-    group.current.scale.setScalar(THREE.MathUtils.clamp(9 * Math.pow(d / 400, 0.65), 4, 60));
+    group.current.scale.setScalar(labelScale(camera.position.distanceTo(_p.set(...anchor)), size.width));
   });
 
   if (selected) return <ScoreLabel b={b} />;
@@ -167,10 +171,9 @@ function ScoreLabel({ b }: { b: ChallengeBuilding }) {
   const label = `${opt && same(params, opt.params) ? "Optimised settings" : "Your settings"}  ${value.toFixed(2)}`;
   const geo = useMemo(() => pill(label.length * 0.54 * FONT_SIZE + 2 * PAD_X, FONT_SIZE + 2 * PAD_Y), [label]);
   const material = useMemo(() => new THREE.MeshBasicMaterial({ color, toneMapped: false }), [color]);
-  useFrame(({ camera }) => {
+  useFrame(({ camera, size }) => {
     if (!group.current) return;
-    const d = camera.position.distanceTo(_p.set(...anchor));
-    group.current.scale.setScalar(THREE.MathUtils.clamp(9 * Math.pow(d / 400, 0.65), 4, 60));
+    group.current.scale.setScalar(labelScale(camera.position.distanceTo(_p.set(...anchor)), size.width));
   });
   return (
     <group ref={group} position={anchor} userData={{ noSnapshot: true }}>

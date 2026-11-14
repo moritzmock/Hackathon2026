@@ -10,6 +10,7 @@ import { buildingsById } from "../data/challenge";
 import { useStore } from "../store";
 import { EDGE } from "./edgeFade";
 import { buildingAnchor, focusCenter } from "./focus";
+import { framing } from "./framing";
 
 const ACTION = CameraControlsImpl.ACTION;
 const MIN_DISTANCE = 35;
@@ -24,6 +25,8 @@ export function MapCamera() {
   const selected = useStore((s) => s.selected);
   const revealed = useStore((s) => s.revealed);
   const { gl, camera, scene, invalidate } = useThree();
+  const viewWidth = useThree((s) => s.size.width);
+  const viewHeight = useThree((s) => s.size.height);
 
   // Wheel zoom toward the cursor: move camera and target toward the ground point P
   // under the cursor by the same factor, so P stays under the cursor.
@@ -99,13 +102,19 @@ export function MapCamera() {
     const r = Math.max(55, Math.sqrt(facts.footprint_area_m2 as number) * 1.6 + height * 1.5);
     const target = new THREE.Vector3(x, base + height * 0.4, -y);
     const pos = new THREE.Vector3(x + r * 0.8, base + height + r * 0.75, -y + r);
-    // Slide the view sideways so the building sits left of the detail panel.
-    const right = new THREE.Vector3().subVectors(target, pos).cross(camera.up).normalize().multiplyScalar(r * 0.32);
-    pos.add(right);
-    target.add(right);
+    // Move the building out from under its card: left of the side panel, or above the phone's bottom sheet.
+    const frame = framing(viewWidth, viewHeight);
+    pos.sub(target).multiplyScalar(frame.distance).add(target);
+    const forward = new THREE.Vector3().subVectors(target, pos);
+    const right = forward.clone().cross(camera.up).normalize();
+    const screenUp = right.clone().cross(forward).normalize();
+    const halfView = forward.length() * Math.tan(THREE.MathUtils.degToRad((camera as THREE.PerspectiveCamera).fov / 2));
+    const shift = right.multiplyScalar(r * frame.side).add(screenUp.multiplyScalar(-frame.up * halfView));
+    pos.add(shift);
+    target.add(shift);
     c.setLookAt(pos.x, pos.y, pos.z, target.x, target.y, target.z, true);
     invalidate();
-  }, [selected, camera, revealed, invalidate]);
+  }, [selected, camera, revealed, invalidate, viewWidth, viewHeight]);
 
   return (
     <CameraControls

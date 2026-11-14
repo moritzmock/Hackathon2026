@@ -12,7 +12,7 @@ export function MethodsPage() {
       <main>
         <section className="methods-intro" aria-labelledby="methods-title">
           <h1 id="methods-title">Which search method gets closest to the bills?</h1>
-          <p>Each dot is one run, and further right is closer to the bills. Pick a building to see how each method did there, hover a dot for its details, or <a href={pages.runs}>see every run in a table</a>.</p>
+          <p>Each dot is one run, and further right is closer to the bills. Pick a building to see how each method did there, hover or tap a dot for its details, or <a href={pages.runs}>see every run in a table</a>.</p>
         </section>
         <MethodChart rows={results} />
         <CityInvite />

@@ -55,7 +55,7 @@
 }
 @media (max-width: 600px) {
   .method-chart { padding: 18px 14px; }
-  .method-switch { flex-wrap: nowrap; max-width: 100%; overflow-x: auto; scrollbar-width: none; }
+  .method-switch { flex-wrap: wrap; border-radius: 18px; } /* the building tabs wrap onto a second line instead of scrolling out of view */
   .method-switch button { flex: none; padding: 6px 10px; font-size: 0.75rem; white-space: nowrap; }
   .method-grid { display: none; }
   .method-row, .method-axis { grid-template-columns: minmax(0, 1fr) 44px; gap: 4px 8px; }
