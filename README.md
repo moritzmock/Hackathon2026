@@ -3,6 +3,8 @@
 A 3D model of Bolzano with the three INTEGRATES challenge buildings, their
 heating bills, and the organizer's simulation model running live in the browser.
 
+You can explore the live demo at [hackathon2026.mmock.net](https://hackathon2026.mmock.net/index.html).
+
 Static site: Vite + React + TypeScript + react-three-fiber. The model
 (pyBuildingEnergy / ISO 52016, via `vendor/integrates`) runs in Pyodide Web Workers.
 
