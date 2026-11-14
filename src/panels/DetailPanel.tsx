@@ -73,7 +73,7 @@ function Content({ b }: { b: ChallengeBuilding }) {
       </div>
       <ScoreLegend />
       <section className="pcard">
-        <h3 className="pcard__title">Heating per month</h3>
+        <h3 className="pcard__title">Heating in February and March</h3>
         {/* Click a month, or a day in the strip under it, to show its weather on the map. */}
         <CompareLines records={b.records} yours={customRows} optimised={opt?.rows}
           focus={weatherFocus} onPickMonth={setWeatherFocus} day={day} onPickDay={(d) => (d ? (setWeatherFocus({ year: d.year, month: d.month }), setDay(d)) : setDay(null))} />

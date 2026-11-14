@@ -577,3 +577,7 @@ body { background: #fff; }
 .mdl__steps li.is-active .mdl__dot { border-color: var(--accent); }
 .mdl__steps li.is-active .mdl__dot i { background: var(--accent); animation: step-pulse 1.1s ease-in-out infinite; }
 .mdl .loading__error { margin: 0; }
+.run-overlay__card .run-overlay__bar { margin-top: -2px; height: 5px; background: var(--card); }
+.run-overlay__card .run-overlay__bar > i { background: linear-gradient(90deg, var(--accent) 0%, #ff9a5c 50%, var(--accent) 100%); background-size: 200% 100%; animation: bar-sheen 1.6s linear infinite; transition: width 0.4s var(--spring); }
+@keyframes bar-sheen { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .run-overlay__card .run-overlay__bar > i { animation: none; } }

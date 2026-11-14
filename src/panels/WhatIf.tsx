@@ -68,10 +68,16 @@ export function WhatIf({ id }: { id: string }) {
   const { setParam, setParams, useSaved, run: start } = useStore.getState();
   const running = run?.status === "running";
   const optimised = optimisedFor(id);
-  // The setting moved last and its value before the move, so the overlay can say what changed.
-  const [lastMove, setLastMove] = useState<LastMove | null>(null);
+  // The settings moved since the last result (each with its value before the first move),
+  // so the overlay can say what changed. A move after a finished result starts a new list.
+  const [moves, setMoves] = useState<LastMove[]>([]);
   const move = (name: string, value: number) => {
-    setLastMove((m) => (m?.name === name ? m : { name, from: params[name] }));
+    const fresh = run?.status !== "running" && !!run && same(run.params, params);
+    setMoves((list) => {
+      const base = fresh ? [] : list;
+      const earlier = base.find((m) => m.name === name);
+      return [{ name, from: earlier?.from ?? params[name] }, ...base.filter((m) => m.name !== name)];
+    });
     setParam(id, name, value);
   };
 
@@ -87,7 +93,7 @@ export function WhatIf({ id }: { id: string }) {
 
   return (
     <section className="pcard settings relative">
-      <RunOverlay id={id} lastMove={lastMove} label={(name) => LABELS[name] ?? name} format={(name, v) => fmt(v, specs[name].unit)} />
+      <RunOverlay id={id} moves={moves} label={(name) => LABELS[name] ?? name} format={(name, v) => fmt(v, specs[name].unit)} />
       {/* Header row: title, then the shortcut back to the optimised values. */}
       <div className="flex items-center gap-2">
         <h3 className="pcard__title flex-1">Settings</h3>
@@ -95,8 +101,8 @@ export function WhatIf({ id }: { id: string }) {
           type="button"
           className="settings-action settings-action--optimised"
           disabled={running || !optimised || same(params, optimised.params)}
-          title="Set the sliders back to the optimised values (the ticks)"
-          onClick={() => { setLastMove(null); if (optimised) setParams(id, optimised.params); }}
+          title="Set the sliders back to the optimised values (the violet marks)"
+          onClick={() => { setMoves([]); if (optimised) setParams(id, optimised.params); }}
         >
           <Sparkles size={13} /> Use optimised
         </button>

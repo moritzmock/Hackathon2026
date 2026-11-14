@@ -30,7 +30,7 @@ export function ModelDownload() {
             {error ? <TriangleAlert size={18} className="mdl__error-icon" /> : <CalibraMark size={26} spinning />}
             <div>
               <p className="mdl__title">{error ? "The energy model did not load" : "Downloading the energy model"}</p>
-              <p className="mdl__sub">{error ? "Reload the page to try again." : "Once, about a minute; faster next time. You can explore meanwhile."}</p>
+              <p className="mdl__sub">{error ? "Reload the page to try again." : "About a minute the first time, faster after. You can explore meanwhile."}</p>
             </div>
           </div>
           {error && <ModelErrorReport message={error} stepLabel={SETUP_LABELS[Math.max(1, step) - 1] ?? "after setup"} />}
