@@ -23,9 +23,7 @@
   from OpenStreetMap and the challenge data, then `build_details.py` the
   street details and `build_rails.py` the railway; `build_data.py` makes
   `public/data.js`; `bake_search_replay.py` (`npm run replay`) makes
-  `src/searchReplay/searchReplay.json` from `data/evaluation_trace.csv`, and
-  `bake_slice_truth.ts` and `bake_slice_search.py` (`npm run replay:slice`)
-  the one-setting search.
+  `src/searchReplay/searchReplay.json` from `data/evaluation_trace.csv`.
 - `vendor/integrates`: the challenge's model as a git submodule, pinned to one
   commit, read-only.
 

@@ -1,4 +1,4 @@
-/* The landing page's replay of our best run: the true score and tries in ink, the guess and the run in violet. */
+/* The landing page's replay of our best run: phases and epochs, then each try's score in violet. */
 
 /* Shared: legend, play button */
 .replay-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 0.75rem; }
@@ -19,8 +19,6 @@
 .replay__score { display: flex; align-items: baseline; gap: 10px; color: var(--muted); font-size: 0.8125rem; }
 .replay__score strong { color: var(--optimised); font: 600 1.75rem/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
 
-.replay__charts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; align-items: start; }
-.replay__chart-title { margin: 0 0 6px; color: var(--heading); font: 600 0.9375rem/1.3 var(--display); letter-spacing: -0.01em; }
 .replay__chart { margin: 0; }
 .replay-main { display: block; width: 100%; height: auto; overflow: visible; }
 .replay-grid line { stroke: rgb(31 34 40 / 0.07); stroke-width: 1; }
@@ -36,30 +34,6 @@
 .replay-dots circle.is-new { animation: replay-drop 0.3s var(--spring); }
 @keyframes replay-drop { from { opacity: 0; } to { opacity: 1; } }
 
-
-/* The guess against the true score along one setting */
-.guess { margin: 0; }
-.replay__note b { color: var(--heading); font-weight: 600; }
-.guess svg { display: block; width: 100%; height: auto; overflow: visible; }
-.guess__label { fill: var(--heading); font: 600 11px "Inter", sans-serif; }
-.guess__band { fill: var(--brand-violet); fill-opacity: 0.16; }
-.guess__truth { fill: none; stroke: var(--heading); stroke-width: 2; stroke-linejoin: round; }
-.guess__mean { fill: none; stroke: var(--brand-violet); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
-.guess__try { fill: var(--heading); stroke: #fff; stroke-width: 2; }
-.guess__try.is-best { fill: var(--brand-violet); }
-.guess__next-line { stroke: var(--brand-violet); stroke-width: 1; stroke-dasharray: 3 4; opacity: 0.6; }
-.guess__next { fill: #fff; stroke: var(--brand-violet); stroke-width: 2.5; }
-.guess__step { fill: var(--brand-violet); font: 600 11px "Inter", sans-serif; }
-.guess__empty { fill: var(--muted); font: 500 13px "Inter", sans-serif; }
-.replay-legend i.is-truth { width: 16px; height: 2px; border-radius: 1px; background: var(--heading); }
-.replay-legend i.is-band { width: 16px; height: 10px; border-radius: 3px; background: rgb(79 37 110 / 0.16); }
-.replay-legend i.is-next { width: 10px; height: 10px; background: #fff; box-shadow: inset 0 0 0 2px var(--brand-violet); }
-.replay-legend i.is-try-dark { width: 8px; height: 8px; background: var(--heading); box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px var(--heading); }
-.replay__note { margin: 6px 0 0; color: var(--muted); font-size: 0.75rem; line-height: 1.5; }
-
-.replay__timeline { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; }
-.replay__timeline input[type="range"] { width: 100%; margin: 0; accent-color: var(--brand-violet); }
-.replay__count { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 /* The phases and epochs, above both charts: phase names over one track of epochs */
 .phase-strip { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; }
@@ -78,11 +52,10 @@
 .phase-strip__epochs button:hover { color: var(--heading); }
 .replay__phase { min-height: 1.5em; margin: -6px 0 0; color: var(--ink); font-size: 0.9375rem; }
 
-@media (max-width: 1100px) {
-  .replay__charts { grid-template-columns: 1fr; gap: 20px; }
-}
-@media (max-width: 900px) {
-}
+.replay__timeline { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; }
+.replay__timeline input[type="range"] { width: 100%; margin: 0; accent-color: var(--brand-violet); }
+.replay__count { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
 @media (max-width: 600px) {
   .replay { padding: 14px; }
   .phase-strip__name { font-size: 0.6875rem; }

@@ -14,12 +14,6 @@ organizer does not run or log. When the replay does not reproduce the trace
 (floating-point differences between computers can change a fit), the counts are left
 out and the Fine-tune stage is cut into 3 equal epochs instead.
 
-For the one-setting search it picks one setting per building: the one the method's
-guess on all tries rates most important (shortest fitted length scale), among the
-settings the model uses as smooth values (schedule settings change only in whole
-hours), and the points at which scripts/bake_slice_truth.ts runs the real model along
-it, with the other 11 settings at the best try's values.
-
 No simulation is run here and nothing in vendor/ is changed. Run with `npm run replay`.
 """
 
@@ -45,7 +39,6 @@ WORKERS = 12
 CONSTANTS = {"ARD_FOCUS_END_FRACTION": 0.5}
 # Schedule settings reach the simulation only as whole-hour profiles (the organizer's objective.py).
 SCHEDULE = {"weekday_heating_hours", "non_workday_heating_hours", "weekday_start_hour", "reduced_area_schedule_fraction"}
-TRUTH_POINTS = 17  # points at which the real model is run for the true score
 
 
 class Diverged(Exception):
@@ -144,12 +137,9 @@ def bake_building(snap, building: str, rows: list[dict], names: list[str], lower
         cuts = np.linspace(focus_end, len(rows), 4).round().astype(int).tolist()
         epochs = [{"start": 0, "end": n_init}, {"start": n_init, "end": focus_end}] + [{"start": a, "end": b} for a, b in zip(cuts, cuts[1:])]
 
-    X = np.clip((physical - lower) / (upper - lower), 0.0, 1.0)
-    y = np.log1p(np.maximum(loss, 0.0))
     return {
         "exact": batches is not None,
         "epochs": epochs,
-        "slice": slice_setting(snap, building, X, y, names, lower, upper),
         "tries": [{"score": round(float(r["score"]), 4), "final": r["is_final_candidate"] == "True"} for r in rows],
         "stages": [
             {"stage": "spread", "start": 0, "end": n_init, "held": []},
@@ -157,24 +147,6 @@ def bake_building(snap, building: str, rows: list[dict], names: list[str], lower
              **({"proposed": focus["proposed"], "repeats": focus["repeats"]} if focus else {})},
             {"stage": "fine", "start": focus_end, "end": len(rows), "held": []},
         ],
-    }
-
-
-def slice_setting(snap, building: str, X, y, names, lower, upper) -> dict:
-    """The setting the one-setting search runs along, and where the real model is run."""
-
-    final = snap._fit_gp(X, y, np.random.default_rng(BASE_SEED + int(building.split("_")[1]) - 1))
-    lengths = np.asarray(final.kernel_.k1.k2.length_scale, dtype=float).reshape(-1)
-    setting = next(int(d) for d in np.argsort(lengths, kind="stable") if names[d] not in SCHEDULE)
-    best = int(np.argmin(y))
-    span = upper[setting] - lower[setting]
-    return {
-        "setting": setting,
-        "lower": float(lower[setting]),
-        "upper": float(upper[setting]),
-        "bestTry": best + 1,
-        "bestValue": float(lower[setting] + X[best, setting] * span),
-        "truthAt": [float(lower[setting] + u * span) for u in np.linspace(0.0, 1.0, TRUTH_POINTS)],
     }
 
 

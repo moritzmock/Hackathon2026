@@ -1,7 +1,6 @@
 // The search replay's timeline, epoch by epoch (an epoch is one of the method's batches). Each epoch
-// starts with a pause, in which the guess is fitted again and the next batch is picked (longer when
-// a new stage starts), then its tries appear one by one. After the last epoch it holds, for the final
-// fit. The data is baked from the best run's evaluation trace by scripts/bake_search_replay.py.
+// starts with a short pause (longer when a new phase starts), then its tries appear one by one.
+// After the last epoch it holds briefly. The data is baked from the best run's evaluation trace by scripts/bake_search_replay.py.
 
 export type StageName = "spread" | "focus" | "fine";
 export type Try = { score: number; final: boolean };
@@ -14,7 +13,7 @@ export type Stage = { stage: StageName; start: number; end: number; held: number
 export type Epoch = { start: number; end: number; proposed?: number; repeats?: number };
 export type BuildingReplay = { exact: boolean; tries: Try[]; stages: Stage[]; epochs: Epoch[] };
 
-export const TIMING = { stagePause: 2600, epochPause: 1800, perTry: 420, endHold: 2800 };
+export const TIMING = { stagePause: 1800, epochPause: 900, perTry: 380, endHold: 1200 };
 
 type Beat = { kind: "pause" | "tries" | "end"; epoch: number; start: number; duration: number };
 export type Timeline = { beats: Beat[]; duration: number };

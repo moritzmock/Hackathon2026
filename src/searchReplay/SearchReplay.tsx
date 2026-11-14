@@ -1,22 +1,17 @@
 // "Our best run, epoch by epoch": the phases and epochs on top (PhaseStrip) with one sentence on the
-// current phase, then side by side the same method on one setting against the real model's true
-// score (GuessChart, sliceSteps.ts) and the score of each of the real run's 48 tries. Both play
-// together, epoch by epoch (replayTimeline.ts).
+// current phase, then the score of each of the real run's 48 tries, with the best so far as a
+// rising line. It plays epoch by epoch (replayTimeline.ts).
 import { useMemo, useRef, useState } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import { buildingName, buildingNumber } from "../panels/buildingName";
-import { GuessChart } from "./GuessChart";
 import { PhaseStrip } from "./PhaseStrip";
-import { bestSoFar, epochStart, frameAt, planTimeline, type BuildingReplay, type Frame, type StageName } from "./replayTimeline";
+import { bestSoFar, epochStart, frameAt, planTimeline, type BuildingReplay, type StageName } from "./replayTimeline";
 import replay from "./searchReplay.json";
-import sliceSearch from "./sliceSearch.json";
-import { sliceViewAt, type SliceSearch } from "./sliceSteps";
 import { usePlayClock } from "./usePlayClock";
 
 const BUILDINGS = ["building_01", "building_02", "building_03"] as const;
 type BuildingId = (typeof BUILDINGS)[number];
 const data = replay.buildings as Record<BuildingId, BuildingReplay>;
-const searches = sliceSearch as Record<BuildingId, SliceSearch>;
 
 const TITLES: Record<StageName, string> = { spread: "Spread out", focus: "Focus", fine: "Fine-tune" };
 const TEXTS: Record<StageName, string> = {
@@ -25,22 +20,14 @@ const TEXTS: Record<StageName, string> = {
   fine: "All settings are free again. Each epoch, the method tries where its guess expects the most gain.",
 };
 
-/** The one-setting chart's label for this moment. */
-function stepLabel(frame: Frame) {
-  if (frame.beat === "end") return "Final guess";
-  if (frame.epoch === 0) return "Spread-out tries";
-  return frame.beat === "pause" ? "New guess, next tries picked" : "Tries run";
-}
-
-const W = 640;
-const H = 272;
+const W = 1000;
+const H = 340;
 const PAD = { left: 34, right: 10, top: 14, bottom: 26 };
 const y = (score: number) => PAD.top + ((100 - score) / 100) * (H - PAD.top - PAD.bottom);
 
 export function SearchReplay() {
   const [id, setId] = useState<BuildingId>("building_01");
   const b = data[id];
-  const search = searches[id];
   const timeline = useMemo(() => planTimeline(b), [b]);
   const root = useRef<HTMLDivElement>(null);
   const clock = usePlayClock(timeline.duration, root);
@@ -79,10 +66,7 @@ export function SearchReplay() {
         {clock.done && best >= 0 ? `Done: the best of ${n} tries is try ${best + 1}, with ${b.tries[best].score.toFixed(2)}.` : TEXTS[stage.stage]}
       </p>
 
-      <div className="replay__charts">
-        <GuessChart search={search} view={sliceViewAt(frame, b, search)} label={stepLabel(frame)} />
-        <figure className="replay__chart">
-          <p className="replay__chart-title">The real run: all 12 settings</p>
+      <figure className="replay__chart">
           <svg className="replay-main" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Score of each try for ${buildingName(id)}, try 1 to ${n}.`}>
             {b.stages.map((s, i) => (
               <rect key={s.stage} className={`replay-stage${i === frame.stage ? " is-current" : ""}`} x={edge(s.start) + 1} y={PAD.top} width={edge(s.end) - edge(s.start) - 2} height={H - PAD.top - PAD.bottom} rx={6} />
@@ -90,7 +74,7 @@ export function SearchReplay() {
             {b.epochs.slice(1).map((e) => (
               <line key={e.start} className="replay-epoch" x1={edge(e.start)} x2={edge(e.start)} y1={PAD.top} y2={H - PAD.bottom} />
             ))}
-            {[0, 50, 100].map((s) => (
+            {[0, 25, 50, 75, 100].map((s) => (
               <g key={s} className="replay-grid">
                 <line x1={PAD.left} x2={W - PAD.right} y1={y(s)} y2={y(s)} />
                 <text x={PAD.left - 8} y={y(s) + 4}>{s}</text>
@@ -108,12 +92,12 @@ export function SearchReplay() {
               <text x={(PAD.left + W - PAD.right) / 2} y={H - 6} textAnchor="middle" className="replay-axis__name">Try</text>
             </g>
           </svg>
-          <ul className="replay-legend">
-            <li><i className="is-try" aria-hidden="true" />Try</li>
-            <li><i className="is-mean" aria-hidden="true" />Best so far</li>
-          </ul>
-        </figure>
-      </div>
+        <ul className="replay-legend">
+          <li><i className="is-try" aria-hidden="true" />Try: its score</li>
+          <li><i className="is-mean" aria-hidden="true" />Best so far</li>
+          <li><i className="is-best" aria-hidden="true" />Best try</li>
+        </ul>
+      </figure>
 
       <div className="replay__timeline">
         <button type="button" className="replay__play" onClick={clock.toggle} aria-label={clock.playing ? "Pause" : clock.done ? "Play again" : "Play"}>
