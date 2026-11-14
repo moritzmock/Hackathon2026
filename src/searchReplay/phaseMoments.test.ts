@@ -4,7 +4,7 @@ import challenge from "../data/challenge.json" with { type: "json" };
 import optimised from "../data/optimised.json" with { type: "json" };
 import { score, simLookup, wape } from "../metrics.ts";
 import phaseResults from "./phaseResults.json" with { type: "json" };
-import { momentAt, phaseMoments, type PhaseResult } from "./phaseMoments.ts";
+import { phaseMoments, type PhaseResult } from "./phaseMoments.ts";
 import replay from "./searchReplay.json" with { type: "json" };
 import { bestSoFar, type BuildingReplay } from "./replayTimeline.ts";
 
@@ -35,11 +35,4 @@ test("the simulation gets closer to the bills at every stage", () => {
     const { moments } = momentsFor(id);
     moments.forEach((m, i) => i > 0 && assert.ok(m.score >= moments[i - 1].score, `${id} moment ${i}`));
   }
-});
-
-test("the bills chart shows the defaults during stage 1, then each finished stage's best", () => {
-  assert.equal(momentAt({ shown: 5, stage: 0, done: false }), 0);
-  assert.equal(momentAt({ shown: 14, stage: 1, done: false }), 1);
-  assert.equal(momentAt({ shown: 30, stage: 2, done: false }), 2);
-  assert.equal(momentAt({ shown: 48, stage: 2, done: true }), 3);
 });

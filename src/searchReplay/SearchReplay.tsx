@@ -12,8 +12,11 @@ import { settingLabel } from "../panels/settingGroups";
 import { bestSoFar, frameAt, planTimeline, type BuildingReplay, type StageName } from "./replayTimeline";
 import replay from "./searchReplay.json";
 import { BillsChart } from "./BillsChart";
+import { GuessChart } from "./GuessChart";
 import phaseResults from "./phaseResults.json";
-import { momentAt, phaseMoments, type PhaseResult } from "./phaseMoments";
+import { phaseMoments, type PhaseResult } from "./phaseMoments";
+import sliceSearch from "./sliceSearch.json";
+import { sliceViewAt, type SliceSearch } from "./sliceSteps";
 import { usePlayClock } from "./usePlayClock";
 
 const BUILDINGS = ["building_01", "building_02", "building_03"] as const;
@@ -29,7 +32,7 @@ const STAGES: Record<StageName, { number: number; title: string; text: string }>
   focus: {
     number: 2,
     title: "Focus",
-    text: "From those tries the method makes its guess, as in the example above, but over 12 settings at once. The guess also shows which settings move the score most: only those 6 are changed now, the other 6 stay at the best try's values.",
+    text: "From those tries the method makes its guess, as in the chart above, but over 12 settings at once. The guess also shows which settings move the score most: only those 6 are changed now, the other 6 stay at the best try's values.",
   },
   fine: {
     number: 3,
@@ -58,7 +61,8 @@ export function SearchReplay() {
     () => phaseMoments(records, score(baselineWape(records))!, phaseResults[id] as PhaseResult[], optimisedFor(id)!, bestSoFar(b.tries, b.tries.length) + 1),
     [id, records, b],
   );
-  const moment = momentAt(frame);
+  const moment = frame.moment;
+  const search = (sliceSearch as Record<string, SliceSearch>)[id];
 
   const n = b.tries.length;
   const x = (i: number) => PAD.left + ((i + 0.5) / n) * (W - PAD.left - PAD.right);
@@ -87,6 +91,20 @@ export function SearchReplay() {
           {best >= 0 && <span>try {best + 1} of {n}</span>}
         </div>
       </div>
+
+      <div className="replay__pair">
+        <GuessChart search={search} view={sliceViewAt(frame, b, search)} />
+        <BillsChart records={records} moment={moments[moment]} />
+      </div>
+
+      <ol className="replay-moments" aria-label="Score at each stage">
+        {moments.map((m, i) => (
+          <li key={m.label} className={i === moment ? "is-current" : i > moment ? "is-ahead" : undefined}>
+            <span>{m.label}</span>
+            <strong>{i <= moment ? m.score.toFixed(2) : "–"}</strong>
+          </li>
+        ))}
+      </ol>
 
       <div className="replay__stage">
         <figure className="replay__chart">
@@ -125,19 +143,6 @@ export function SearchReplay() {
           </figcaption>
         </figure>
 
-        <BillsChart records={records} moment={moments[moment]} />
-      </div>
-
-      <ol className="replay-moments" aria-label="Score at each stage">
-        {moments.map((m, i) => (
-          <li key={m.label} className={i === moment ? "is-current" : i > moment ? "is-ahead" : undefined}>
-            <span>{m.label}</span>
-            <strong>{i <= moment ? m.score.toFixed(2) : "–"}</strong>
-          </li>
-        ))}
-      </ol>
-
-      <div className="replay__bottom">
         <div className="replay__caption">
           <h3><span>{text.number}</span> {text.title}</h3>
           <p>{text.text}</p>

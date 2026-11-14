@@ -38,7 +38,6 @@
 .replay-dots circle.is-new { animation: replay-drop 0.3s var(--spring); }
 @keyframes replay-drop { from { opacity: 0; } to { opacity: 1; } }
 
-.replay__bottom { display: grid; }
 .replay__caption { padding: 18px 20px; border-radius: 14px 14px 14px 0; background: var(--panel-card); }
 .replay__caption h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; color: var(--heading); font: 600 1.25rem/1.2 var(--display); letter-spacing: -0.02em; }
 .replay__caption h3 span {
@@ -49,6 +48,28 @@
 .replay__caption p + p { margin-top: 10px; }
 .replay__caption .replay__held, .replay__caption .replay__fact { color: var(--muted); font-size: 0.8125rem; }
 .replay__caption .replay__done { padding-top: 10px; border-top: 1px solid var(--line); color: var(--heading); font-weight: 500; }
+
+/* The guess against the true score along one setting */
+.replay__pair { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.guess { margin: 0; }
+.guess svg { display: block; width: 100%; height: auto; overflow: visible; }
+.guess__label { fill: var(--heading); font: 600 11px "Inter", sans-serif; }
+.guess__axis { stroke: var(--line); }
+.guess__band { fill: var(--brand-violet); fill-opacity: 0.16; }
+.guess__truth { fill: none; stroke: var(--heading); stroke-width: 2; stroke-linejoin: round; }
+.guess__mean { fill: none; stroke: var(--brand-violet); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.guess__try { fill: var(--heading); stroke: #fff; stroke-width: 2; }
+.guess__try.is-best { fill: var(--brand-violet); }
+.guess__next-line { stroke: var(--brand-violet); stroke-width: 1; stroke-dasharray: 3 4; opacity: 0.6; }
+.guess__gain { fill: none; stroke: var(--brand-violet-2); stroke-width: 2; }
+.guess__next { fill: var(--brand-violet); stroke: #fff; stroke-width: 1.5; }
+.guess__step { fill: var(--brand-violet); font: 600 11px "Inter", sans-serif; }
+.guess__empty { fill: var(--muted); font: 500 13px "Inter", sans-serif; }
+.replay-legend i.is-truth { width: 16px; height: 2px; border-radius: 1px; background: var(--heading); }
+.replay-legend i.is-band { width: 16px; height: 10px; border-radius: 3px; background: rgb(79 37 110 / 0.16); }
+.replay-legend i.is-next { width: 9px; height: 9px; border-radius: 1px; transform: rotate(45deg); background: var(--brand-violet); }
+.replay-legend i.is-try-dark { width: 8px; height: 8px; background: var(--heading); box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px var(--heading); }
+.replay__note { margin: 6px 0 0; color: var(--muted); font-size: 0.75rem; line-height: 1.5; }
 
 /* The real bills against the simulation, and the score at each stage */
 .bills { margin: 0; }
@@ -69,7 +90,7 @@
 .replay__count { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 @media (max-width: 900px) {
-  .replay__stage { grid-template-columns: 1fr; gap: 16px; }
+  .replay__stage, .replay__pair { grid-template-columns: 1fr; gap: 16px; }
   .replay-moments { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {

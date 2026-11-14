@@ -3,7 +3,6 @@
 // for the scored months and its score. The defaults come from the challenge's baseline, the middle
 // two from phaseResults.json (scripts/bake_phase_results.ts), the last from our optimised result.
 import type { MonthlyRecord, SimRow } from "../data/types";
-import type { Frame } from "./replayTimeline";
 
 export type Moment = { label: string; try: number; score: number; rows: SimRow[] };
 export type PhaseResult = { after: string; try: number; score: number; rows: SimRow[] };
@@ -23,6 +22,3 @@ export function phaseMoments(
     { label: LABELS[3], try: finalTry, score: final.score, rows: final.rows },
   ];
 }
-
-/** Which moment the bills chart shows: the defaults during stage 1, then the best try of each finished stage. */
-export const momentAt = (frame: Frame) => (frame.done ? 3 : frame.stage);

@@ -23,7 +23,8 @@
     "test:regimes": "node scripts/test_parallel_regimes.ts",
     "pipeline": "npm run model && npm run data && npm run test:model",
     "test": "node --test src/**/*.test.ts",
-    "replay": "uv run --no-project --python 3.11 --with numpy --with scipy --with scikit-learn==1.9.1 python scripts/bake_search_replay.py"
+    "replay": "uv run --no-project --python 3.11 --with numpy --with scipy --with scikit-learn==1.9.1 python scripts/bake_search_replay.py",
+    "replay:slice": "uv run --no-project --python 3.11 --with numpy --with scipy --with scikit-learn==1.9.1 python scripts/bake_slice_search.py"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

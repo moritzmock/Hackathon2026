@@ -25,7 +25,8 @@
   `public/data.js`; `bake_search_replay.py` (`npm run replay`) makes
   `src/searchReplay/searchReplay.json` from `data/evaluation_trace.csv`, and
   `bake_phase_results.ts` the simulated stage results in
-  `src/searchReplay/phaseResults.json`.
+  `src/searchReplay/phaseResults.json`, `bake_slice_truth.ts` and
+  `bake_slice_search.py` (`npm run replay:slice`) the one-setting search.
 - `vendor/integrates`: the challenge's model as a git submodule, pinned to one
   commit, read-only.
 

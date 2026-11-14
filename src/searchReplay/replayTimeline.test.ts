@@ -58,14 +58,18 @@ test("the timeline starts empty, names each stage before its tries, only moves f
   for (const id of ids) {
     const b = buildings[id];
     const timeline = planTimeline(b);
-    assert.deepEqual(frameAt(timeline, b, 0), { shown: 0, stage: 0, done: false });
-    assert.deepEqual(frameAt(timeline, b, timeline.duration), { shown: b.tries.length, stage: 2, done: true });
+    assert.deepEqual(frameAt(timeline, b, 0), { shown: 0, stage: 0, moment: 0, morph: 1, done: false });
+    assert.deepEqual(frameAt(timeline, b, timeline.duration), { shown: b.tries.length, stage: 2, moment: 3, morph: 1, done: true });
     let previous = frameAt(timeline, b, 0);
     for (let ms = 0; ms <= timeline.duration; ms += 20) {
       const f = frameAt(timeline, b, ms);
       assert.ok(f.shown >= previous.shown && f.stage >= previous.stage);
       // The tries on screen reach into this stage, never past it.
       assert.ok(f.shown <= b.stages[f.stage].end && f.shown >= b.stages[f.stage].start);
+      // The bills and the guess show the defaults during stage 1, then the best of each finished
+      // stage; the last moment comes once every try is shown.
+      assert.ok(f.moment >= previous.moment && f.moment <= 3);
+      assert.equal(f.moment, f.shown === b.tries.length && ms >= timeline.moments[3] ? 3 : f.stage);
       previous = f;
     }
   }
