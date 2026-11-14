@@ -199,6 +199,21 @@ kbd, .kbd {
 .detail__head p { margin: 0.1rem 0 0; font-size: 0.75rem; }
 .detail__pinned { background: var(--surface); }
 
+.score-scale { margin: -0.3rem 0 0.8rem; }
+.score-scale__caption {
+  display: flex; justify-content: space-between; gap: 0.5rem;
+  margin-bottom: 0.3rem; color: var(--muted); font-size: 0.6875rem;
+}
+.score-scale__caption span:first-child { color: var(--ink); font-weight: 600; }
+.score-scale__bar {
+  height: 9px; border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgb(35 38 45 / 0.12);
+}
+.score-scale__ticks { position: relative; height: 0.9rem; margin-top: 0.15rem; color: var(--muted); font-size: 0.625rem; font-variant-numeric: tabular-nums; }
+.score-scale__ticks span { position: absolute; top: 0; transform: translateX(-50%); }
+.score-scale__ticks span:first-child { transform: none; }
+.score-scale__ticks span:last-child { transform: translateX(-100%); }
+
 .chart { margin: 0 0 0.75rem; }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible; }
 .chart svg text { fill: var(--muted); font-size: 10px; font-family: inherit; }

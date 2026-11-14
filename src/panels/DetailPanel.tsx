@@ -10,6 +10,7 @@ import { buildingName } from "./buildingName";
 import { same, WhatIf } from "./WhatIf";
 import { scoreColor } from "../world/scoreColor";
 import { RunProgress } from "./RunProgress";
+import { ScoreLegend } from "./ScoreLegend";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useWeather } from "../weather/focus";
@@ -58,6 +59,7 @@ function Content({ b }: { b: ChallengeBuilding }) {
           </Card>
         )}
       </div>
+      <ScoreLegend />
       {/* Click a month, or a day in the strip under it, to show its weather on the map. */}
       <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"}
         focus={weatherFocus} onPickMonth={setWeatherFocus} day={day} onPickDay={(d) => (d ? (setWeatherFocus({ year: d.year, month: d.month }), setDay(d)) : setDay(null))} />
