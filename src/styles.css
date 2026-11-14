@@ -59,10 +59,10 @@ kbd, .kbd {
 .icon-btn--boxed { border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow-sm); color: var(--ink); }
 
 /* Layout: building list + map */
-.app { position: fixed; inset: 12px; display: flex; }
+.app { position: fixed; inset: 0; display: flex; }
 .workspace {
   position: relative; flex: 1; min-width: 0; display: flex; gap: 10px; padding: 10px;
-  background: var(--app); border-radius: 18px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  background: var(--app); /* fills the window: no outer frame */
 }
 
 /* Building sidebar: slim rows (photo, name, facts, score) that fold to just the photos while a building is open */
