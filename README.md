@@ -6,6 +6,15 @@ heating bills, and the organizer's simulation model running live in the browser.
 Static site: Vite + React + TypeScript + react-three-fiber. The model
 (pyBuildingEnergy / ISO 52016, via `vendor/integrates`) runs in Pyodide Web Workers.
 
+## Team
+
+- Jonas Rabensteiner
+- Thomas Borsani
+- Daniel Planötscher
+
+[Calibra on the NOI Hackathon site](https://hackathon.bz.it/project/calibra)
+lists the full project team.
+
 ## Quick start
 
 ```bash
