@@ -87,8 +87,23 @@ class SyncAuthorTests(unittest.TestCase):
             commit(racer, "concurrent update")
 
             first_identity = root / "first-identity.json"
+            draw_count = root / "draw-count"
             wrappers = root / "bin"
             wrappers.mkdir()
+            python_wrapper = wrappers / "python3"
+            python_wrapper.write_text(
+                f"#!{sys.executable}\n"
+                "import os, runpy, secrets, sys\n"
+                "from pathlib import Path\n"
+                "if len(sys.argv) > 1 and sys.argv[1].endswith('/sync_author.py'):\n"
+                f"    counter = Path({str(draw_count)!r})\n"
+                "    counter.write_text(str(int(counter.read_text()) + 1) if counter.exists() else '1')\n"
+                "    secrets.choice = lambda population: population[-1]\n"
+                "    runpy.run_path(sys.argv[1], run_name='__main__')\n"
+                "else:\n"
+                f"    os.execv({sys.executable!r}, [{sys.executable!r}, *sys.argv[1:]])\n"
+            )
+            python_wrapper.chmod(0o700)
             wrapper = wrappers / "git"
             wrapper.write_text(
                 f"#!{sys.executable}\n"
@@ -117,7 +132,8 @@ class SyncAuthorTests(unittest.TestCase):
             first = json.loads(first_identity.read_text())
             final = git(remote, "show", "-s", "--format=%an%n%ae%n%cn%n%ce", "main").splitlines()
             self.assertEqual(final, first)
-            self.assertIn(tuple(final[:2]), sync_author.TEAM_MEMBERS)
+            self.assertEqual(tuple(final[:2]), sync_author.TEAM_MEMBERS[-1])
+            self.assertEqual(draw_count.read_text(), "1")
             self.assertEqual(final[:2], final[2:])
             self.assertEqual(git(remote, "show", "main:README.md"), "team root")
             self.assertEqual(git(remote, "show", "main:concurrent.txt"), "preserve competing update")
