@@ -121,6 +121,13 @@ go. `BuildingList.tsx` was emptied by another session's failed script edit at
 ring: the C's opening narrowed to ±30° and the tile sits on the ring's line,
 as thick as the ring, so it reads as the dial's mark (logomark and tab icon).
 
+### Correction: type checks
+
+The type checks reported after the rebrand were run through `timeout`, which
+does not exist on this Mac, so they never ran. They were rerun properly when
+everyone's work was gathered on main: `npx tsc -b --noEmit` passed and
+`npm run build` passed.
+
 ## Later
 
 - The README still describes the app as Bolzano only. The building photo
