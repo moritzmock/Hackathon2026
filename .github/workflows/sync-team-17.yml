@@ -1,8 +1,12 @@
 name: Sync frontend to team-17
 
 on:
-  schedule:
-    - cron: '3-59/15 * * * *'
+  # Normalize Git authors runs on every push. Its token-based rewrite does
+  # not trigger another push workflow, so sync after it has completed.
+  workflow_run:
+    workflows: ['Normalize Git authors']
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -14,6 +18,10 @@ concurrency:
 
 jobs:
   sync:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.head_repository.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

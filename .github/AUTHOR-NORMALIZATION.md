@@ -27,7 +27,8 @@ Cryptographic signatures on rewritten commits cannot be retained.
   An explicit force-with-lease check preserves competing remote updates.
   The latest ordinary push queues its own run.
 - Only the pushed branch is rewritten. Tags, integrates and team-17 are
-  outside this automation. The scheduled team-17 snapshot sync continues.
+  outside this automation. The team-17 frontend snapshot sync runs after
+  this workflow succeeds on main; see [automatic sync](SYNC-TEAM-17.md).
 
 ## Working with rewritten history
 

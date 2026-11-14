@@ -19,7 +19,8 @@ The existing submission contains the frontend and backend in separate folders.
 - Validate both workflow files with actionlint, inspect branch/success/repo
   guards, run the frontend's existing build check, and verify actual
   automatic runs after publishing. Compare both remote subtrees against
-  the source Git trees and verify the team root files remain intact.
+  the source tracked-file archives (the existing sync format) and verify
+  the team root files remain intact.
 
 This is a workflow-configuration change. No artificial tests duplicating
 the YAML are introduced; real GitHub event-triggered runs verify the
@@ -31,7 +32,18 @@ in progress: plan recorded; updating the workflow triggers and documentation.
 
 ## Result
 
-Not yet published.
+- Both workflow files pass actionlint; changed diffs have no whitespace
+  errors and the changed local documentation link resolves.
+- Frontend npm test passes all 9 existing checks. npm run build passes,
+  including generation and verification of the model assets and six wheels.
+- Structure/security review: native GitHub events need no new helper code.
+  The frontend accepts only successful same-repository workflow runs on
+  main, checks out the trusted default branch, and consumes no upstream
+  artifacts. Existing credentials, retry logic and read-only GitHub token
+  permissions are preserved. No actionable findings.
+- Factory docs validation was attempted; the CLI still reports unknown
+  command check-docs. Full factory documentation checks remain unverified.
+- Publishing and live trigger verification remain in progress.
 
 ## Later
 
