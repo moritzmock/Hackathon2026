@@ -129,7 +129,16 @@ kbd, .kbd {
 .mapctl__btn.mapctl__single { width: 32px; height: 32px; background: var(--surface); }
 .mapctl__btn.mapctl__single:hover { background: var(--paper); }
 
-.layers { position: absolute; top: 12px; left: 12px; z-index: 22; }
+.map-top-controls { position: absolute; top: 12px; left: 12px; z-index: 22; display: flex; align-items: center; gap: 8px; max-width: calc(100% - 24px); }
+.layers { position: relative; z-index: 2; flex: none; }
+.approaches-map-link {
+  display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 12px;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow-sm);
+  color: var(--heading); font-size: 0.75rem; font-weight: 600; text-decoration: none; white-space: nowrap;
+  transition: background 0.15s, transform 0.15s var(--spring);
+}
+.approaches-map-link:hover { background: var(--paper); transform: translateY(-1px); }
+.approaches-map-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .layers__panel {
   position: absolute; top: 40px; left: 0; width: 260px; padding: 12px 14px; border-radius: 12px;
   background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
@@ -231,8 +240,6 @@ kbd, .kbd {
 .legend { flex-wrap: wrap; gap: 0.25rem 0.9rem; }
 .legend span { white-space: nowrap; }
 .legend--off { opacity: 0.45; }
-.line--running { opacity: 0.35; animation: pulse 1.2s ease-in-out infinite; }
-@keyframes pulse { 50% { opacity: 0.15; } }
 
 /* shadcn tokens mapped to the app's warm palette */
 :root {
@@ -386,7 +393,7 @@ kbd, .kbd {
 
 /* Weather: a small sign on the map showing what is on it; each month's days under a building's chart */
 .wsign {
-  position: absolute; top: 12px; left: 52px; z-index: 21; display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px;
+  display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px;
   border-radius: 999px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-sm);
   font-size: 0.75rem; font-variant-numeric: tabular-nums; white-space: nowrap;
 }
@@ -397,6 +404,7 @@ kbd, .kbd {
 .wsign__season { padding: 1px 7px; border-radius: 999px; background: var(--paper); color: var(--muted); font-size: 0.6875rem; }
 .wsign button { display: grid; place-items: center; width: 20px; height: 20px; margin-right: -4px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
 .wsign button:hover { background: var(--paper); color: var(--ink); }
+@media (max-width: 540px) { .map-top-controls .wsign > span, .map-top-controls .wsign__season, .map-top-controls .wsign__live { display: none; } }
 .wlegend { display: flex; flex-wrap: wrap; gap: 2px 10px; margin-top: 2px; color: var(--muted); font-size: 0.6875rem; }
 .wlegend span { display: flex; align-items: center; gap: 3px; }
 .wlegend i { width: 8px; height: 8px; border-radius: 2px; }
@@ -421,22 +429,6 @@ kbd, .kbd {
 .settings-action--optimised:hover:not(:disabled) { background: color-mix(in srgb, var(--optimised) 8%, var(--surface)); }
 .settings-action--icon { width: 26px; padding: 0; justify-content: center; color: var(--muted); }
 
-/* Model run progress in the building panel: one bar split into steps (the winters, or the
-   setup steps), each filling with a soft sheen while it runs and turning solid when done. */
-.runbar { display: flex; gap: 6px; }
-.runbar__seg { flex: 1; min-width: 0; display: grid; gap: 4px; }
-.runbar__track { position: relative; height: 6px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 9%, transparent); overflow: hidden; }
-.runbar__track i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--accent); transition: width 0.6s var(--spring); }
-.runbar__seg.is-active .runbar__track i {
-  background: linear-gradient(90deg, var(--accent) 0%, #ffb27f 50%, var(--accent) 100%); background-size: 200% 100%;
-  animation: runbar-sheen 1.4s linear infinite;
-}
-.runbar__seg.is-done .runbar__track i { background: var(--accent); }
-.runbar__label { display: flex; align-items: center; gap: 3px; color: var(--muted); font-size: 0.6875rem; transition: color 0.2s; }
-.runbar__seg.is-done .runbar__label { color: var(--ink); }
-.runbar__seg.is-done .runbar__label svg { color: var(--accent); }
-@keyframes runbar-sheen { from { background-position: 100% 0; } to { background-position: -100% 0; } }
-@media (prefers-reduced-motion: reduce) { .runbar__track i { animation: none !important; } }
 
 /* ---------- Docked panels (UI only, not the map) ----------
    The building list is a light grey bar on the left edge and the building panel a light grey
@@ -574,3 +566,14 @@ body { background: #fff; }
 .setrow.is-changed .setrow__value { background: var(--brand-orange-soft); color: var(--accent-deep); }
 .setrow__opt { position: absolute; top: 50%; width: 2px; height: 12px; border-radius: 1px; background: var(--optimised); transform: translate(-50%, -50%); pointer-events: none; }
 .setrow__range { display: flex; justify-content: space-between; margin-top: -1px; font-size: 0.6875rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+/* The score while its result is out of date: faded and soft, sharpening when the new number lands. */
+.score-value { transition: opacity 0.35s ease, filter 0.35s ease; }
+.score-value.is-pending { opacity: 0.35; filter: blur(1.5px); }
+/* Over the settings while the model runs; the sliders under it are locked. */
+.run-overlay { position: absolute; inset: 0; z-index: 5; display: flex; justify-content: center; align-items: flex-start; padding-top: 4.5rem;
+  background: color-mix(in srgb, var(--paper) 72%, transparent); backdrop-filter: blur(3px); border-radius: 0.75rem; }
+.run-overlay__card { position: sticky; top: 2rem; display: grid; justify-items: center; gap: 0.35rem; width: min(17rem, 85%); padding: 1rem 1.25rem; text-align: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 0.875rem; box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 10%, transparent); }
+.run-overlay__card p { margin: 0; }
+.run-overlay__bar { position: relative; display: block; width: 100%; height: 4px; margin-top: 0.35rem; border-radius: 999px; overflow: hidden; background: color-mix(in srgb, var(--whatif) 15%, transparent); }
+.run-overlay__bar > i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--whatif); transition: width 0.3s linear; }

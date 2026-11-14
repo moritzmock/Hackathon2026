@@ -35,8 +35,11 @@ export function App() {
             />
             <Scene />
           </Canvas>
-          <LayersControl />
-          <WeatherSign />
+          <div className="map-top-controls">
+            <LayersControl />
+            <a className="approaches-map-link" href={`${import.meta.env.BASE_URL}approaches.html`}>Show approaches</a>
+            <WeatherSign />
+          </div>
           <DetailPanel />
         </main>
         <LoadingScreen />

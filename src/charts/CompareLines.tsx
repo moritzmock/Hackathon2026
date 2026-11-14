@@ -16,21 +16,19 @@ function niceStep(v: number) {
   return [1, 2, 2.5, 5, 10].map((s) => s * p).find((s) => s >= v)!;
 }
 
-/** Measured vs your settings vs optimised, over the four scored months; under a picked month's column, its days and their weather. */
+/** Measured vs optimised, with your settings once a custom result is ready; below a picked month, its days and weather. */
 export function CompareLines({
   records,
   yours,
   optimised,
-  running,
   focus,
   onPickMonth,
   day = null,
   onPickDay,
 }: {
   records: MonthlyRecord[];
-  yours: SimRow[] | undefined; // undefined: organiser defaults (the baseline)
+  yours: SimRow[] | undefined; // undefined: no completed custom result to draw
   optimised: SimRow[] | undefined;
-  running: boolean;
   /** The month the map shows, highlighted on the chart. */
   focus?: { year: number; month: number } | null;
   /** Clicking a month's column; clicking the focused month again clears it. */
@@ -42,9 +40,10 @@ export function CompareLines({
 }) {
   const [tip, setTip] = useState<string | null>(null);
   const at = (rows: SimRow[] | undefined, r: MonthlyRecord) => rows?.find((s) => s.year === r.year && s.month === r.month)?.kwh;
+  const visibleSeries = SERIES.filter((s) => s.key !== "yours" || Boolean(yours));
   const values: Record<Key, (number | undefined)[]> = {
     measured: records.map((r) => r.measured_kwh),
-    yours: records.map((r) => (yours ? at(yours, r) : r.baseline_kwh)),
+    yours: records.map((r) => at(yours, r)),
     optimised: records.map((r) => at(optimised, r)),
   };
   const strip = Boolean(onPickDay && focus);
@@ -59,16 +58,15 @@ export function CompareLines({
   return (
     <figure className="chart">
       <div className="legend">
-        {SERIES.map((s) => (
+        {visibleSeries.map((s) => (
           <span key={s.key} className={s.key === "optimised" && !optimised ? "legend--off" : undefined}>
             <svg className="legend__line" viewBox="0 0 18 8" aria-hidden="true"><line x1="1" x2="17" y1="4" y2="4" stroke={s.color} strokeWidth={2} strokeDasharray={s.dash} strokeLinecap="round" /></svg>
             {s.label}
-            {s.key === "yours" && !yours && <small> (defaults)</small>}
             {s.key === "optimised" && !optimised && <small> (none yet)</small>}
           </span>
         ))}
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Measured, your settings and optimised heating energy">
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`${["Measured", ...(yours ? ["your settings"] : []), ...(optimised ? ["optimised"] : [])].join(", ")} heating energy`}>
         {ticks.map((t) => (
           <g key={t}>
             <line x1={ml} x2={W - mr} y1={y(t)} y2={y(t)} stroke="var(--line)" strokeWidth={1} />
@@ -95,12 +93,12 @@ export function CompareLines({
         {onPickDay && focus && (
           <WeatherStrip month={focus} left={0} width={W} top={H - mb + 30} day={day} onPickDay={onPickDay} />
         )}
-        {SERIES.map((s) => {
+        {visibleSeries.map((s) => {
           const pts = values[s.key].map((v, i) => (v === undefined ? null : [x(i), y(v)] as const));
           if (pts.some((p) => p === null)) return null;
           const d = pts.map((p, i) => `${i ? "L" : "M"}${p![0]},${p![1]}`).join(" ");
           return (
-            <g key={s.key} className={s.key === "yours" && running ? "line--running" : "line"}>
+            <g key={s.key} className="line">
               <path d={d} fill="none" stroke={s.color} strokeWidth={2} strokeDasharray={s.dash} strokeLinejoin="round" style={{ transition: "d 0.6s ease" }} />
               {pts.map((p, i) => (
                 <circle key={i} cx={p![0]} cy={p![1]} r={3} fill={s.key === "yours" ? "var(--surface)" : s.color} stroke={s.key === "yours" ? s.color : "var(--surface)"} strokeWidth={s.key === "yours" ? 2 : 1.5}

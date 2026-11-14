@@ -1,15 +1,17 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Gauge, Sparkles, X } from "lucide-react";
 import { CompareLines } from "../charts/CompareLines";
+import { visibleCustomRows } from "../charts/visibleCustomRows";
 import { optimisedFor } from "../data/optimised";
-import { buildingsById } from "../data/challenge";
+import { buildingsById, defaultParams } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 import { useStore } from "../store";
 import { buildingName } from "./buildingName";
 import { same, WhatIf } from "./WhatIf";
 import { scoreColor } from "../world/scoreColor";
-import { RunProgress } from "./RunProgress";
+import { RunOutcome } from "./RunOutcome";
+import { resultPending } from "./resultPending";
 import { ScoreLegend } from "./ScoreLegend";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useWeather } from "../weather/focus";
@@ -24,7 +26,10 @@ function Content({ b }: { b: ChallengeBuilding }) {
   const w = rows ? wape(b.records, simLookup(rows)) : undefined;
   // How good the current settings are, on the same red → green scale as the glow on the map.
   const params = useStore((s) => s.params[b.id]);
+  const customRows = visibleCustomRows(params, run, opt?.params, defaultParams());
   const onOptimised = !!opt && same(params, opt.params);
+  // From the first slider move until the new result is in, the shown score and line are out of date.
+  const pending = resultPending(run, params, defaultParams());
   const yours = score(w ?? base)!;
   const yoursColor = `#${scoreColor(yours).getHexString()}`;
   // Scored here like yours (all four months), not taken from the file.
@@ -49,7 +54,7 @@ function Content({ b }: { b: ChallengeBuilding }) {
         <div className="ptile">
           <div className="ptile__text">
             <span className="ptile__label">{onOptimised ? "Optimised settings" : "Your settings"}</span>
-            <b className="ptile__value" style={{ color: yoursColor }}>{yours.toFixed(2)}<small>/ 100</small></b>
+            <b className={`ptile__value score-value${pending ? " is-pending" : ""}`} style={{ color: yoursColor }}>{yours.toFixed(2)}<small>/ 100</small></b>
           </div>
           <span className="ptile__icon" style={{ color: yoursColor, background: `color-mix(in srgb, ${yoursColor} 12%, var(--surface))` }}><Gauge size={20} /></span>
         </div>
@@ -67,9 +72,9 @@ function Content({ b }: { b: ChallengeBuilding }) {
       <section className="pcard">
         <h3 className="pcard__title">Heating per month</h3>
         {/* Click a month, or a day in the strip under it, to show its weather on the map. */}
-        <CompareLines records={b.records} yours={rows} optimised={opt?.rows} running={run?.status === "running"}
+        <CompareLines records={b.records} yours={customRows} optimised={opt?.rows}
           focus={weatherFocus} onPickMonth={setWeatherFocus} day={day} onPickDay={(d) => (d ? (setWeatherFocus({ year: d.year, month: d.month }), setDay(d)) : setDay(null))} />
-        <RunProgress id={b.id} />
+        <RunOutcome id={b.id} />
       </section>
       <WhatIf id={b.id} />
     </>
