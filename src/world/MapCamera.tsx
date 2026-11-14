@@ -21,7 +21,9 @@ const MAX_DISTANCE = 5500;
 const ZOOM_PER_PIXEL = 0.0035; // wheel sensitivity: one mouse notch ≈ 30% closer
 const C = focusCenter;
 const HOME = { pos: new THREE.Vector3(C.x + 250, C.y + 1700, C.z + 3200), target: new THREE.Vector3(C.x + 200, C.y, C.z - 250) };
-const FAR = HOME.target.clone().add(HOME.pos.clone().sub(HOME.target).multiplyScalar(1.8));
+// Where the camera waits under the first-load clouds: farther out than home, but inside the
+// zoom-out limit (otherwise the controls pull it in with a jolt as the clouds part).
+const FAR = HOME.target.clone().add(HOME.pos.clone().sub(HOME.target).multiplyScalar(1.35));
 // Letting a building go steps back a little from where you are, instead of flying home.
 const STEP_BACK = 2.5; // times the current distance
 const STEP_BACK_MAX = 2500; // metres from the look-at point, at most
