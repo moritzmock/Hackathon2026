@@ -17,7 +17,8 @@ What made those looks fail, as far as the screenshots and the code show:
 - **Only the forest turns.** The ground picture paints all forest one colour (104, 158, 76); the shader finds it by its red value (forest 0.14 in linear colour, scrub from 0.24) and its green lead, so water, roads and the city stay as they are.
 - **A smooth wash, not patches.** The forest takes warm leaf colours that drift slowly and softly over the slopes, from gold through orange to rust, made with smooth noise (no sine waves, so no hatching or repeating lines) at a scale of a few hundred metres, with no edges. About a quarter stays green (pines), also in soft, wide areas. The colours are full leaf colours (replaced, not mixed into the green), at about the forest's own brightness, so they read as foliage and not as dirt.
 - **Larches above 1000 m** lean to gold, with more green (spruce) between them.
-- **Meadows too (the owner):** the lighter greens (meadows, lawns, vineyards, scrub) take the same leaf colours, full (not mixed into the green), lifted to the ground's own brightness and a little softer; about half stays green, in soft areas. Fades as the leaves fall.
+- **Only the forest, a bit (the owner: "the patches on the floor are weird. Maybe lets just use the forest patches a bit with foliage"):** meadows and lawns stay as they are; in the forest about half stays green (pines, in soft areas, more above), the rest takes muted leaf colours: gold #b39a52, ochre #a8783f, rust #8e5a3c, larch #bfa250 (the first version's brighter orange read as one strong orange over the slopes).
+- **Sharper shadows up close (the owner: "the shadow sometimes bugs when you move in", blocky edges):** the shadow picture (3072 pixels across) covered the whole city, about 1.4 m per pixel. Closer in it now covers a smaller area around where the camera looks (half-widths 400, 800, 1400 m, at least 2.5 times the camera distance; `src/world/shadowBox.ts`, with unit tests), up to 5.5 times sharper; it is redrawn only when that area changes. Trade-off: shadows stop at the edge of that area, which may show far off when the camera is tilted low. A cascaded shadow setup (three.js CSM) would avoid that, but needs every material, including the custom season and foliage shaders, wired to it: too much for now.
 - **Smaller (the owner):** the wash drifts at about 150 m, 55 m and 22 m (first version 420, 150, 60 m); pines in areas of about 110 and 40 m.
 - **The calendar of the city's trees** (`foliage.ts`): turning from 28 September to 1 November, each place at its own time; as the leaves fall (8 November to 8 December) the turned woods fade to a soft bare grey-brown, and they are green again when the leaves come out in spring.
 - Only `src/world/season.ts` changes (the terrain's season shader). Decoration only: OpenStreetMap does not say which trees grow in a forest.
@@ -26,16 +27,18 @@ Checks: type check, `npm test`, build; screenshots in headless Chrome of the ove
 
 ## Status
 
-done
+stopped: the owner decided to remove the foliage again ("lets remove the foliage again"); the mountain forest stays green. The sharper close-up shadows stay.
 
 ## Result
 
-- `src/world/season.ts`: the forest wash (rust, orange, gold, larch gold above 1000 m, soft pine areas, bare grey-brown as the leaves fall) and the lighter leaf colours on about half of the lighter greens, on the dates of the city's trees.
+- **Removed again:** `src/world/season.ts` is back to its cdd0a02 version (forest green all year, as after run 031). The looks below were each tried and turned down.
+- **Kept:** sharper shadows closer in (`src/world/WeatherLights.tsx`, `src/world/shadowBox.ts` with 4 unit tests).
+- Last version tried (removed): the forest wash (rust, ochre, gold, larch gold above 1000 m, soft pine areas, bare grey-brown as the leaves fall) muted, about half the forest staying green, on the dates of the city's trees; meadows unchanged. `src/world/WeatherLights.tsx` and `shadowBox.ts`: sharper shadows closer in.
 - The owner watched it live in the dev server and asked for the meadows to turn a bit and for a smaller pattern; both are in, then "push all".
-- The meadows first took a light straw-gold touch mixed into the green (15–50 %); the owner found the light green "still weird" (the mix gives a sickly yellow-green, as run 031's ochre did), so they now take full colours in areas instead.
-- Checks: type check passes; `npm test` 76 pass, 0 fail; `vite build` passes. Headless screenshots did not finish this time (software WebGL hung before the scene showed), so the look was checked by the owner in the running app, not by screenshots.
+- Meadows, tried and dropped: a straw-gold touch mixed into the green ("still weird": a sickly yellow-green); the leaf colours lifted to the meadows' brightness ("weirdly light", then "the patches on the floor are weird"); plain meadows with deep green pines ("before was better", which was about the meadows having colour; the owner then chose plain meadows and a gentler forest).
+- Checks: type check passes; `npm test` 80 pass, 0 fail (with the shadow area's 4 new tests); `vite build` passes. Headless screenshots hung at first; later ones (with a time limit) showed the last versions, today, overview and a slope.
 
 ## Later
 
-- The broadleaf forest is now bare grey-brown from December to April (it follows the city trees' leaves). If that looks too dull in winter, keep only the autumn part.
+- Autumn on the mountain forest has now been tried in six looks over runs 031 and 033 (stands, one shade, single crowns, a smooth wash in bright and muted colours, with and without the meadows) and each was turned down. Ask before trying again.
 - Picking a month on the chart still does not change the map's season (only a picked day does, `src/weather/focus.ts`), so other months can only be seen by picking a day.
