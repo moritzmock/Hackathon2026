@@ -1,4 +1,3 @@
-import { AnimatePresence, motion } from "framer-motion";
 import { Building, Building2, School } from "lucide-react";
 import { useEffect } from "react";
 import { challenge } from "../data/challenge";
@@ -20,7 +19,6 @@ const ids = challenge.buildings.map((b) => b.id);
 export function BuildingList() {
   const selected = useStore((s) => s.selected);
   const select = useStore((s) => s.select);
-  const revealed = useStore((s) => s.revealed);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -38,40 +36,28 @@ export function BuildingList() {
 
   return (
     <aside className={`list${selected ? " is-collapsed" : ""}`} aria-label="Challenge buildings">
-      <AnimatePresence>
-        {revealed && (
-          <motion.div
-            className="list__inner"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ type: "spring", stiffness: 240, damping: 30, delay: 0.5 }}
-          >
-            <header className="list__head">
-              {/* The logo always leads back to the landing page, as on the other pages. */}
-              <a className="list__brand" href={pages.landing} aria-label="Calibra, home">
-                <CalibraMark size={34} />
-                <CalibraWordmark />
-              </a>
-              {/* Calibra is not tied to one city; Bolzano is the one shown for now. */}
-              <h2>
-                Bolzano <span>· {challenge.buildings.length} buildings</span>
-              </h2>
-            </header>
-            <div className="list__scroll">
-              {challenge.buildings.map((b, i) => (
-                <motion.div
-                  key={b.id}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + i * 0.08, type: "spring", stiffness: 260, damping: 28 }}
-                >
-                  <Stay b={b} active={b.id === selected} />
-                </motion.div>
-              ))}
+      {/* No intro animation: the list sits in place under the first-load clouds and is simply
+          there when they part (an intro ran while the 3D map was being built and stuttered). */}
+      <div className="list__inner">
+        <header className="list__head">
+          {/* The logo always leads back to the landing page, as on the other pages. */}
+          <a className="list__brand" href={pages.landing} aria-label="Calibra, home">
+            <CalibraMark size={34} />
+            <CalibraWordmark />
+          </a>
+          {/* Calibra is not tied to one city; Bolzano is the one shown for now. */}
+          <h2>
+            Bolzano <span>· {challenge.buildings.length} buildings</span>
+          </h2>
+        </header>
+        <div className="list__scroll">
+          {challenge.buildings.map((b) => (
+            <div key={b.id}>
+              <Stay b={b} active={b.id === selected} />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          ))}
+        </div>
+      </div>
     </aside>
   );
 }
