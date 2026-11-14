@@ -5,14 +5,14 @@ settings, per building) and splits each building's tries into the method's three
 stages: spread out (the first 13), focus (the next tries, which keep 6 settings at
 the best try's values) and fine-tune (the rest).
 
-To say how many tries the method proposed in the Focus batch, it also replays the
+To find the method's epochs (its batches) and how many tries it proposed in each, it also replays the
 method, ard_bayesian_optimisation, with the backend's own code (imported read-only
 from the run's calibration_snapshot.py) and the run's recorded seed. A stand-in for
 the organizer's objective answers each proposal from the trace; proposals the trace
 does not have are repeats of an earlier whole-hour heating schedule, which the
 organizer does not run or log. When the replay does not reproduce the trace
-(floating-point differences between computers can change a fit), that count is left
-out.
+(floating-point differences between computers can change a fit), the counts are left
+out and the Fine-tune stage is cut into 3 equal epochs instead.
 
 For the one-setting search it picks one setting per building: the one the method's
 guess on all tries rates most important (shortest fitted length scale), among the
@@ -137,10 +137,18 @@ def bake_building(snap, building: str, rows: list[dict], names: list[str], lower
         focus = batches[1]
         assert (focus["start"], focus["end"]) == (n_init, focus_end), f"{building}: the replay's Focus batch is not the trace's"
 
+    # The epochs: the method's batches. Without an exact replay, Fine-tune is cut into 3 equal parts.
+    if batches is not None:
+        epochs = [{"start": b["start"], "end": b["end"], "proposed": b["proposed"], "repeats": b["repeats"]} for b in batches]
+    else:
+        cuts = np.linspace(focus_end, len(rows), 4).round().astype(int).tolist()
+        epochs = [{"start": 0, "end": n_init}, {"start": n_init, "end": focus_end}] + [{"start": a, "end": b} for a, b in zip(cuts, cuts[1:])]
+
     X = np.clip((physical - lower) / (upper - lower), 0.0, 1.0)
     y = np.log1p(np.maximum(loss, 0.0))
     return {
         "exact": batches is not None,
+        "epochs": epochs,
         "slice": slice_setting(snap, building, X, y, names, lower, upper),
         "tries": [{"score": round(float(r["score"]), 4), "final": r["is_final_candidate"] == "True"} for r in rows],
         "stages": [

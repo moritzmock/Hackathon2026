@@ -25,22 +25,20 @@ The run's `evaluation_trace.csv` records every try: 48 per building × 3 buildin
 - **Order:** first the stage of each try and the settings held still, worked out from the log (the animation depends on it); then the section.
 - **Shown with real data only** (the owner: "with real data"): each try's score, and the simulation against the real bills after each stage.
 
-### UX/UI (agreed, after three rounds)
+### UX/UI (agreed, after several rounds)
 
 - The owner's data: `~/Downloads/evaluation_trace.csv` ("evaluation trace for our best algorithm"), byte-identical to the backend's trace for the best run; the score on the y-axis, `is_final_candidate` marks each building's best try, grouped by `building_id`.
-- The owner's direction in the end: "make it get closer for each phase, and show the phases, with real data", and "remove the flame".
-- The owner, after seeing it without it: "it should have this animation where it approximates the real data" (the textbook picture of a Bayesian search). So on top left: the same method on one setting, every try a real model run on the true line, the guess through the tries closing in on it, expected improvement with the next try, in step with the replay's stages.
-- "Our best run, stage by stage": below it, the score of each try against its number, with the best score so far as a rising step line and the best try as a ringed dark-violet dot, the three stages shaded and named; right, the real bills of the four scored months (ink) against the simulation (violet), showing the default settings during stage 1 and then the best try after each finished stage, the bars growing or shrinking to it; below, the score at each of the four moments; then the stage's explanation (held settings in Focus, the repeated picks when known) and play/pause with a position slider. A switch picks the building.
+- The owner's direction, in order: real data only; "remove the flame"; "it should have this animation where it approximates the real data" (the textbook picture of a Bayesian search); "shouldn't it work across epochs, together with the one below, and killing the bar chart"; "make it more fluent as an animation"; expected improvement as its own panel is not needed.
+- "Our best run, epoch by epoch": on top, the method on one setting against the real model's true score, the guess fitted through the tries, the next batch ringed on the guess, each pick dropping onto the true score while the epoch runs; below, the real run's 48 tries with the stages shaded and the epochs marked; beside it, the stage's explanation; play, pause and a position slider; a switch between the buildings. Both charts play together, epoch by epoch, each epoch as one smooth movement (fit, pick, run).
 - Starts by itself once scrolled into view, once; still and finished with reduced motion (the factory's choice). Placed after "The three buildings".
 
 ### Architecture (the factory's choices, at hackathon pace)
 
 - `data/evaluation_trace.csv`: the owner's trace, kept as given (like `data/submission_result.json`).
-- `scripts/bake_search_replay.py` (`npm run replay`): each try's score and the three stages from the trace (13 spread-out tries by the method's rule; Focus = the tries that keep 6 settings at the best spread-out try's values). It also replays the method itself (`ard_bayesian_optimisation` from the run's `calibration_snapshot.py`, imported read-only, scikit-learn 1.9.1, the run's seed 2026 + building number − 1) with a stand-in objective answering from the trace, to count the Focus batch's picks and repeats. Writes `src/searchReplay/searchReplay.json` (10 KB). Nothing in `vendor/` is changed.
-- `scripts/bake_phase_results.ts`: the in-browser model (as `bake_optimised.ts`) on the best try after stages 1 and 2, checked against the trace's score; writes `src/searchReplay/phaseResults.json`. The defaults and the final best come from `challenge.json` (baseline) and `optimised.json`.
-- `scripts/bake_slice_truth.ts` (the real model along one setting per building, 54 runs) and `scripts/bake_slice_search.py` (`npm run replay:slice`, the one-setting search with the method's own `_fit_gp` and `_expected_improvement`).
-- `src/searchReplay/`: `replayTimeline.ts`, `phaseMoments.ts`, `sliceSteps.ts` (rules), `GuessChart.tsx`, `usePlayClock.ts`, `SearchReplay.tsx`, `BillsChart.tsx`, `searchReplay.css`.
-- The settings' plain labels move from `WhatIf.tsx` to `src/panels/settingGroups.ts`; the pill switch moves to the shared `.site-switch`. No new library: SVG, CSS transitions and `requestAnimationFrame`.
+- `scripts/bake_search_replay.py` (`npm run replay`): tries, stages and epochs (the method's batches, from replaying it with the backend's own code and the run's seed against the trace), and the one setting to search along. Nothing in `vendor/` is changed.
+- `scripts/bake_slice_truth.ts`: the in-browser model along that setting (54 runs). `scripts/bake_slice_search.py` (`npm run replay:slice`): the one-setting search, in as many epochs as the real run, with the method's own `_fit_gp`, `_expected_improvement` and `_kriging_believer`.
+- `src/searchReplay/`: `replayTimeline.ts` and `sliceSteps.ts` (rules), `usePlayClock.ts`, `GuessChart.tsx`, `SearchReplay.tsx`, `searchReplay.css`.
+- The settings' plain labels move from `WhatIf.tsx` to `src/panels/settingGroups.ts`; the pill switch moves to the shared `.site-switch`. No new library: SVG and `requestAnimationFrame`.
 
 ### Checks
 
@@ -55,6 +53,9 @@ The run's `evaluation_trace.csv` records every try: 48 per building × 3 buildin
 - The method's guess along one setting after each stage of the 48-try run, against the true line: the tries are not on the line, so the guess does not pass through them; the owner wanted the animation where the guess approximates the real data try by try. Replaced by the one-setting search.
 - The orange flame on the best try: the owner asked to remove it; the best try is a ringed dot.
 - Re-fitting the map on the logged tries with batches of 6: the method proposes 12 per batch and the organizer does not run repeats of a whole-hour schedule, so Focus was one batch (building 01: 12 picked, 6 run).
+- The real bills against the simulation after each stage (bars, with the score at each stage): six extra model runs, all matching the trace; the owner asked to remove the bar chart in favour of the epoch-by-epoch picture. Committed in d5d1523, removed with `scripts/bake_phase_results.ts` and its data.
+- The one-setting search as single tries, synced to the stages: the owner wanted it to work across the real run's epochs. Replaced by batches per epoch.
+- Expected improvement as its own panel with diamonds: the owner asked whether it was needed; the picks are ringed on the guess instead.
 - A video file: the owner chose the landing page.
 
 ## Status
@@ -63,11 +64,10 @@ done.
 
 ## Result
 
-- Landing page: "How the search found the settings" → "Our best run, stage by stage", as above. Building 01 closes in 38.76 → 80.16 → 93.75 → 96.44; building 02 0.00 → 65.65 → 97.35 → 99.41; building 03 0.00 → 86.68 → 94.53 → 96.81 (the default settings miss the bills of 02 and 03 by more than 100%, and the challenge score stops at 0).
-- The six stage simulations (best after stage 1 and 2 per building: tries 10 and 17, 13 and 14, 11 and 17) match the trace's scores exactly (to 1e-6), about 6.5 and 2 minutes each in Pyodide.
-- Replay of the method: buildings 01 and 03 exact (batches 13 · 6 of 12 · 10 · 12 · 7 and 13 · 8 of 12 · 12 · 11 · 4); building 02 differs from try 14, so its Focus picks are not shown.
-- One-setting search: night temperature (building 01), fully heated share (02, 03); 11 tries each, every one a real model run; all three end on the true top, our best try's own score (96.44, 99.41, 96.81). The true line: 54 runs, about 15 minutes in 9 processes; the best try's own point matches the trace in all three.
-- First version committed as c7130bf, the bills version as d5d1523; this version adds the one-setting search on top.
+- Landing page: "How the search found the settings" → "Our best run, epoch by epoch", as above.
+- One-setting search: night temperature (building 01), fully heated share (02, 03); 5 epochs each (3 spread-out tries, then 2 per epoch), 11 tries, every one a real model run; all three end on the true top, our best try's own score (96.44, 99.41, 96.81). The true line: 54 runs, about 15 minutes in 9 processes; the best try's own point matches the trace in all three.
+- Epochs of the real run: building 01 13 · 6 (of 12 picked) · 10 · 12 · 7; building 03 13 · 8 · 12 · 11 · 4 (exact replays); building 02 13 · 6 · then Fine-tune cut into 3 equal parts (marked as estimated).
+- Commits: c7130bf (12-slice version), d5d1523 (bills version), 6d87744 (one-setting search), and this one (epochs, fluent animation, bars and the expected-improvement panel removed).
 - Checks: `npm test` 80 pass, 0 fail; type check passes; `npm run build` passes (model assets verified). Headless Chrome: the landing page at 1360 px and 390 px plays to try 48, no console errors, no sideways scrolling. `npx software-factory check-docs` passes.
 - Docs: [Search replay](../../docs/reference/features/search-replay.md), the features index, the landing page's page, the blueprint (structure, Open).
 

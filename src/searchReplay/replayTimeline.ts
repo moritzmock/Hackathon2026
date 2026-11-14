@@ -1,8 +1,7 @@
-// The search replay's timeline: how many of the best run's tries are on screen at a moment, in
-// which stage, and which of the four moments the bills and the guess show (the defaults, then the
-// best after each finished stage). It plays stage by stage: a pause to name the stage, then its
-// tries one by one; after the last try it holds, so the last moment can come in.
-// The data is baked from the best run's evaluation trace by scripts/bake_search_replay.py.
+// The search replay's timeline, epoch by epoch (an epoch is one of the method's batches). Each epoch
+// starts with a pause, in which the guess is fitted again and the next batch is picked (longer when
+// a new stage starts), then its tries appear one by one. After the last epoch it holds, for the final
+// fit. The data is baked from the best run's evaluation trace by scripts/bake_search_replay.py.
 
 export type StageName = "spread" | "focus" | "fine";
 export type Try = { score: number; final: boolean };
@@ -12,39 +11,47 @@ export type Try = { score: number; final: boolean };
  * repeated an earlier whole-hour heating schedule (known only when the run could be replayed).
  */
 export type Stage = { stage: StageName; start: number; end: number; held: number[]; proposed?: number; repeats?: number };
-export type BuildingReplay = { exact: boolean; tries: Try[]; stages: Stage[] };
+export type Epoch = { start: number; end: number; proposed?: number; repeats?: number };
+export type BuildingReplay = { exact: boolean; tries: Try[]; stages: Stage[]; epochs: Epoch[] };
 
-export const TIMING = { stagePause: 2200, perTry: 320, endHold: 2000, morph: 1200 };
+export const TIMING = { stagePause: 2600, epochPause: 1800, perTry: 420, endHold: 2800 };
 
-/** `starts`: when each stage begins; `moments`: when each of the four moments begins. */
-export type Timeline = { starts: number[]; moments: number[]; duration: number };
+type Beat = { kind: "pause" | "tries" | "end"; epoch: number; start: number; duration: number };
+export type Timeline = { beats: Beat[]; duration: number };
 /**
- * What is on screen: the first `shown` tries, during stage number `stage` (an index into
- * `stages`), and moment `moment` (0 … 3), `morph` (0 … 1) of the way in from the one before.
+ * What is on screen: the first `shown` tries, in epoch `epoch` and stage `stage` (indices), during
+ * its pause, its tries or the closing hold (`beat`), `progress` (0 … 1) of the way through that beat.
  */
-export type Frame = { shown: number; stage: number; moment: number; morph: number; done: boolean };
+export type Frame = { shown: number; stage: number; epoch: number; beat: Beat["kind"]; progress: number; done: boolean };
+
+export const stageOf = (replay: BuildingReplay, tryIndex: number) => replay.stages.findIndex((s) => tryIndex >= s.start && tryIndex < s.end);
 
 export function planTimeline(replay: BuildingReplay): Timeline {
-  const starts: number[] = [];
+  const beats: Beat[] = [];
   let t = 0;
-  for (const s of replay.stages) {
-    starts.push(t);
-    t += TIMING.stagePause + (s.end - s.start) * TIMING.perTry;
-  }
-  return { starts, moments: [0, ...starts.slice(1), t], duration: t + TIMING.endHold };
+  const add = (kind: Beat["kind"], epoch: number, duration: number) => {
+    beats.push({ kind, epoch, start: t, duration });
+    t += duration;
+  };
+  replay.epochs.forEach((e, i) => {
+    const newStage = i === 0 || stageOf(replay, e.start) !== stageOf(replay, replay.epochs[i - 1].start);
+    add("pause", i, newStage ? TIMING.stagePause : TIMING.epochPause);
+    add("tries", i, (e.end - e.start) * TIMING.perTry);
+  });
+  add("end", replay.epochs.length - 1, TIMING.endHold);
+  return { beats, duration: t };
 }
 
 export function frameAt(timeline: Timeline, replay: BuildingReplay, ms: number): Frame {
   const time = Math.max(0, Math.min(ms, timeline.duration));
-  let stage = 0;
-  while (stage + 1 < timeline.starts.length && timeline.starts[stage + 1] <= time) stage++;
-  const s = replay.stages[stage];
-  const into = time - timeline.starts[stage] - TIMING.stagePause;
-  const shown = into < 0 ? s.start : Math.min(s.end, s.start + Math.floor(into / TIMING.perTry) + 1);
-  let moment = 0;
-  while (moment + 1 < timeline.moments.length && timeline.moments[moment + 1] <= time) moment++;
-  const morph = moment === 0 ? 1 : Math.min(1, (time - timeline.moments[moment]) / TIMING.morph);
-  return { shown, stage, moment, morph, done: time >= timeline.duration };
+  let beat = timeline.beats[0];
+  for (const b of timeline.beats) if (b.start <= time) beat = b;
+  const into = time - beat.start;
+  const progress = Math.min(1, into / beat.duration);
+  const e = replay.epochs[beat.epoch];
+  const shown =
+    beat.kind === "pause" ? e.start : beat.kind === "end" ? replay.tries.length : Math.min(e.end, e.start + Math.floor(into / TIMING.perTry) + 1);
+  return { shown, stage: stageOf(replay, Math.min(e.start, replay.tries.length - 1)), epoch: beat.epoch, beat: beat.kind, progress, done: time >= timeline.duration };
 }
 
 /** The index of the highest-scoring try among the first `shown`, or −1 when none is shown. */

@@ -1,4 +1,4 @@
-/* The landing page's replay of our best run: violet tries and simulation, the real bills in ink. */
+/* The landing page's replay of our best run: the true score and tries in ink, the guess and the run in violet. */
 
 /* Shared: legend, play button */
 .replay-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 8px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 0.75rem; }
@@ -6,7 +6,7 @@
 .replay-legend i { display: block; width: 9px; height: 9px; border-radius: 50%; }
 .replay-legend i.is-try { background: var(--brand-violet-4); }
 .replay-legend i.is-best { width: 11px; height: 11px; background: var(--brand-violet); box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--brand-violet); }
-.replay-legend i.is-bill { width: 12px; height: 12px; border-radius: 3px; background: var(--heading); }
+.replay-legend i.is-epoch { width: 16px; height: 8px; border-radius: 3px; background: var(--brand-violet-4); }
 .replay-legend i.is-mean { width: 16px; height: 3px; border-radius: 2px; background: var(--brand-violet); }
 .replay__play {
   display: grid; place-items: center; width: 40px; height: 40px; border: 0; border-radius: 999px;
@@ -32,6 +32,11 @@
 .replay-stage.is-current { fill: var(--brand-violet-soft); fill-opacity: 0.55; }
 .replay-stage__label { fill: var(--muted); font: 600 11px "Inter", sans-serif; }
 .replay-stage__label.is-current { fill: var(--brand-violet); }
+.replay-epoch rect { fill: rgb(31 34 40 / 0.06); transition: fill 0.4s; }
+.replay-epoch text { fill: var(--muted); font: 600 8px "Inter", sans-serif; }
+.replay-epoch line { stroke: rgb(31 34 40 / 0.14); stroke-dasharray: 2 3; }
+.replay-epoch.is-current rect { fill: var(--brand-violet-4); }
+.replay-epoch.is-current text { fill: #fff; }
 .replay-best { fill: none; stroke: var(--brand-violet); stroke-width: 2.5; stroke-linejoin: round; }
 .replay-dots circle { fill: var(--brand-violet-4); }
 .replay-dots circle.is-best { fill: var(--brand-violet); stroke: #fff; stroke-width: 2; }
@@ -50,48 +55,30 @@
 .replay__caption .replay__done { padding-top: 10px; border-top: 1px solid var(--line); color: var(--heading); font-weight: 500; }
 
 /* The guess against the true score along one setting */
-.replay__pair { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 28px; align-items: start; }
-.guess { margin: 0; }
+.guess { margin: 0; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
 .guess svg { display: block; width: 100%; height: auto; overflow: visible; }
 .guess__label { fill: var(--heading); font: 600 11px "Inter", sans-serif; }
-.guess__axis { stroke: var(--line); }
 .guess__band { fill: var(--brand-violet); fill-opacity: 0.16; }
 .guess__truth { fill: none; stroke: var(--heading); stroke-width: 2; stroke-linejoin: round; }
 .guess__mean { fill: none; stroke: var(--brand-violet); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 .guess__try { fill: var(--heading); stroke: #fff; stroke-width: 2; }
 .guess__try.is-best { fill: var(--brand-violet); }
 .guess__next-line { stroke: var(--brand-violet); stroke-width: 1; stroke-dasharray: 3 4; opacity: 0.6; }
-.guess__gain { fill: none; stroke: var(--brand-violet-2); stroke-width: 2; }
-.guess__next { fill: var(--brand-violet); stroke: #fff; stroke-width: 1.5; }
+.guess__next { fill: #fff; stroke: var(--brand-violet); stroke-width: 2.5; }
 .guess__step { fill: var(--brand-violet); font: 600 11px "Inter", sans-serif; }
 .guess__empty { fill: var(--muted); font: 500 13px "Inter", sans-serif; }
 .replay-legend i.is-truth { width: 16px; height: 2px; border-radius: 1px; background: var(--heading); }
 .replay-legend i.is-band { width: 16px; height: 10px; border-radius: 3px; background: rgb(79 37 110 / 0.16); }
-.replay-legend i.is-next { width: 9px; height: 9px; border-radius: 1px; transform: rotate(45deg); background: var(--brand-violet); }
+.replay-legend i.is-next { width: 10px; height: 10px; background: #fff; box-shadow: inset 0 0 0 2px var(--brand-violet); }
 .replay-legend i.is-try-dark { width: 8px; height: 8px; background: var(--heading); box-shadow: 0 0 0 1.5px #fff, 0 0 0 2.5px var(--heading); }
 .replay__note { margin: 6px 0 0; color: var(--muted); font-size: 0.75rem; line-height: 1.5; }
 
-/* The real bills against the simulation, and the score at each stage */
-.bills { margin: 0; }
-.bills svg { display: block; width: 100%; height: auto; }
-.bills__title { fill: var(--heading); font: 600 11px "Inter", sans-serif; }
-.bills__axis { stroke: var(--line); }
-.bills__real { fill: var(--heading); }
-.bills__sim { fill: var(--brand-violet-2); transform-box: fill-box; transform-origin: bottom; transition: transform 1s var(--spring); }
-.bills__month { fill: var(--muted); font: 500 11px "Inter", sans-serif; }
-.replay-moments { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
-.replay-moments li { display: grid; gap: 4px; padding: 12px 14px; border-radius: 12px; background: var(--panel-card); transition: background 0.4s, opacity 0.4s; }
-.replay-moments li.is-current { background: var(--brand-violet-soft); }
-.replay-moments li.is-ahead { opacity: 0.5; }
-.replay-moments span { color: var(--muted); font-size: 0.75rem; }
-.replay-moments strong { color: var(--optimised); font: 600 1.375rem/1 var(--display); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .replay__timeline { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; }
 .replay__timeline input[type="range"] { width: 100%; margin: 0; accent-color: var(--brand-violet); }
 .replay__count { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 
 @media (max-width: 900px) {
-  .replay__stage, .replay__pair { grid-template-columns: 1fr; gap: 16px; }
-  .replay-moments { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .replay__stage { grid-template-columns: 1fr; gap: 16px; }
 }
 @media (max-width: 600px) {
   .replay { padding: 14px; }
@@ -99,6 +86,6 @@
   .replay__count { grid-column: 1 / -1; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .replay-stage, .bills__sim, .replay-moments li { transition: none; }
+  .replay-stage { transition: none; }
   .replay-dots circle.is-new { animation: none; }
 }

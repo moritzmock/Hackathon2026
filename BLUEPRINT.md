@@ -24,9 +24,8 @@
   street details and `build_rails.py` the railway; `build_data.py` makes
   `public/data.js`; `bake_search_replay.py` (`npm run replay`) makes
   `src/searchReplay/searchReplay.json` from `data/evaluation_trace.csv`, and
-  `bake_phase_results.ts` the simulated stage results in
-  `src/searchReplay/phaseResults.json`, `bake_slice_truth.ts` and
-  `bake_slice_search.py` (`npm run replay:slice`) the one-setting search.
+  `bake_slice_truth.ts` and `bake_slice_search.py` (`npm run replay:slice`)
+  the one-setting search.
 - `vendor/integrates`: the challenge's model as a git submodule, pinned to one
   commit, read-only.
 
@@ -99,7 +98,7 @@ Ask before changing any of these.
 - A `verify` script that runs build, `test:model` and a Playwright smoke test
   of the scene.
 - Search replay: building 02's run cannot be replayed exactly on this
-  computer from try 14, so its Focus batch's picks and repeats are not shown.
+  computer from try 14, so its Fine-tune epochs are estimated (3 equal parts).
 - Whether real building names may be shown (check the challenge rules).
 - Whether to move the submodule pin to upstream `HEAD` (it is ahead of the
   local `integrates` copy).

@@ -14,6 +14,6 @@ The site opens on the landing page (`index.html`, code in `src/landing/`). The s
 
 **Brand:** both follow the [corporate identity](../../../public/brand/calibra-corporate-identity.pdf) ([decision 0005](../../decisions/0005-calibra-brand.md)): no eyebrow labels; Sora 600 for headings and big numbers with tabular figures, Inter for text; white page, light grey cards, thin lines, no heavy shadows; one black main button; Lucide icons at 16 px. Each colour keeps its meaning, so the chart uses only optimised violet for runs and orange appears only in the flame; parameter groups are not colour-coded.
 
-**Search replay:** after “The three buildings”, “How the search found the settings” replays the best run stage by stage, with the simulation closing in on the real bills; see [Search replay](search-replay.md). It shows the best score over the 48 tries for that run only (the results CSV has no per-run history).
+**Search replay:** after “The three buildings”, “How the search found the settings” replays the best run epoch by epoch, with the method on one setting closing in on the real model's score; see [Search replay](search-replay.md). It shows the best score over the 48 tries for that run only (the results CSV has no per-run history).
 
 **Checks:** `src/methods/methodRanking.test.ts` (ranking by method and by building, the chart floor). Headless Chrome at 1360 px and at a 390 px phone width: no sideways scrolling, no console errors.

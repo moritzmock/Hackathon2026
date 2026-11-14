@@ -54,22 +54,31 @@ test("in the focus stage, 6 settings stay at the best spread-out try's values", 
   }
 });
 
-test("the timeline starts empty, names each stage before its tries, only moves forward and ends on every try", () => {
+test("the epochs are the method's batches: they cover every try in order and never cross a stage", () => {
+  for (const id of ids) {
+    const { tries, stages, epochs } = buildings[id];
+    assert.equal(epochs[0].start, 0);
+    epochs.forEach((e, i) => i > 0 && assert.equal(e.start, epochs[i - 1].end));
+    assert.equal(epochs.at(-1)!.end, tries.length);
+    assert.deepEqual([epochs[0].end, epochs[1].end], [stages[0].end, stages[1].end]);
+  }
+});
+
+test("the timeline starts empty, plays epoch by epoch, only moves forward and ends on every try", () => {
   for (const id of ids) {
     const b = buildings[id];
     const timeline = planTimeline(b);
-    assert.deepEqual(frameAt(timeline, b, 0), { shown: 0, stage: 0, moment: 0, morph: 1, done: false });
-    assert.deepEqual(frameAt(timeline, b, timeline.duration), { shown: b.tries.length, stage: 2, moment: 3, morph: 1, done: true });
+    assert.deepEqual(frameAt(timeline, b, 0), { shown: 0, stage: 0, epoch: 0, beat: "pause", progress: 0, done: false });
+    const last = frameAt(timeline, b, timeline.duration);
+    assert.deepEqual([last.shown, last.stage, last.epoch, last.beat, last.done], [b.tries.length, 2, b.epochs.length - 1, "end", true]);
     let previous = frameAt(timeline, b, 0);
     for (let ms = 0; ms <= timeline.duration; ms += 20) {
       const f = frameAt(timeline, b, ms);
-      assert.ok(f.shown >= previous.shown && f.stage >= previous.stage);
-      // The tries on screen reach into this stage, never past it.
-      assert.ok(f.shown <= b.stages[f.stage].end && f.shown >= b.stages[f.stage].start);
-      // The bills and the guess show the defaults during stage 1, then the best of each finished
-      // stage; the last moment comes once every try is shown.
-      assert.ok(f.moment >= previous.moment && f.moment <= 3);
-      assert.equal(f.moment, f.shown === b.tries.length && ms >= timeline.moments[3] ? 3 : f.stage);
+      assert.ok(f.shown >= previous.shown && f.stage >= previous.stage && f.epoch >= previous.epoch);
+      assert.ok(f.progress >= 0 && f.progress <= 1);
+      // The tries on screen reach into this epoch, never past it.
+      const e = b.epochs[f.epoch];
+      assert.ok(f.shown >= e.start && f.shown <= e.end);
       previous = f;
     }
   }

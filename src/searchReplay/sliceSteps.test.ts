@@ -22,46 +22,56 @@ test("the true line is the real model at the planned points, and passes through 
 
 test("every try of the one-setting search is a real model point, and the guess goes through it", () => {
   for (const id of ids) {
-    const { truth, steps } = searches[id];
+    const { truth, steps, lower, upper } = searches[id];
     for (const step of steps) {
       assert.equal(new Set(step.tries).size, step.tries.length);
       for (const i of step.tries) {
-        const at = Math.round(((truth[i].value - searches[id].lower) / (searches[id].upper - searches[id].lower)) * (step.mean.length - 1));
+        const at = Math.round(((truth[i].value - lower) / (upper - lower)) * (step.mean.length - 1));
         // The guess is drawn on a grid; next to a try it is within a few points of the true score.
         assert.ok(Math.abs(step.mean[at] - truth[i].score) < 5, `${id}: guess ${step.mean[at]} vs ${truth[i].score}`);
       }
     }
+  }
+});
+
+test("one step per epoch of the real run; each epoch adds the picks of the step before", () => {
+  for (const id of ids) {
+    const { steps } = searches[id];
+    assert.equal(steps.length, replay.buildings[id].epochs.length);
     steps.forEach((s, k) => {
-      if (s.next === null) return assert.equal(k, steps.length - 1);
-      assert.deepEqual(steps[k + 1].tries, [...s.tries, s.next]);
+      if (k === steps.length - 1) return assert.deepEqual(s.picks, []);
+      assert.ok(s.picks.length > 0 && s.picks.every((p) => !s.tries.includes(p)));
+      assert.deepEqual(steps[k + 1].tries, [...s.tries, ...s.picks]);
     });
   }
 });
 
-test("the best try of the one-setting search gets better or stays, and ends near the true top", () => {
+test("the best try of the one-setting search gets better or stays, and ends at the true top", () => {
   for (const id of ids) {
     const { truth, steps } = searches[id];
     const best = (tries: number[]) => Math.max(...tries.map((i) => truth[i].score));
     steps.forEach((s, k) => k > 0 && assert.ok(best(s.tries) >= best(steps[k - 1].tries)));
-    assert.ok(best(steps.at(-1)!.tries) > Math.max(...truth.map((p) => p.score)) - 1, id);
+    assert.equal(best(steps.at(-1)!.tries), Math.max(...truth.map((p) => p.score)), id);
   }
 });
 
-test("the one-setting search plays in step with the replay's stages", () => {
+test("the one-setting search plays in step with the epochs: no guess in epoch 1, tries only ever added", () => {
   for (const id of ids) {
     const b = replay.buildings[id] as BuildingReplay;
     const search = searches[id];
     const timeline = planTimeline(b);
-    let previous = sliceViewAt(frameAt(timeline, b, 0), b, search);
-    assert.deepEqual(previous, { step: -1, tries: 0, morph: 1 });
+    let seen = 0;
     for (let ms = 0; ms <= timeline.duration; ms += 25) {
       const frame = frameAt(timeline, b, ms);
       const view = sliceViewAt(frame, b, search);
-      assert.ok(view.step >= previous.step && view.tries >= previous.tries);
-      // No guess during the spread-out stage; a guess in the stages after it.
-      assert.equal(view.step === -1, frame.stage === 0);
-      previous = view;
+      assert.equal(view.guess === null, frame.epoch === 0 && frame.beat !== "end");
+      const onScreen = view.settled.length + view.dropping.length;
+      assert.ok(onScreen >= seen, `${id} at ${ms} ms`);
+      seen = Math.max(seen, view.settled.length);
+      for (const d of view.dropping) assert.ok(d.land > 0 && d.land <= 1);
+      if (view.guess) assert.ok(view.guess.morph >= 0 && view.guess.morph <= 1);
     }
-    assert.deepEqual(sliceViewAt(frameAt(timeline, b, timeline.duration), b, search), { step: search.steps.length - 1, tries: search.steps.at(-1)!.tries.length, morph: 1 });
+    const end = sliceViewAt(frameAt(timeline, b, timeline.duration), b, search);
+    assert.deepEqual([end.guess?.to, end.guess?.morph, end.settled.length], [search.steps.length - 1, 1, search.steps.at(-1)!.tries.length]);
   }
 });
