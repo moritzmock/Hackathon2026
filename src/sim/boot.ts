@@ -18,8 +18,9 @@ export interface BootOptions {
 }
 
 export type RunYear = (buildingId: string, paramsJson: string, year: number) => string;
+export type RunRegime = (buildingId: string, paramsJson: string, year: number, reduced: boolean) => string;
 
-export async function bootModel(py: PyodideInterface, opts: BootOptions): Promise<{ runYear: RunYear; manifest: Manifest }> {
+export async function bootModel(py: PyodideInterface, opts: BootOptions): Promise<{ runYear: RunYear; runRegime: RunRegime; manifest: Manifest }> {
   const status = opts.onStatus ?? (() => {});
   const manifest = JSON.parse(new TextDecoder().decode(await opts.fetchBytes("manifest.json"))) as Manifest;
 
@@ -44,5 +45,6 @@ del _wheel_files`);
   status("Preparing simulation");
   await py.runPythonAsync(opts.entrySource);
   const runYear = py.globals.get("run_year") as RunYear;
-  return { runYear, manifest };
+  const runRegime = py.globals.get("run_regime") as RunRegime;
+  return { runYear, runRegime, manifest };
 }

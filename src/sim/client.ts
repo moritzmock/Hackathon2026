@@ -1,7 +1,8 @@
-// Main-thread client: a small pool of model workers. One building = one task
-// per weather year, run in parallel (the organizer's own split).
+// Main-thread client: split thermal regimes when four workers are available;
+// smaller pools use the organizer's original one-job-per-year path.
 import type { SimRow } from "../data/types";
-import type { FromWorker, ToWorker } from "./protocol";
+import { combineRegimes } from "./combine.ts";
+import type { FromWorker, RegimeResult, ToWorker } from "./protocol";
 
 export const YEARS = [2018, 2019];
 
@@ -9,13 +10,14 @@ export const YEARS = [2018, 2019];
 export const SETUP_STEPS = ["Downloading Python runtime", "Loading scientific Python", "Installing building model", "Preparing simulation"];
 const POOL_SIZE = Math.max(1, Math.min(YEARS.length * 2, Math.floor((navigator.hardwareConcurrency || 2) / 2)));
 
-type Pending = { resolve: (rows: SimRow[]) => void; reject: (e: Error) => void };
+type TaskResult = Extract<FromWorker, { type: "year_result" | "regime_result" }>;
+type Pending = { resolve: (result: TaskResult) => void; reject: (e: Error) => void };
 interface Slot { worker: Worker; busy: boolean }
 
 let slots: Slot[] = [];
 let nextId = 1;
 const pending = new Map<number, Pending>();
-const queue: { msg: Extract<ToWorker, { type: "run" }>; p: Pending }[] = [];
+const queue: { msg: Extract<ToWorker, { type: "run" | "run_regime" }>; p: Pending }[] = [];
 let statusListener: (s: string) => void = () => {};
 let errorDetailListener: (detail: string) => void = () => {};
 
@@ -44,7 +46,7 @@ function ensurePool() {
       const id = m.id as number; // results and run errors always carry their run id
       const p = pending.get(id);
       pending.delete(id);
-      if (m.type === "result") p?.resolve(m.rows);
+      if (m.type === "year_result" || m.type === "regime_result") p?.resolve(m);
       else {
         if (m.detail) console.error(`Model run failed\n${m.detail}`);
         p?.reject(new Error(m.message));
@@ -87,11 +89,25 @@ function pump() {
   }
 }
 
-function runYear(buildingId: string, params: Record<string, number>, year: number): Promise<SimRow[]> {
+function submit(msg: Extract<ToWorker, { type: "run" | "run_regime" }>): Promise<TaskResult> {
   ensurePool();
-  return new Promise((resolve, reject) => {
-    queue.push({ msg: { type: "run", id: nextId++, buildingId, params, year }, p: { resolve, reject } });
+  return new Promise<TaskResult>((resolve, reject) => {
+    queue.push({ msg, p: { resolve, reject } });
     pump();
+  });
+}
+
+function runYear(buildingId: string, params: Record<string, number>, year: number): Promise<SimRow[]> {
+  return submit({ type: "run", id: nextId++, buildingId, params, year }).then((result) => {
+    if (result.type !== "year_result") throw new Error("Expected a combined year result");
+    return result.rows;
+  });
+}
+
+function runRegime(buildingId: string, params: Record<string, number>, year: number, reduced: boolean): Promise<RegimeResult> {
+  return submit({ type: "run_regime", id: nextId++, buildingId, params, year, reduced }).then((result) => {
+    if (result.type !== "regime_result") throw new Error("Expected a thermal regime result");
+    return result.data;
   });
 }
 
@@ -111,8 +127,19 @@ export async function simulate(
   params: Record<string, number>,
   onYearDone?: (year: number) => void,
 ): Promise<SimRow[]> {
-  const perYear = await Promise.all(
-    YEARS.map((y) => runYear(buildingId, params, y).then((rows) => (onYearDone?.(y), rows))),
-  );
+  const perYear = await Promise.all(YEARS.map(async (year) => {
+    if (POOL_SIZE < YEARS.length * 2) {
+      const rows = await runYear(buildingId, params, year);
+      onYearDone?.(year);
+      return rows;
+    }
+    const [normal, reduced] = await Promise.all([
+      runRegime(buildingId, params, year, false),
+      runRegime(buildingId, params, year, true),
+    ]);
+    const rows = combineRegimes(normal, reduced);
+    onYearDone?.(year);
+    return rows;
+  }));
   return perYear.flat().sort((a, b) => a.year - b.year || a.month - b.month);
 }

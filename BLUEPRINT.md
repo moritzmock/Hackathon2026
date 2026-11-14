@@ -27,8 +27,11 @@ returning monthly kWh:
 1. **Precomputed:** baseline, calibrated result and parameter sweeps, baked by
    the Python scripts with the real model. They load instantly.
 2. **Live what-if:** the real pyBuildingEnergy model in Pyodide, in Web
-   Workers. Each building is four runs (2 years × 2 temperature zones), spread
-   over workers. About 36 MB on first load, then cached.
+   Workers. With four worker slots, each building runs four year-by-regime
+   jobs (2 years × 2 temperature zones); the app blends the scored hours
+   before summing February and March. Smaller pools use the organizer's
+   original one-job-per-year calculation. About 36 MB on first load, then
+   cached.
 
 If Pyodide fails, the same function can call a local Python API instead,
 without changing the UI. See
@@ -66,6 +69,10 @@ Ask before changing any of these.
 - `npm run test:model`: the in-browser model against the official baseline;
   run it after any change to `src/sim/`, `scripts/sync_model.py` or the
   submodule pin.
+- `npm run test:regimes`: the four-job app path against the official baseline
+  for all buildings and years, plus a changed-setting comparison with the
+  organizer's original one-year path. The client unit test checks the smaller
+  pool's original-year fallback.
 - The 3D scene: open it in a browser (Playwright) and check it draws and the
   console has no errors. WebGL is not covered by unit tests.
 

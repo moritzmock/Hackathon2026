@@ -1,7 +1,7 @@
 /// <reference lib="webworker" />
 // Runs the pinned INTEGRATES model (pyBuildingEnergy, ISO 52016) in Pyodide.
 import type { loadPyodide as LoadPyodide } from "pyodide";
-import { bootModel, type RunYear } from "./boot";
+import { bootModel, type RunRegime, type RunYear } from "./boot";
 import entrySource from "./entry.py?raw";
 import type { FromWorker, ToWorker } from "./protocol";
 
@@ -10,7 +10,7 @@ const post = (msg: FromWorker) => ctx.postMessage(msg);
 const PYODIDE_URL = `https://cdn.jsdelivr.net/pyodide/v${__PYODIDE_VERSION__}/full/`;
 const ASSETS = new URL(`${import.meta.env.BASE_URL}py/`, ctx.location.origin + "/").href;
 
-let ready: Promise<RunYear> | undefined;
+let ready: Promise<{ runYear: RunYear; runRegime: RunRegime }> | undefined;
 
 // Debugging aids for error reports: what the worker was doing, and when.
 const t0 = performance.now();
@@ -76,7 +76,7 @@ function report(err: unknown, context: string): string {
 
 const short = (err: unknown) => (err instanceof Error ? err.message.split("\n").filter(Boolean).slice(-3).join("\n") : String(err));
 
-function boot(): Promise<RunYear> {
+function boot(): Promise<{ runYear: RunYear; runRegime: RunRegime }> {
   ready ??= (async () => {
     status("Downloading Python runtime");
     note(`importing ${PYODIDE_URL}pyodide.mjs`);
@@ -89,7 +89,7 @@ function boot(): Promise<RunYear> {
       log.push(`          python: ${line}`);
     };
     const py = await loadPyodide({ indexURL: PYODIDE_URL, stdout: keep, stderr: keep });
-    const { runYear, manifest } = await bootModel(py, {
+    const { runYear, runRegime, manifest } = await bootModel(py, {
       fetchBytes: async (p) => {
         const url = new URL(p, ASSETS).href;
         note(`fetching ${url}`);
@@ -102,7 +102,7 @@ function boot(): Promise<RunYear> {
     });
     note(`ready (integrates@${manifest.integrates_commit})`);
     post({ type: "ready", commit: manifest.integrates_commit });
-    return runYear;
+    return { runYear, runRegime };
   })();
   return ready;
 }
@@ -119,9 +119,14 @@ ctx.onmessage = async (e: MessageEvent<ToWorker>) => {
     return;
   }
   try {
-    const runYear = await boot();
-    const rows = JSON.parse(runYear(msg.buildingId, JSON.stringify(msg.params), msg.year));
-    post({ type: "result", id: msg.id, rows });
+    const model = await boot();
+    if (msg.type === "run") {
+      const rows = JSON.parse(model.runYear(msg.buildingId, JSON.stringify(msg.params), msg.year));
+      post({ type: "year_result", id: msg.id, rows });
+    } else {
+      const data = JSON.parse(model.runRegime(msg.buildingId, JSON.stringify(msg.params), msg.year, msg.reduced));
+      post({ type: "regime_result", id: msg.id, data });
+    }
   } catch (err) {
     const context = `run: ${msg.buildingId}, weather year ${msg.year}, params ${JSON.stringify(msg.params)}`;
     post({ type: "error", id: msg.id, message: short(err), detail: report(err, context) });

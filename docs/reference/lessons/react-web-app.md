@@ -31,3 +31,8 @@
   finish: Vite can return its HTML page for a missing wheel and Python
   reports BadZipFile. See [run 004](../../../factory/runs/004-deployment-model-assets.md)
   and the [deployment instructions](../../../README.md#deploy-on-vercel).
+- Before porting a slow browser model to a new language, check whether one
+  queued worker job contains independent calculations. Splitting those jobs
+  across an existing pool can shorten the wait while retaining the same
+  pinned solver. Compare full browser time and the model's official outputs,
+  as in [run 011](../../../factory/runs/011-fresh-regimes.md).
