@@ -416,11 +416,11 @@ body { background: #fff; }
 .workspace { padding: 0; gap: 0; background: #fff; }
 .stage { border-radius: 0; }
 .list {
-  width: 400px; padding: 22px 18px 12px; background: #fff;
+  width: 320px; padding: 22px 18px 12px; background: #fff;
   border-right: 1px solid var(--line); box-shadow: none; border-radius: 0;
 }
 .list.is-collapsed { width: 72px; padding: 22px 8px 12px; }
-.list__scroll { grid-template-columns: 1fr 1fr; gap: 20px 14px; padding: 2px 2px 14px; }
+.list__scroll { grid-template-columns: 1fr; gap: 18px; padding: 2px 2px 14px; }
 .list.is-collapsed .list__scroll { grid-template-columns: 1fr; gap: 10px; }
 
 .stay { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 0; margin: 0; background: none; border-radius: 0; box-shadow: none; }
