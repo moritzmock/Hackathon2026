@@ -20,10 +20,24 @@ Measured in the ground picture (linear colours, as the shader sees them): forest
 
 Checks: type check, `npm test`, build; screenshots in headless Chrome of the overview and two slopes, before and after, today (live weather). No unit test: the change is shader code.
 
+### Tried
+
+All dropped; the owner decided to leave the mountain forest green.
+
+- Stands of the trees' four autumn colours, 100–300 m across, with green pine patches: the owner found them too strong ("blobs"); with smaller stands built from waves, the pattern looked hatched.
+- At the same time another session committed one smooth warm-orange shade on all green slopes above 600 m (daadcea). The owner, shown both, chose a smooth version of this run's (forest only, broadleaf colours below 1000 m, bare in winter, larches kept). As one smooth ochre shade it looked "dirty, not like foliage".
+- Single tree crowns about 14 m across (yellow, ochre, rust and green pines): "too detailed"; the owner then said to leave the mountains green.
+- Found on the way: picking a month on the chart changes only the weather sign, not the map's season (only a picked day does, `src/weather/focus.ts`), so a "February" screenshot of the map still shows today's autumn values.
+
 ## Status
 
-in progress.
+stopped: the owner chose to leave the mountain forest green.
 
 ## Result
 
+- `src/world/season.ts` is back to its state before this run and before daadcea (the version from 4318f76): the mountain forest stays green; the city's leafy trees, bushes and scattered single trees keep their autumn colours. The gold larch band (1000–2000 m) is still in that code but barely shows, because its forest test looks for a darker green than the map's forest colour.
+- Checks: type check of the file, `npm test` 80 pass, 0 fail; overview seen in headless Chrome: green slopes, autumn trees in the city.
+
 ## Later
+
+- The larch band's forest test (dark green, brightness 0.18–0.32) misses most of the map's forest (brightness 0.26 in linear colour); a test on the red value (forest 0.14, scrub from 0.24) finds it. Remove the larch band, or fix the test if a gold band up high is wanted after all.
