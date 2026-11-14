@@ -21,10 +21,11 @@ const methodLabels: Record<string, string> = {
 };
 
 export function describeApproach(run: string): { group: string; method: string; variant: string | null } {
-  const [group, method, , , , , variant] = run.split("__");
+  // The variant is everything after the six fixed parts; CalibLab runs have two codes (seed4__ces0.01).
+  const [group, method, , , , , ...variant] = run.split("__");
   return {
     group: groupLabels[group] ?? group.replaceAll("_", " "),
     method: methodLabels[method] ?? method.replaceAll("_", " "),
-    variant: variant ?? null,
+    variant: variant.length ? variant.join("__") : null,
   };
 }

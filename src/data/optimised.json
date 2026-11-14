@@ -1,114 +1,123 @@
 {
- "algorithm": "bayesian_optimization",
+ "algorithm": "ard_bayesian_optimisation",
  "team": "Calibra",
  "buildings": {
   "building_01": {
    "params": {
-    "weekday_heating_hours": 5.031993192230117,
+    "weekday_heating_hours": 4,
     "non_workday_heating_hours": 4,
-    "weekday_start_hour": 7.372848594880885,
-    "occupied_heating_setpoint_c": 19.352318823532578,
-    "night_setback_temperature_c": 12,
-    "outdoor_shutdown_temperature_c": 16.289343618520977,
-    "normally_heated_area_fraction": 0.6443257528546378,
-    "reduced_area_setpoint_c": 12,
-    "reduced_area_schedule_fraction": 0.36366040097402386
+    "weekday_start_hour": 5,
+    "occupied_heating_setpoint_c": 18.96866603763056,
+    "night_setback_temperature_c": 12.260185688625915,
+    "outdoor_shutdown_temperature_c": 14.884296299204268,
+    "normally_heated_area_fraction": 0.728056613845709,
+    "reduced_area_setpoint_c": 15.222590260960287,
+    "reduced_area_schedule_fraction": 0.3849247735539228,
+    "air_exchange_multiplier": 0.9511190826931398,
+    "opaque_envelope_u_value_multiplier": 0.9944983469471096,
+    "window_u_value_multiplier": 0.9384729550597928
    },
    "rows": [
     {
      "year": 2018,
      "month": 2,
-     "kwh": 29483.77905885306
+     "kwh": 29247.30468065454
     },
     {
      "year": 2018,
      "month": 3,
-     "kwh": 23590.319055244563
+     "kwh": 23413.360057126454
     },
     {
      "year": 2019,
      "month": 2,
-     "kwh": 25299.917694750548
+     "kwh": 25540.0446786411
     },
     {
      "year": 2019,
      "month": 3,
-     "kwh": 17782.455119604398
+     "kwh": 17928.46056020824
     }
    ],
-   "score": 95.62957301764582
+   "score": 96.44011405747887
   },
   "building_02": {
    "params": {
     "weekday_heating_hours": 4,
     "non_workday_heating_hours": 0,
-    "weekday_start_hour": 5,
-    "occupied_heating_setpoint_c": 21.02647351932535,
-    "night_setback_temperature_c": 13.232879565730071,
+    "weekday_start_hour": 5.3828920774482345,
+    "occupied_heating_setpoint_c": 19.037607037446765,
+    "night_setback_temperature_c": 12,
     "outdoor_shutdown_temperature_c": 12,
-    "normally_heated_area_fraction": 0.6415264636442406,
-    "reduced_area_setpoint_c": 17,
-    "reduced_area_schedule_fraction": 0.27508225201001524
+    "normally_heated_area_fraction": 0.6,
+    "reduced_area_setpoint_c": 12.12093606749066,
+    "reduced_area_schedule_fraction": 0.4389257734772121,
+    "air_exchange_multiplier": 1.3,
+    "opaque_envelope_u_value_multiplier": 1.1,
+    "window_u_value_multiplier": 0.9391325858847807
    },
    "rows": [
     {
      "year": 2018,
      "month": 2,
-     "kwh": 84962.2027743656
+     "kwh": 83832.13627680734
     },
     {
      "year": 2018,
      "month": 3,
-     "kwh": 70070.73886574613
+     "kwh": 70443.29601272568
     },
     {
      "year": 2019,
      "month": 2,
-     "kwh": 75266.48377361
+     "kwh": 75641.06377620794
     },
     {
      "year": 2019,
      "month": 3,
-     "kwh": 52755.629366492794
+     "kwh": 55903.79366907847
     }
    ],
-   "score": 97.72399459772892
+   "score": 99.40676670960555
   },
   "building_03": {
    "params": {
     "weekday_heating_hours": 4,
     "non_workday_heating_hours": 0,
-    "weekday_start_hour": 8.799220617885549,
+    "weekday_start_hour": 9,
     "occupied_heating_setpoint_c": 18.5,
-    "night_setback_temperature_c": 16.795939641926907,
-    "outdoor_shutdown_temperature_c": 12.504538995469407,
+    "night_setback_temperature_c": 16.06069022621474,
+    "outdoor_shutdown_temperature_c": 12.210854913812328,
     "normally_heated_area_fraction": 0.6,
-    "reduced_area_setpoint_c": 12,
-    "reduced_area_schedule_fraction": 0.4499341381148263
+    "reduced_area_setpoint_c": 14.664527358425843,
+    "reduced_area_schedule_fraction": 0.25,
+    "air_exchange_multiplier": 1.0449499232351702,
+    "opaque_envelope_u_value_multiplier": 0.9262703890174248,
+    "window_u_value_multiplier": 1.1
    },
    "rows": [
     {
      "year": 2018,
      "month": 2,
-     "kwh": 139913.26177596004
+     "kwh": 140120.61318233842
     },
     {
      "year": 2018,
      "month": 3,
-     "kwh": 107872.69916386344
+     "kwh": 109108.62372943672
     },
     {
      "year": 2019,
      "month": 2,
-     "kwh": 119448.75957859303
+     "kwh": 119627.31441036983
     },
     {
      "year": 2019,
      "month": 3,
-     "kwh": 65278.79871197308
+     "kwh": 69281.7032733437
     }
    ],
-   "score": 97.93797202146726
+   "score": 96.81156985972133
   }
  }
 }

@@ -21,10 +21,10 @@ test("the ranking follows the chosen building", () => {
   assert.deepEqual(rankMethods([a, b], "building_02").map((m) => m.method), ["tpe", "cma_es"]);
 });
 
-test("all 52 recorded runs land in the 12 search methods, ARD Bayesian optimisation first overall", () => {
+test("all 100 recorded runs land in the 12 search methods, ARD Bayesian optimisation first overall", () => {
   const ranked = rankMethods(rows, "OVERALL");
   assert.equal(ranked.length, 12);
-  assert.equal(ranked.reduce((n, m) => n + m.runs.length, 0), 52);
+  assert.equal(ranked.reduce((n, m) => n + m.runs.length, 0), 100);
   assert.equal(ranked[0].method, "ard_bayesian_optimisation");
   assert.equal(ranked[0].best.OVERALL, rows[0].OVERALL);
 });
