@@ -32,7 +32,7 @@ not guarantee equal observed counts or prevent consecutive repeats.
 
 ## Status
 
-in progress: implemented and checked locally; publishing and verifying live syncs.
+done: implemented in both repositories, published and verified through live syncs.
 
 ## Result
 
@@ -53,8 +53,26 @@ in progress: implemented and checked locally; publishing and verifying live sync
   No actionable findings or broader refactors are needed.
 - Factory documentation check attempted: the CLI reports unknown command
   check-docs; full factory docs validation remains unverified.
+- Frontend implementation published as f58abd2; the automatic sync and
+  all four workflow tests pass:
+  https://github.com/moritzmock/Hackathon2026/actions/runs/43535472842.
+- Backend implementation published as 8d8959f; the automatic sync and
+  all four workflow tests pass:
+  https://github.com/moritzmock/integrates/actions/runs/43535476335.
+- Target commit cc78f66 selects thomas-borsani with his recorded email for
+  both author and committer. Target commit 60f334c selects
+  daniel-planotscher with his recorded email for both fields.
+- Both target subtrees exactly match their published source archives;
+  root README.md and LICENSE are preserved. This verifies an actual sync,
+  not a statistical claim about the distribution of future selections.
+- To use it: push to main in either source. Existing event-driven sync
+  chooses one of the four identities. No extra secret or configuration is
+  needed. No app/algorithm changes require browser or model execution.
 
 ## Later
 
 - Full factory docs checking remains unavailable in the installed CLI;
   validate changed links directly and record the limitation.
+- Factory core suggestion: select related identity fields as one unit and
+  keep a logical operation's random choice stable across network retries.
+  Control randomness in tests without adding a production override.
