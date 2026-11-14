@@ -68,3 +68,11 @@ export interface DetailsData {
   /** Water surface: flat triangles [x0, y0, z0, x1, y1, z1, x2, y2, z2, …]. */
   water: number[];
 }
+
+/** The railway (public/data/rails.json, built by scripts/build_rails.py). */
+export interface RailsData {
+  /** Every track outside tunnels: [x0, y0, z0, x1, y1, z1, …], draped on the terrain. */
+  tracks: number[][];
+  /** Lines for the trains, longest first: [x0, y0, z0, hidden0, …]; hidden = 1 inside a tunnel. */
+  routes: number[][];
+}

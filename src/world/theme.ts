@@ -35,5 +35,11 @@ export const theme = {
   conifers: ["#3c6f3a", "#457a40", "#335f34"],
   bushes: ["#558f3f", "#62a048", "#4a8238", "#6fa94f"],
   trunk: "#7d5d44",
+  ballast: "#a39b90",
+  rail: "#6f6b66",
+  trainBody: "#f4f2ee",
+  trainBand: "#6e4281",
+  trainWindows: "#2c3340",
+  trainRoof: "#b9bcc2",
   cars: ["#c9473d", "#ece6da", "#3f5f86", "#d9b44a", "#5d8a6a", "#7a6f9a", "#2f3540", "#b8bfc8"],
 };

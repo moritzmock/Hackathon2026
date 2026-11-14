@@ -14,6 +14,7 @@ import { Effects } from "./Effects";
 import { LetGoWhenZoomedOut } from "./LetGoWhenZoomedOut";
 import { MapCamera } from "./MapCamera";
 import { PopIn } from "./PopIn";
+import { Rails } from "./Rails";
 import { Roads } from "./Roads";
 import { SkyDome } from "./SkyDome";
 import { Smoke } from "./Smoke";
@@ -23,6 +24,7 @@ import { Targets } from "./Targets";
 import { Terrain } from "./Terrain";
 import { Ticker } from "./Ticker";
 import { Traffic } from "./Traffic";
+import { Trains } from "./Trains";
 import { theme } from "./theme";
 import { Trees } from "./Trees";
 import { Water } from "./Water";
@@ -53,6 +55,7 @@ export function Scene() {
           {layers.city && <City />}
           {layers.city && <RoofUnits />}
           {layers.streets && <Roads />}
+          {layers.streets && <Rails />}
           {layers.trees && <Trees />}
           {layers.trees && <Bushes />}
           {layers.cars && <Cars />}
@@ -62,6 +65,7 @@ export function Scene() {
           // Things that only make sense while moving (they would freeze mid-air otherwise).
           <group>
             {layers.cars && layers.streets && <Traffic />}
+            {layers.cars && layers.streets && <Trains />}
             {layers.city && <Smoke />}
             <Clouds />
             <Balloon />
