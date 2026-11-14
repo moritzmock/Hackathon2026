@@ -19,6 +19,12 @@
   staging and can produce a false tree mismatch.
   [Run 006](../../../factory/runs/006-sync-on-push.md) checks both exports
   with line-ending conversion disabled.
+- Select an identity's name and email as one pair, and keep the same choice
+  across retries of a logical operation. Control randomness in tests to
+  exercise every allowed identity and verify retry stability, without
+  providing a production override.
+  [Run 008](../../../factory/runs/008-random-team-sync-authors.md) verifies
+  this behavior with an actual rejected push and live sync commits.
 - Generated runtime assets need a production build step and an output
   check. A local build can hide missing assets because ignored files still
   exist locally. Never delete served assets before replacement downloads
