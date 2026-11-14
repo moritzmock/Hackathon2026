@@ -40,7 +40,7 @@ export function Scene() {
   return (
     <>
       <color attach="background" args={[SKY]} />
-      <fog attach="fog" args={[SKY, 3800, 11000]} />
+      <fog attach="fog" args={[SKY, 3000, 8800]} />
       <SkyDome />
       <WeatherLights />
       <Precipitation />

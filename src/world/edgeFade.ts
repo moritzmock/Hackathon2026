@@ -3,7 +3,7 @@
 import * as THREE from "three";
 import { focusCenter } from "./focus";
 
-export const EDGE = { start: 2600, end: 4500 };
+export const EDGE = { start: 2100, end: 3600 };
 
 /** The page background behind the map: the map's edge fades into it (and the sky's horizon). */
 export const EDGE_COLOR = new THREE.Color("#ffffff");

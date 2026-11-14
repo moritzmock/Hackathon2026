@@ -36,16 +36,16 @@ from shapely.ops import unary_union
 import build_world as world
 from drape import Piece, drape, pillars
 
-RADIUS = 2300.0           # detail zone around the challenge buildings, metres
+RADIUS = 1900.0           # detail zone around the challenge buildings, metres
 DENSIFY = 12.0            # road vertex spacing so roads follow the terrain
 MAX_TREES = 40000
 MAX_CARS = 2500
-YARD_RADIUS = 1900
+YARD_RADIUS = 1550
 YARD_TREES_PER_M2 = 1 / 700
 BUSHES_PER_M2 = 1 / 260
 MAX_BUSHES = 26000
 RIVER_HALF_WIDTH = {"river": 12.0, "canal": 4.0, "stream": 2.0}
-WATER_RADIUS = 4600.0    # water surface is built out to where the map fades into the sky
+WATER_RADIUS = 3700.0    # water surface is built out to where the map fades into the sky
 WATER_SEGMENT = 40.0    # vertex spacing so the water surface follows the terrain
 WATER_MARGIN = 3.0      # keep trees, bushes and cars this far from the water
 RAIL_MARGIN = 3.5       # keep trees, bushes and cars this far from a railway track's centre

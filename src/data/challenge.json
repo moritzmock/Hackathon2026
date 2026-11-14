@@ -1,5 +1,5 @@
 {
- "integrates_commit": "705bc1198668cc812b6ae73691fb2561ed09bfa3",
+ "integrates_commit": "78ce3b4acf507d4cc61ae174a6690d23aef3167a",
  "parameters": [
   {
    "name": "weekday_heating_hours",
@@ -124,7 +124,7 @@
     "facade_w_wwr": 0.2445832080002306
    },
    "height": 18.2,
-   "base": 44.5,
+   "base": 38.0,
    "centroid": [
     -987.1,
     -69.4
@@ -195,7 +195,7 @@
     "facade_w_wwr": 0.26374631486162
    },
    "height": 19.5,
-   "base": 43.3,
+   "base": 36.8,
    "centroid": [
     -816.4,
     -231.0
@@ -292,7 +292,7 @@
     "facade_w_wwr": 0.5768899176134928
    },
    "height": 22.3,
-   "base": 37.8,
+   "base": 31.3,
    "centroid": [
     797.2,
     -56.4
