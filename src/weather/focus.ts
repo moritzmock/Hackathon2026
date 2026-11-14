@@ -2,6 +2,7 @@
 import { useMemo } from "react";
 import { create } from "zustand";
 import { dayConditions, liveConditions, monthConditions, type Conditions, type DayKey, type MonthKey } from "./conditions";
+import { useStore } from "../store";
 import { fetchLiveWeather, type LiveWeather } from "./live";
 
 const REFRESH_MS = 10 * 60 * 1000;
@@ -25,6 +26,13 @@ export const useWeather = create<WeatherState>((set) => ({
   setFocus: (focus) => set({ focus, day: null }),
   setDay: (day) => set({ day }),
 }));
+
+// Closing a building goes back to Bolzano now (the month/day picked on its chart was for that building).
+useStore.subscribe((s, prev) => {
+  if (prev.selected && !s.selected && (useWeather.getState().focus || useWeather.getState().day)) {
+    useWeather.getState().setFocus(null);
+  }
+});
 
 async function refresh() {
   try {
