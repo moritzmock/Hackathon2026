@@ -38,3 +38,11 @@ The owner: "the banner is too much... keep the above the fold with text". The se
 - The pictures are a snapshot: re-run `node scripts/capture_landing_images.mjs` (dev server running) after the city, the buildings or the opening view change. It assumes Chrome at the macOS path unless `CHROME` is set.
 - The opening view's lower right shows a blurred hillside close to the camera; a capture from a slightly different camera position, or cropping the picture, could look cleaner.
 - The landing page shows the best overall run's building scores; the best score per building comes from different runs (see the methods page).
+
+## Follow-up: the INTEGRATES look (2026-11-14)
+
+The owner: "can you make the landing page a bit similar to this: https://www.integratesproject.eu/". That site opens with a full-width violet band (white title, short text, one button, rounded decorative tiles on the right), a photo that overlaps the band's lower edge into a pale violet band with small tiles under it, violet headings, and light grey rounded panels.
+
+Plan: the same layout for the landing page, with Calibra's logo and words (nothing of INTEGRATES' logo or text): the sentence, text and buttons in a violet band with tiles on the right; the city picture overlapping into a pale violet band with three small tiles; violet headings; the three buildings inside a light grey panel; the links on a grey band. Kept from earlier asks: no eyebrow labels (the site uses orange capitals above headings), text above the fold. The main button is white on violet rather than the site's orange, because orange keeps its one meaning in Calibra's identity (your settings, the flame).
+
+Result: `LandingPage.tsx` (bands, `Tiles` with the tile layouts) and `landing.css` rewritten. The first try placed the picture's small tiles over the next heading (the picture was shifted with `top` and a negative margin, so its column ended above the picture's visible edge); the picture now overlaps with a negative top margin inside a `flow-root` band, and the tiles hang from its lower-left corner. Checks: `npm test` 49 pass, 0 fail; type check passes; `vite build` passes; headless Chrome at 1360 px and 390 px, no sideways scrolling, no console errors.

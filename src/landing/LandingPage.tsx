@@ -69,44 +69,81 @@ const MORE = [
   { href: pages.runs, icon: Table2, title: `All ${results.length} runs`, text: "Each run's method, settings and building scores." },
 ];
 
+/**
+ * Decorative tiles in the INTEGRATES manner: rounded squares on a grid, each with one sharp
+ * corner, in the brand's violets, white and one orange. [column, row, colour, sharp corner].
+ */
+type Tile = [number, number, "violet" | "light" | "soft" | "white" | "orange" | "grey", "tl" | "tr" | "br" | "bl"];
+const HERO_TILES: Tile[] = [
+  [1, 1, "violet", "br"], [3, 1, "light", "bl"],
+  [2, 2, "white", "tr"],
+  [3, 3, "violet", "tl"],
+  [2, 4, "orange", "tr"], [3, 4, "white", "bl"],
+  [3, 5, "violet", "tr"],
+];
+const PICTURE_TILES: Tile[] = [[1, 1, "orange", "tr"], [2, 2, "violet", "bl"], [1, 3, "grey", "tr"]];
+
+function Tiles({ tiles, className }: { tiles: Tile[]; className: string }) {
+  return (
+    <div className={`landing-tiles ${className}`} aria-hidden="true">
+      {tiles.map(([column, row, colour, sharp]) => (
+        <span key={`${column}-${row}`} className={`landing-tile landing-tile--${colour} landing-tile--${sharp}`} style={{ gridColumn: column, gridRow: row }} />
+      ))}
+    </div>
+  );
+}
+
 export function LandingPage() {
   return (
-    <div className="site">
+    <div className="site landing">
       <SiteHeader current="landing" />
       <main>
-        <section className="landing-intro" aria-labelledby="landing-title">
-          <h1 id="landing-title">Three buildings, their real heating bills, and a simulation tuned to meet them.</h1>
-          <div>
-            <p>Calibra runs the INTEGRATES building energy model in your browser. Fly over Bolzano, pick a building and see how close the simulation gets to what was actually paid for heating.</p>
-            <div className="landing-intro__actions">
-              <OpenCity />
-              <a className="site-link" href={pages.methods}>Compare the methods <ArrowRight size={16} aria-hidden="true" /></a>
+        <section className="landing-hero" aria-labelledby="landing-title">
+          <div className="landing-wrap landing-hero__inner">
+            <div className="landing-hero__copy">
+              <h1 id="landing-title">Three buildings, their real heating bills, and a simulation tuned to meet them.</h1>
+              <p>Calibra runs the INTEGRATES building energy model in your browser. Fly over Bolzano, pick a building and see how close the simulation gets to what was actually paid for heating.</p>
+              <div className="landing-hero__actions">
+                <OpenCity tone="light" />
+                <a className="landing-hero__link" href={pages.methods}>Compare the methods <ArrowRight size={16} aria-hidden="true" /></a>
+              </div>
             </div>
+            <Tiles tiles={HERO_TILES} className="landing-tiles--hero" />
           </div>
         </section>
 
-        <CityWindow />
+        <div className="landing-picture">
+          <div className="landing-wrap">
+            <CityWindow />
+            <Tiles tiles={PICTURE_TILES} className="landing-tiles--picture" />
+          </div>
+        </div>
 
         <section className="landing-section" aria-labelledby="landing-buildings-title">
-          <div className="landing-section__head">
-            <h2 id="landing-buildings-title" className="site-title">The three buildings</h2>
-            <p>Score out of 100 from our best run: 100 means the simulation matches the heating bills of February and March, 2018 and 2019, exactly.</p>
+          <div className="landing-wrap">
+            <div className="landing-section__head">
+              <h2 id="landing-buildings-title">The three buildings</h2>
+              <p>Score out of 100 from our best run: 100 means the simulation matches the heating bills of February and March, 2018 and 2019, exactly.</p>
+            </div>
+            <ul className="landing-buildings">{buildings.map((id) => <BuildingCard key={id} id={id} />)}</ul>
           </div>
-          <ul className="landing-buildings">{buildings.map((id) => <BuildingCard key={id} id={id} />)}</ul>
         </section>
 
-        <section className="landing-section" aria-label="More results">
-          <ul className="landing-more">
-            {MORE.map(({ href, icon: Icon, title, text }) => (
-              <li key={href}>
-                <a href={href}>
-                  <span className="landing-more__icon"><Icon size={16} aria-hidden="true" /></span>
-                  <span className="landing-more__text"><strong>{title}</strong><span>{text}</span></span>
-                  <ArrowRight size={16} aria-hidden="true" />
-                </a>
-              </li>
-            ))}
-          </ul>
+        <section className="landing-more-band" aria-labelledby="landing-more-title">
+          <div className="landing-wrap">
+            <h2 id="landing-more-title">Look closer at the results</h2>
+            <ul className="landing-more">
+              {MORE.map(({ href, icon: Icon, title, text }) => (
+                <li key={href}>
+                  <a href={href}>
+                    <span className="landing-more__icon"><Icon size={16} aria-hidden="true" /></span>
+                    <span className="landing-more__text"><strong>{title}</strong><span>{text}</span></span>
+                    <ArrowRight size={16} aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </section>
       </main>
       <SiteFooter />
