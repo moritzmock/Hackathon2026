@@ -7,7 +7,8 @@
 
 - `src/`: the app. Vite + React + TypeScript; the 3D scene with three.js
   through react-three-fiber and drei; shared state in zustand. `src/sim/` runs
-  the simulation in Web Workers.
+  the simulation in Web Workers. `src/approaches/` contains the separate static
+  page of recorded calibration runs, entered through `approaches.html`.
 - `public/`: static files served as they are. `baseline.html` and `data.js`
   (the first chart of bills against the untuned model); `py/` holds the
   packaged model for Pyodide (`integrates.zip`, `wheels/`, `manifest.json`),

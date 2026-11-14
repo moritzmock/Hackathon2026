@@ -10,3 +10,4 @@ open.
 
 - [Browser simulation](browser-simulation.md): live energy results and parallel thermal regimes.
 - [Score colour](score-colour.md): the selected building's score colours and 0–100 legend.
+- [Explored approaches](explored-approaches.md): the 52 recorded calibration runs and their scores.

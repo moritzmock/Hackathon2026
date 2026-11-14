@@ -15,5 +15,13 @@ export default defineConfig({
     __PYODIDE_VERSION__: JSON.stringify(pkg.devDependencies.pyodide.replace(/^[\^~]/, "")),
   },
   worker: { format: "es" },
+  build: {
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL("./index.html", import.meta.url)),
+        approaches: fileURLToPath(new URL("./approaches.html", import.meta.url)),
+      },
+    },
+  },
   server: { fs: { deny: ["vendor/**"] } },
 });
