@@ -22,7 +22,8 @@
   `build_world.py` (`npm run data`) builds the city, terrain and buildings
   from OpenStreetMap and the challenge data, then `build_details.py` the
   street details and `build_rails.py` the railway; `build_data.py` makes
-  `public/data.js`.
+  `public/data.js`; `bake_search_replay.py` (`npm run replay`) makes
+  `src/searchReplay/searchReplay.json` from `data/evaluation_trace.csv`.
 - `vendor/integrates`: the challenge's model as a git submodule, pinned to one
   commit, read-only.
 
@@ -94,6 +95,9 @@ Ask before changing any of these.
   parameter sweeps, already generated) is not shown yet.
 - A `verify` script that runs build, `test:model` and a Playwright smoke test
   of the scene.
+- Search replay: building 02's maps are re-fitted approximations (the method's
+  own fit cannot be reproduced on this computer from try 14); its data (about
+  140 KB) loads with the landing page rather than when scrolled to.
 - Whether real building names may be shown (check the challenge rules).
 - Whether to move the submodule pin to upstream `HEAD` (it is ahead of the
   local `integrates` copy).

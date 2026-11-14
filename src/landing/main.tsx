@@ -9,6 +9,7 @@ import "../styles.css";
 import "../brand/brand.css";
 import "../site/site.css";
 import "./landing.css";
+import "../searchReplay/searchReplay.css";
 import { LandingPage } from "./LandingPage";
 
 createRoot(document.getElementById("root")!).render(

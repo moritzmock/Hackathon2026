@@ -55,7 +55,7 @@ export function MethodChart({ rows }: { rows: Run[] }) {
     <TooltipProvider delayDuration={80}>
       <div className="method-chart">
         <div className="method-chart__controls">
-          <div className="method-switch" role="group" aria-label="Score shown">
+          <div className="site-switch" role="group" aria-label="Score shown">
             {METRICS.map((m) => (
               <button key={m.key} type="button" aria-pressed={metric === m.key} onClick={() => setMetric(m.key)}>{m.label}</button>
             ))}

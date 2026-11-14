@@ -7,13 +7,6 @@
 /* Method chart */
 .method-chart { padding: 24px 28px 22px; border: 1px solid var(--line); border-radius: 20px; background: #fff; }
 .method-chart__controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; margin-bottom: 18px; }
-.method-switch { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 999px; background: var(--paper); }
-.method-switch button {
-  padding: 7px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--muted);
-  font: 500 0.8125rem "Inter", sans-serif; cursor: pointer; transition: background 0.15s, color 0.15s;
-}
-.method-switch button:hover { color: var(--heading); }
-.method-switch button[aria-pressed="true"] { background: #fff; color: var(--heading); box-shadow: var(--shadow-sm); }
 .method-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 0; padding: 0; list-style: none; color: var(--muted); font-size: 0.8125rem; }
 .method-legend li { display: inline-flex; align-items: center; gap: 7px; }
 .method-legend i { width: 9px; height: 9px; border-radius: 50%; background: var(--brand-violet-4); }
@@ -53,8 +46,6 @@
 }
 @media (max-width: 600px) {
   .method-chart { padding: 18px 14px; }
-  .method-switch { flex-wrap: wrap; border-radius: 18px; } /* the building tabs wrap onto a second line instead of scrolling out of view */
-  .method-switch button { flex: none; padding: 6px 10px; font-size: 0.75rem; white-space: nowrap; }
   .method-grid { display: none; }
   .method-row, .method-axis { grid-template-columns: minmax(0, 1fr) 44px; gap: 4px 8px; }
   .method-axis > :first-child { display: none; }

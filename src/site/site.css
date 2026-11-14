@@ -126,3 +126,17 @@
   .site-nav .site-nav__runs { display: none; }
   .site-closing { flex-direction: column; align-items: flex-start; padding: 26px 22px; }
 }
+
+/* A pill switch between a few views (the methods chart's score, the search replay's building) */
+.site-switch { display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 3px; border-radius: 999px; background: var(--paper); }
+.site-switch button {
+  padding: 7px 14px; border: 0; border-radius: 999px; background: transparent; color: var(--muted);
+  font: 500 0.8125rem "Inter", sans-serif; cursor: pointer; transition: background 0.15s, color 0.15s;
+}
+.site-switch button:hover { color: var(--heading); }
+.site-switch button[aria-pressed="true"] { background: #fff; color: var(--heading); box-shadow: var(--shadow-sm); }
+@media (max-width: 600px) {
+  .site-switch { flex-wrap: wrap; border-radius: 18px; }
+  /* the building tabs wrap onto a second line instead of scrolling out of view */
+  .site-switch button { flex: none; padding: 6px 10px; font-size: 0.75rem; white-space: nowrap; }
+}

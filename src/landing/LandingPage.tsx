@@ -2,6 +2,7 @@ import { ArrowRight, ChartScatter, Table2 } from "lucide-react";
 import results from "../approaches/results.json";
 import { buildingsById } from "../data/challenge";
 import { rankMethods } from "../methods/methodRanking";
+import { SearchReplay } from "../searchReplay/SearchReplay";
 import { buildingName, buildingNumber } from "../panels/buildingName";
 import { OpenCity } from "../site/OpenCity";
 import { PageBand } from "../site/PageBand";
@@ -98,6 +99,16 @@ export function LandingPage() {
               <p>Score out of 100 from our best run: 100 means the simulation matches the heating bills of February and March, 2018 and 2019, exactly.</p>
             </div>
             <ul className="landing-buildings site-panel">{buildings.map((id) => <BuildingCard key={id} id={id} />)}</ul>
+          </div>
+        </section>
+
+        <section className="site-section" aria-labelledby="landing-replay-title">
+          <div className="site-wrap">
+            <div className="site-section__head">
+              <h2 id="landing-replay-title">How the search found the settings</h2>
+              <p>Our best run, replayed from its log: 48 tries per building, a Bayesian search in three stages. The score is out of 100, as above.</p>
+            </div>
+            <div className="site-panel"><SearchReplay /></div>
           </div>
         </section>
 
