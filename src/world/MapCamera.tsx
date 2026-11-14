@@ -19,10 +19,15 @@ const ZOOM_PER_PIXEL = 0.0035; // wheel sensitivity: one mouse notch ≈ 30% clo
 const C = focusCenter;
 const HOME = { pos: new THREE.Vector3(C.x + 250, C.y + 1700, C.z + 3200), target: new THREE.Vector3(C.x + 200, C.y, C.z - 250) };
 const FAR = HOME.target.clone().add(HOME.pos.clone().sub(HOME.target).multiplyScalar(1.8));
+// Letting a building go steps back a little from where you are, instead of flying home.
+const STEP_BACK = 2.5; // times the current distance
+const STEP_BACK_MAX = 2500; // metres from the look-at point, at most
 
 export function MapCamera() {
   const ref = useRef<CameraControls>(null);
   const selected = useStore((s) => s.selected);
+  const hadBuilding = useRef(false);
+  const wentHome = useRef(false);
   const revealed = useStore((s) => s.revealed);
   const { gl, camera, scene, invalidate } = useThree();
   const viewWidth = useThree((s) => s.size.width);
@@ -78,7 +83,7 @@ export function MapCamera() {
     return () => area.removeEventListener("wheel", onWheel);
   }, [gl, camera, scene, invalidate]);
 
-  // Fly to the selected building (or back home).
+  // Fly to the selected building; when it is let go, step back a little (first load: home).
   useEffect(() => {
     const c = ref.current;
     if (!c) return;
@@ -93,10 +98,31 @@ export function MapCamera() {
         c.setLookAt(FAR.x, FAR.y, FAR.z, HOME.target.x, HOME.target.y, HOME.target.z, false);
         return;
       }
-      c.setLookAt(HOME.pos.x, HOME.pos.y, HOME.pos.z, HOME.target.x, HOME.target.y, HOME.target.z, true);
-      invalidate();
+      if (hadBuilding.current) {
+        // A building was just let go (closed, or zoomed out of): keep looking at the same spot
+        // and step back a little, so you stay where you were in the city.
+        hadBuilding.current = false;
+        const pos = new THREE.Vector3(), target = new THREE.Vector3();
+        c.getPosition(pos, true);
+        c.getTarget(target, true);
+        const away = pos.sub(target);
+        away.setLength(Math.min(STEP_BACK_MAX, Math.max(away.length() * STEP_BACK, away.length())));
+        const to = target.clone().add(away);
+        c.setLookAt(to.x, to.y, to.z, target.x, target.y, target.z, true);
+        invalidate();
+        return;
+      }
+      // Once, as the clouds part: glide down to the city. Afterwards a change of the view's size
+      // (the list unfolding, a resized window) leaves the camera where it is.
+      if (!wentHome.current) {
+        wentHome.current = true;
+        c.setLookAt(HOME.pos.x, HOME.pos.y, HOME.pos.z, HOME.target.x, HOME.target.y, HOME.target.z, true);
+        invalidate();
+      }
       return;
     }
+    hadBuilding.current = true;
+    wentHome.current = true;
     const { centroid: [x, y], base, height, facts } = building;
     // Close up: the building fills a good part of the view (camera ends up ~1.5 r away).
     const r = Math.max(55, Math.sqrt(facts.footprint_area_m2 as number) * 1.6 + height * 1.5);
