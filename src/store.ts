@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { challenge, defaultParams } from "./data/challenge";
+import { optimisedFor } from "./data/optimised";
 import type { SimRow } from "./data/types";
-import { onModelErrorDetail, onModelStatus, SETUP_STEPS, simulate } from "./sim/client";
+import { onModelErrorDetail, onModelStatus, SETUP_STEPS, simulate, YEARS } from "./sim/client";
 
 // People who ask their system for less motion start with the moving things off.
 const prefersReducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -18,7 +19,23 @@ export interface Run {
   yearsDone: number[];
   /** True when the model was already set up as the run started. */
   warm: boolean;
+  /** Filled in from the precomputed optimised result, not run in this browser. */
+  preset?: boolean;
 }
+
+/** Each building starts on its optimised settings (organizer defaults where there is no result). */
+const startParams = (id: string) => ({ ...defaultParams(), ...(optimisedFor(id)?.params ?? {}) });
+
+/** The optimised result is already computed, so it shows at once without running the model. */
+const presetRuns = (): Record<string, Run | undefined> =>
+  Object.fromEntries(
+    challenge.buildings.flatMap((b) => {
+      const o = optimisedFor(b.id);
+      if (!o) return [];
+      const run: Run = { status: "done", params: startParams(b.id), rows: o.rows, startedAt: 0, yearsDone: [...YEARS], warm: true, seconds: 0, preset: true };
+      return [[b.id, run]];
+    }),
+  );
 
 export interface Layers {
   city: boolean;
@@ -79,8 +96,8 @@ interface State {
 export const useStore = create<State>((set, get) => ({
   selected: null,
   hovered: null,
-  params: Object.fromEntries(challenge.buildings.map((b) => [b.id, defaultParams()])),
-  runs: {},
+  params: Object.fromEntries(challenge.buildings.map((b) => [b.id, startParams(b.id)])),
+  runs: presetRuns(),
   modelStatus: "Model not loaded",
   setupStep: 0,
   modelReady: false,

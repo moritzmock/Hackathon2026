@@ -76,8 +76,8 @@ export function WhatIf({ id }: { id: string }) {
         <button
           type="button"
           className="settings-action settings-action--optimised"
-          disabled={!optimised}
-          title="Set the sliders to the optimised values (the teal ticks)"
+          disabled={!optimised || same(params, optimised.params)}
+          title="Set the sliders back to the optimised values (the ticks)"
           onClick={() => optimised && setParams(id, optimised.params)}
         >
           <Sparkles size={13} /> Use optimised

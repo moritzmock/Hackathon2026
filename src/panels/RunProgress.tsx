@@ -35,7 +35,7 @@ export function RunProgress({ id }: { id: string }) {
   // A short "updated" note after a run, then back to the hint.
   const [showDone, setShowDone] = useState(false);
   useEffect(() => {
-    if (run?.status !== "done") return;
+    if (run?.status !== "done" || run.preset) return;
     setShowDone(true);
     const t = setTimeout(() => setShowDone(false), 4000);
     return () => clearTimeout(t);

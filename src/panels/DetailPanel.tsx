@@ -7,7 +7,8 @@ import type { ChallengeBuilding } from "../data/types";
 import { baselineWape, score, simLookup, wape } from "../metrics";
 import { useStore } from "../store";
 import { buildingName } from "./buildingName";
-import { WhatIf } from "./WhatIf";
+import { same, WhatIf } from "./WhatIf";
+import { scoreColor } from "../world/scoreColor";
 import { RunProgress } from "./RunProgress";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,11 @@ function Content({ b }: { b: ChallengeBuilding }) {
   const rows = run?.rows;
   const base = baselineWape(b.records);
   const w = rows ? wape(b.records, simLookup(rows)) : undefined;
+  // How good the current settings are, on the same red → green scale as the glow on the map.
+  const params = useStore((s) => s.params[b.id]);
+  const onOptimised = !!opt && same(params, opt.params);
+  const yours = score(w ?? base)!;
+  const yoursColor = `#${scoreColor(yours).getHexString()}`;
   // Scored here like yours (all four months), not taken from the file.
   const optScore = opt ? score(wape(b.records, simLookup(opt.rows))) : undefined;
   const weatherFocus = useWeather((s) => s.focus);
@@ -39,9 +45,9 @@ function Content({ b }: { b: ChallengeBuilding }) {
 
       <div className="mb-2">
       <div className="mb-3 grid grid-cols-2 gap-2">
-        <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${w === undefined ? "" : "bg-[color-mix(in_srgb,var(--whatif)_12%,var(--paper))]"}`}>
-          <span className="text-[0.7rem] text-muted-foreground">Your settings</span>
-          <b className="text-2xl tabular-nums text-[var(--whatif)]">{score(w ?? base)!.toFixed(0)}<small className="ml-1 text-xs font-normal text-muted-foreground">/ 100</small></b>
+        <Card className="gap-0 rounded-xl border-0 px-3 py-2 shadow-none" style={{ background: `color-mix(in srgb, ${yoursColor} 12%, var(--paper))` }}>
+          <span className="text-[0.7rem] text-muted-foreground">{onOptimised ? "Optimised settings" : "Your settings"}</span>
+          <b className="text-2xl tabular-nums" style={{ color: yoursColor }}>{yours.toFixed(0)}<small className="ml-1 text-xs font-normal text-muted-foreground">/ 100</small></b>
         </Card>
         <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${opt ? "bg-[color-mix(in_srgb,var(--optimised)_10%,var(--paper))]" : ""}`}>
           <span className="text-[0.7rem] text-muted-foreground">Optimised</span>
