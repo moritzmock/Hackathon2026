@@ -7,7 +7,7 @@ Sources:
   trees   OpenStreetMap trees and tree rows (real) + trees scattered inside
           mapped parks, grass and forest (placement is illustrative)
   cars    decoration only: random positions along streets
-  yards   decoration: extra trees and bushes on free land (not on streets or buildings)
+  yards   decoration: extra trees and bushes on free land (not on streets, buildings or railway tracks)
 
 Output: public/data/details.json
   roads: [[width, kind, x0, y0, z0, x1, y1, z1, …], …]   kind 0 = major, 1 = minor, 2 = path
@@ -45,6 +45,7 @@ RIVER_HALF_WIDTH = {"river": 12.0, "canal": 4.0, "stream": 2.0}
 WATER_RADIUS = 11000.0   # water surface is built out to where the map fades into the sky
 WATER_SEGMENT = 40.0    # vertex spacing so the water surface follows the terrain
 WATER_MARGIN = 3.0      # keep trees, bushes and cars this far from the water
+RAIL_MARGIN = 3.5       # keep trees, bushes and cars this far from a railway track's centre
 SEED = 2026
 
 ROADS = {  # highway → (width m, kind)
@@ -93,10 +94,12 @@ def main() -> None:
     meta, z_at, centre = load_context()
     context = world.fetch_context()
 
-    # Buildings block trees and cars.
+    # Buildings and railway tracks block trees, bushes and cars (trains run on the tracks).
     footprints = [Polygon(list(zip(b[2][0::2], b[2][1::2]))) for b in meta["buildings"]
                   if near((b[2][0], b[2][1]), centre)]
-    blocked = STRtree([p.buffer(1.5) for p in footprints if p.is_valid])
+    tracks = [LineString(line).buffer(RAIL_MARGIN) for e in context if e.get("tags", {}).get("railway") == "rail"
+              for line in world.element_lines(e) if any(near(p, centre) for p in line)]
+    blocked = STRtree([p.buffer(1.5) for p in footprints if p.is_valid] + tracks)
 
     # Water (real OSM rivers and lakes) blocks trees, bushes and cars, and gets its own surface.
     water_parts = []
