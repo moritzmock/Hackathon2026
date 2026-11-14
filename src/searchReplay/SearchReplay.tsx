@@ -1,6 +1,6 @@
-// "How the search found the settings": the three phases on top (PhaseStrip) with one sentence on the
-// current phase, then the score of each of the real run's 48 tries, with the best so far as a rising
-// line and the phases shaded behind (replayTimeline.ts).
+// "How the search found the settings": the three phases on top (PhaseStrip), then the score of each
+// of the real run's 48 tries, with the best so far as a rising line and the phases shaded behind
+// (replayTimeline.ts).
 import { useMemo, useRef, useState } from "react";
 import { Pause, Play, RotateCcw } from "lucide-react";
 import { buildingName, buildingNumber } from "../panels/buildingName";
@@ -14,15 +14,12 @@ type BuildingId = (typeof BUILDINGS)[number];
 const data = replay.buildings as Record<BuildingId, BuildingReplay>;
 
 const TITLES: Record<StageName, string> = { spread: "Initial phase", focus: "Focus phase", fine: "Full phase" };
-const TEXTS: Record<StageName, string> = {
-  spread: "Try 1 is the model's defaults; the next tries are spread evenly over all settings.",
-  focus: "Only the 6 settings that matter most are changed; the other 6 stay at the best try's values.",
-  fine: "All 12 settings are free again. Batch by batch, the method tries where it expects the most gain.",
-};
 
 const W = 1000;
 const H = 340;
-const PAD = { left: 34, right: 10, top: 14, bottom: 26 };
+// The plot fills the width, so the tabs, the phases and the plot share their edges; the score labels
+// sit inside the plot, on their grid lines.
+const PAD = { left: 0, right: 0, top: 14, bottom: 26 };
 const y = (score: number) => PAD.top + ((100 - score) / 100) * (H - PAD.top - PAD.bottom);
 
 export function SearchReplay() {
@@ -61,10 +58,7 @@ export function SearchReplay() {
         </div>
       </div>
 
-      <PhaseStrip replay={b} frame={frame} titles={TITLES} inset={{ left: (PAD.left / W) * 100, right: (PAD.right / W) * 100 }} onPhase={(i) => clock.seek(stageStart(timeline, b, i))} />
-      <p className="replay__phase">
-        {clock.done && best >= 0 ? `Done: the best of ${n} tries is try ${best + 1}, with ${b.tries[best].score.toFixed(2)}.` : TEXTS[stage.stage]}
-      </p>
+      <PhaseStrip replay={b} frame={frame} titles={TITLES} onPhase={(i) => clock.seek(stageStart(timeline, b, i))} />
 
       <figure className="replay__chart">
           <svg className="replay-main" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Score of each try for ${buildingName(id)}, try 1 to ${n}.`}>
@@ -74,7 +68,7 @@ export function SearchReplay() {
             {[0, 25, 50, 75, 100].map((s) => (
               <g key={s} className="replay-grid">
                 <line x1={PAD.left} x2={W - PAD.right} y1={y(s)} y2={y(s)} />
-                <text x={PAD.left - 8} y={y(s) + 4}>{s}</text>
+                <text x={PAD.left + 8} y={y(s) - 5}>{s}</text>
               </g>
             ))}
             <path className="replay-best" d={bestLine.join(" ")} />

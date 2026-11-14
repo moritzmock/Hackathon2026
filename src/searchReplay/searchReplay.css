@@ -23,7 +23,7 @@
 .replay-main { display: block; width: 100%; height: auto; overflow: visible; }
 .replay-grid line { stroke: rgb(31 34 40 / 0.07); stroke-width: 1; }
 .replay-grid text, .replay-axis text { fill: var(--muted); font: 500 11px "Inter", sans-serif; font-variant-numeric: tabular-nums; }
-.replay-grid text { text-anchor: end; }
+.replay-grid text { text-anchor: start; }
 .replay-axis .replay-axis__name { fill: var(--heading); font-weight: 600; }
 .replay-stage { fill: var(--panel-card); transition: fill 0.4s; }
 .replay-stage.is-current { fill: var(--brand-violet-soft); fill-opacity: 0.55; }
@@ -35,7 +35,7 @@
 
 
 /* The three phases, above the chart */
-.phase-strip { display: flex; margin: 0 var(--inset-right) 0 var(--inset-left); padding: 0; list-style: none; }
+.phase-strip { display: flex; margin: 0 -0.1%; padding: 0; list-style: none; }
 .phase-strip > li { flex-basis: 0; min-width: 0; padding: 0 0.1%; container-type: inline-size; } /* the plot's phase bands have the same small gaps */
 .phase-strip button {
   position: relative; display: block; width: 100%; height: 40px; overflow: hidden; padding: 0; border: 0; border-radius: 8px;
@@ -51,7 +51,6 @@
   .phase-strip button > span { padding: 0; text-align: center; }
   .phase-strip button b { margin: 0; }
 }
-.replay__phase { min-height: 1.5em; margin: -6px 0 0; color: var(--ink); font-size: 0.9375rem; }
 
 .replay__timeline { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; }
 .replay__timeline input[type="range"] { width: 100%; margin: 0; accent-color: var(--brand-violet); }
