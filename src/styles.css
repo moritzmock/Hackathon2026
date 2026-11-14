@@ -428,22 +428,6 @@ kbd, .kbd {
 .settings-action--optimised:hover:not(:disabled) { background: color-mix(in srgb, var(--optimised) 8%, var(--surface)); }
 .settings-action--icon { width: 26px; padding: 0; justify-content: center; color: var(--muted); }
 
-/* Model run progress in the building panel: one bar split into steps (the winters, or the
-   setup steps), each filling with a soft sheen while it runs and turning solid when done. */
-.runbar { display: flex; gap: 6px; }
-.runbar__seg { flex: 1; min-width: 0; display: grid; gap: 4px; }
-.runbar__track { position: relative; height: 6px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 9%, transparent); overflow: hidden; }
-.runbar__track i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--accent); transition: width 0.6s var(--spring); }
-.runbar__seg.is-active .runbar__track i {
-  background: linear-gradient(90deg, var(--accent) 0%, #ffb27f 50%, var(--accent) 100%); background-size: 200% 100%;
-  animation: runbar-sheen 1.4s linear infinite;
-}
-.runbar__seg.is-done .runbar__track i { background: var(--accent); }
-.runbar__label { display: flex; align-items: center; gap: 3px; color: var(--muted); font-size: 0.6875rem; transition: color 0.2s; }
-.runbar__seg.is-done .runbar__label { color: var(--ink); }
-.runbar__seg.is-done .runbar__label svg { color: var(--accent); }
-@keyframes runbar-sheen { from { background-position: 100% 0; } to { background-position: -100% 0; } }
-@media (prefers-reduced-motion: reduce) { .runbar__track i { animation: none !important; } }
 
 /* ---------- Docked panels (UI only, not the map) ----------
    The building list is a white bar on the left edge and the building panel a white bar
@@ -525,3 +509,15 @@ body { background: #fff; }
     transition: none !important; animation: none !important; transform: none !important;
   }
 }
+
+/* The score while its result is out of date: faded and soft, sharpening when the new number lands. */
+.score-value { transition: opacity 0.35s ease, filter 0.35s ease; }
+.score-value.is-pending { opacity: 0.35; filter: blur(1.5px); }
+/* Over the settings while the model runs; the sliders under it are locked. */
+.run-overlay { position: absolute; inset: 0; z-index: 5; display: flex; justify-content: center; align-items: flex-start; padding-top: 4.5rem;
+  background: color-mix(in srgb, var(--paper) 72%, transparent); backdrop-filter: blur(3px); border-radius: 0.75rem; }
+.run-overlay__card { position: sticky; top: 2rem; display: grid; justify-items: center; gap: 0.35rem; width: min(17rem, 85%); padding: 1rem 1.25rem; text-align: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 0.875rem; box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 10%, transparent); }
+.run-overlay__card p { margin: 0; }
+.run-overlay__bar { position: relative; display: block; width: 100%; height: 4px; margin-top: 0.35rem; border-radius: 999px; overflow: hidden; background: color-mix(in srgb, var(--whatif) 15%, transparent); }
+.run-overlay__bar > i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: var(--whatif); transition: width 0.3s linear; }

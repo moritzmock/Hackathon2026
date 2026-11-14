@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { challenge } from "../data/challenge";
 import { optimisedFor } from "../data/optimised";
 import { useStore } from "../store";
+import { RunOverlay } from "./RunOverlay";
 
 const AUTO_RUN_DELAY_MS = 600;
 
@@ -64,7 +65,7 @@ export function WhatIf({ id }: { id: string }) {
   const changed = challenge.parameters.filter((p) => params[p.name] !== p.default).length;
 
   // Run on its own shortly after the settings stop changing. While a run is
-  // going, wait; when it ends, run again only if the settings moved meanwhile.
+  // going the settings are locked under the overlay, so nothing queues up.
   useEffect(() => {
     if (running) return;
     const needsRun = run ? !same(run.params, params) : changed > 0;
@@ -74,14 +75,15 @@ export function WhatIf({ id }: { id: string }) {
   }, [params, running, run, changed, id, start]);
 
   return (
-    <section className="space-y-4 border-t pt-4">
+    <section className="relative space-y-4 border-t pt-4">
+      <RunOverlay id={id} />
       {/* Header row: title, then the two shortcuts (optimised values, back to defaults). */}
       <div className="flex items-center gap-2">
         <h3 className="flex-1 text-sm font-semibold">Settings</h3>
         <button
           type="button"
           className="settings-action settings-action--optimised"
-          disabled={!optimised || same(params, optimised.params)}
+          disabled={running || !optimised || same(params, optimised.params)}
           title="Set the sliders back to the optimised values (the ticks)"
           onClick={() => optimised && setParams(id, optimised.params)}
         >
@@ -90,7 +92,7 @@ export function WhatIf({ id }: { id: string }) {
         <button
           type="button"
           className="settings-action settings-action--icon"
-          disabled={!changed}
+          disabled={running || !changed}
           onClick={() => resetParams(id)}
           title="Back to the defaults"
           aria-label="Back to the defaults"
@@ -120,7 +122,7 @@ export function WhatIf({ id }: { id: string }) {
                   </Tooltip>
                 </span>
                 <div className="relative">
-                  <Slider min={p.lower} max={p.upper} step={(p.upper - p.lower) / 100} value={[v]}
+                  <Slider disabled={running} min={p.lower} max={p.upper} step={(p.upper - p.lower) / 100} value={[v]}
                     onValueChange={([nv]) => setParam(id, p.name, nv)} aria-label={it.label} />
                   {opt !== undefined && (
                     <i className="pointer-events-none absolute top-0 h-3 w-0.5 -translate-x-1/2 rounded bg-[var(--optimised)]"

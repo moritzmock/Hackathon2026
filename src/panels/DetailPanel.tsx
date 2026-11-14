@@ -10,7 +10,8 @@ import { useStore } from "../store";
 import { buildingName } from "./buildingName";
 import { same, WhatIf } from "./WhatIf";
 import { scoreColor } from "../world/scoreColor";
-import { RunProgress } from "./RunProgress";
+import { RunOutcome } from "./RunOutcome";
+import { resultPending } from "./resultPending";
 import { ScoreLegend } from "./ScoreLegend";
 import { Card } from "@/components/ui/card";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,6 +29,8 @@ function Content({ b }: { b: ChallengeBuilding }) {
   const params = useStore((s) => s.params[b.id]);
   const customRows = visibleCustomRows(params, run, opt?.params, defaultParams());
   const onOptimised = !!opt && same(params, opt.params);
+  // From the first slider move until the new result is in, the shown score and line are out of date.
+  const pending = resultPending(run, params, defaultParams());
   const yours = score(w ?? base)!;
   const yoursColor = `#${scoreColor(yours).getHexString()}`;
   // Scored here like yours (all four months), not taken from the file.
@@ -52,7 +55,7 @@ function Content({ b }: { b: ChallengeBuilding }) {
       <div className={`mb-3 grid gap-2 ${onOptimised ? "" : "grid-cols-2"}`}>
         <Card className="gap-0 rounded-xl border-0 px-3 py-2 shadow-none" style={{ background: `color-mix(in srgb, ${yoursColor} 12%, var(--paper))` }}>
           <span className="text-[0.7rem] text-muted-foreground">{onOptimised ? "Optimised settings" : "Your settings"}</span>
-          <b className="text-2xl tabular-nums" style={{ color: yoursColor }}>{yours.toFixed(2)}<small className="ml-1 text-xs font-normal text-muted-foreground">/ 100</small></b>
+          <b className={`score-value text-2xl tabular-nums${pending ? " is-pending" : ""}`} style={{ color: yoursColor }}>{yours.toFixed(2)}<small className="ml-1 text-xs font-normal text-muted-foreground">/ 100</small></b>
         </Card>
         {!onOptimised && (
           <Card className={`gap-0 rounded-xl border-0 px-3 py-2 shadow-none ${opt ? "bg-[color-mix(in_srgb,var(--optimised)_10%,var(--paper))]" : ""}`}>
@@ -65,7 +68,7 @@ function Content({ b }: { b: ChallengeBuilding }) {
       {/* Click a month, or a day in the strip under it, to show its weather on the map. */}
       <CompareLines records={b.records} yours={customRows} optimised={opt?.rows}
         focus={weatherFocus} onPickMonth={setWeatherFocus} day={day} onPickDay={(d) => (d ? (setWeatherFocus({ year: d.year, month: d.month }), setDay(d)) : setDay(null))} />
-        <RunProgress id={b.id} />
+        <RunOutcome id={b.id} />
       </div>
       <WhatIf id={b.id} />
     </>
