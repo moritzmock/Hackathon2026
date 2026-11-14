@@ -386,6 +386,9 @@ body { background: #fff; }
   border-right: 1px solid var(--line); box-shadow: none; border-radius: 0;
 }
 .stage { margin-left: 72px; }
+/* The map's buttons move along with the list, so the unfolded list never covers them. */
+.map-top-controls { transition: left 0.35s var(--spring); }
+.list:not(.is-collapsed) ~ .stage .map-top-controls { left: 260px; }
 .list.is-collapsed { width: 72px; padding: 22px 8px 12px; }
 .list__scroll { grid-template-columns: 1fr; gap: 18px; padding: 2px 2px 14px; scrollbar-width: thin; scrollbar-color: rgb(20 24 30 / 0.12) transparent; }
 .list.is-collapsed .list__scroll { grid-template-columns: 1fr; gap: 10px; }
@@ -624,7 +627,7 @@ body { background: #fff; }
     border-left: 0; border-top: 1px solid var(--line); border-radius: 20px 20px 0 0; box-shadow: 0 -8px 24px rgb(20 24 30 / 0.08);
     padding: 14px 12px calc(20px + env(safe-area-inset-bottom));
   }
-  .map-top-controls { top: 10px; left: 10px; max-width: calc(100% - 20px); }
+  .map-top-controls, .list:not(.is-collapsed) ~ .stage .map-top-controls { top: 10px; left: 10px; max-width: calc(100% - 20px); }
 
   /* The card's handle: tap or swipe to fold the card to a bar (name and score) and open it again. */
   .detail { touch-action: pan-y; transition: height 0.3s var(--spring); }
