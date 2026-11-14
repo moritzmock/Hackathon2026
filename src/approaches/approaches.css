@@ -3,13 +3,17 @@
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
   max-width: 1320px; margin: 0 auto; padding: 26px 40px;
 }
-.approaches-back, .approaches-jump {
+.approaches-home { display: inline-flex; text-decoration: none; }
+.approaches-nav { display: flex; align-items: center; gap: 10px; }
+.approaches-methods, .approaches-back, .approaches-jump {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   color: var(--heading); font-size: 0.8125rem; font-weight: 600; text-decoration: none;
 }
+.approaches-methods { padding: 9px 13px; border-radius: 999px; }
+.approaches-methods:hover { background: var(--paper); }
 .approaches-back { padding: 9px 13px; border: 1px solid var(--line); border-radius: 999px; }
 .approaches-back:hover { background: var(--paper); }
-.approaches-back:focus-visible, .approaches-jump:focus-visible, .approaches-run-id summary:focus-visible {
+.approaches-home:focus-visible, .approaches-methods:focus-visible, .approaches-back:focus-visible, .approaches-jump:focus-visible, .approaches-run-id summary:focus-visible {
   outline: 2px solid var(--accent); outline-offset: 3px;
 }
 .approaches-main { max-width: 1320px; margin: 0 auto; padding: 10px 40px 80px; }
@@ -80,7 +84,8 @@
   .approaches-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
-  .approaches-header { padding: 18px 18px; }
+  .approaches-header { flex-wrap: wrap; gap: 8px; padding: 18px 18px; }
+  .approaches-nav { width: 100%; justify-content: space-between; }
   .approaches-header .calibra-mark { width: 32px; height: 32px; }
   .approaches-header .calibra-wordmark { font-size: 1.4rem; }
   .approaches-back { padding: 8px 10px; }

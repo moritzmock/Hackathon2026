@@ -2,7 +2,7 @@
 
 ## Request
 
-The owner reports that it is difficult to move freely between the two pages that look like landing pages and the map, and asks for a link audit and a plan only. The site currently has four static pages: the main landing page (`index.html`), Methods (`methods.html`), All runs (`approaches.html`), and the 3D city (`city.html`). The owner clarified that Methods and All runs should link both ways, both should lead back to the map, and the map should have only one outgoing page link, to All runs. No implementation is authorised in this run yet.
+The owner reports that it is difficult to move freely between the two pages that look like landing pages and the map, and first asks for a link audit and a plan only. The site has four static pages: the main landing page (`index.html`), Methods (`methods.html`), All runs (`approaches.html`), and the 3D city (`city.html`). The owner clarified that Methods and All runs should link both ways, both should lead back to the map, and the map should have only one outgoing page link, to All runs. After agreeing to the plan, the owner pointed out that the All runs → Methods link was still missing and asked for the correction in the app.
 
 Current link audit (2026-11-14):
 
@@ -41,12 +41,16 @@ Current link audit (2026-11-14):
 
 ## Status
 
-not started. The owner agreed to this navigation plan on 2026-11-14. Implementation has not started. No product code changed.
+done. The owner agreed to the navigation plan on 2026-11-14 and then requested the missing link be fixed in the app. The links, phone layout, documentation and checks are complete; the local preview is available for the owner to try.
 
 ## Result
 
-Planning only. The run's relative Markdown link resolves and the file has no trailing whitespace. The documented `npx software-factory check-docs` could not complete: there is no local `software-factory` executable and `npx --no-install` waited without output, so it was stopped. No product tests were run because no product code changed.
+Planning record committed as `44cb96a`. The All runs header now links to Methods and the city; its logo links home. The Methods and landing page headers keep All runs visible on phones. The map retains its one page link to All runs, now using the shared address.
+
+Checks: `npm test` under Node 24 passed 49/49 tests; `npm run typecheck`, direct `vite build` and `npm run check:model-assets` passed, building all four pages and verifying the existing model assets. The full `npm run build` was attempted but its `prebuild` packaging step could not reach PyPI in this environment; no model files were changed. In the built-site browser preview, clicking All runs → Methods and Map → All runs worked, as did All runs → Map; at 390 px, Methods and All runs headers showed the links without sideways scrolling. The All runs header was also viewed at desktop width. The new Methods link was reached with Tab and had a solid focus outline.
+
+Review: the change uses the existing HTML links and shared page addresses, with no new routing code or dependency. The All runs header keeps its separate visual style; the map still has one outgoing page link. No structural change is needed. The feature reference pages now describe the current links. The documented `npx software-factory check-docs` check is unavailable locally (no installed executable); changed Markdown links and paths were checked directly.
 
 ## Later
 
-- Existing documentation records the missing city-to-landing link in [run 024](024-landing-page.md). Update the feature documentation after the navigation is implemented.
+- The map intentionally has only its All runs page link, as the owner specified. [Run 024](024-landing-page.md) records the older idea of adding a direct map-to-landing link; do not implement that under this plan.

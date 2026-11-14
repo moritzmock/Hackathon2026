@@ -5,6 +5,7 @@ import { BuildingList } from "./panels/BuildingList";
 import { DetailPanel } from "./panels/DetailPanel";
 import { LayersControl } from "./panels/LayersControl";
 import { LoadingScreen } from "./panels/LoadingScreen";
+import { pages } from "./site/pages";
 import { useStore } from "./store";
 import { WeatherSign } from "./weather/WeatherSign";
 import { Scene } from "./world/Scene";
@@ -37,7 +38,7 @@ export function App() {
           </Canvas>
           <div className="map-top-controls">
             <LayersControl />
-            <a className="approaches-map-link" href={`${import.meta.env.BASE_URL}approaches.html`}>Show approaches</a>
+            <a className="approaches-map-link" href={pages.runs}>Show approaches</a>
             <WeatherSign />
           </div>
           <DetailPanel />

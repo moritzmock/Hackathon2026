@@ -1,5 +1,6 @@
 import { ArrowLeft, ArrowUpRight, FlaskConical } from "lucide-react";
 import { CalibraLogo } from "../brand/CalibraLogo";
+import { pages } from "../site/pages";
 import { describeApproach } from "./describeApproach";
 import results from "./results.json";
 
@@ -53,8 +54,11 @@ export function ApproachesPage() {
   return (
     <div className="approaches-page">
       <header className="approaches-header">
-        <CalibraLogo />
-        <a className="approaches-back" href={`${import.meta.env.BASE_URL}city.html`}><ArrowLeft size={16} aria-hidden="true" /> Back to city</a>
+        <a className="approaches-home" href={pages.landing} aria-label="Calibra, home"><CalibraLogo /></a>
+        <nav className="approaches-nav" aria-label="Pages">
+          <a className="approaches-methods" href={pages.methods}>Methods</a>
+          <a className="approaches-back" href={pages.city}><ArrowLeft size={16} aria-hidden="true" /> Back to city</a>
+        </nav>
       </header>
 
       <main className="approaches-main">
