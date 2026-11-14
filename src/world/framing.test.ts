@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { framing, SHEET } from "./framing.ts";
+import { BAR, framing, SHEET } from "./framing.ts";
 
 test("on a wide screen the building slides left of the side panel, at the usual distance", () => {
   const f = framing(1400, 900);
@@ -28,4 +28,16 @@ test("the distance stays within limits on extreme screens", () => {
 test("the switch to the phone framing happens where the list hides (760 px)", () => {
   assert.equal(framing(760, 900).side, 0);
   assert.ok(framing(761, 900).side > 0);
+});
+
+test("with the phone card folded to a bar, the building sits lower, in the middle of the larger free map", () => {
+  const open = framing(390, 844);
+  const folded = framing(390, 844, true);
+  assert.equal(folded.up, BAR);
+  assert.ok(folded.up < open.up);
+  assert.ok(folded.distance <= open.distance);
+});
+
+test("folding changes nothing on a wide screen (there is no sheet there)", () => {
+  assert.deepEqual(framing(1400, 900, true), framing(1400, 900));
 });

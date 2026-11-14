@@ -6,6 +6,7 @@ import { challenge } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
 import { useStore } from "../store";
 import { extrude } from "./geometry";
+import { TAP_PX } from "./groundDrag";
 import { RoofDetails } from "./RoofDetails";
 import { TargetBounce } from "./TargetBounce";
 import { lookFor } from "./targetLooks";
@@ -68,7 +69,7 @@ function Target({ b }: { b: ChallengeBuilding }) {
         receiveShadow
         onClick={(e) => {
           e.stopPropagation();
-          select(b.id);
+          if (e.delta <= TAP_PX) select(b.id); // not at the end of a drag that started on it
         }}
         onPointerOver={(e) => {
           e.stopPropagation();

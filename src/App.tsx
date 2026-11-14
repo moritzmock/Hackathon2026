@@ -6,6 +6,7 @@ import { BuildingStrip } from "./panels/BuildingStrip";
 import { DetailPanel } from "./panels/DetailPanel";
 import { LayersControl } from "./panels/LayersControl";
 import { LoadingScreen } from "./panels/LoadingScreen";
+import { OverviewButton } from "./panels/OverviewButton";
 import { useStore } from "./store";
 import { WeatherSign } from "./weather/WeatherSign";
 import { Scene } from "./world/Scene";
@@ -38,6 +39,7 @@ export function App() {
           </Canvas>
           <div className="map-top-controls">
             <LayersControl />
+            <OverviewButton />
             <a className="approaches-map-link" href={`${import.meta.env.BASE_URL}approaches.html`}>Show approaches</a>
             <WeatherSign />
           </div>

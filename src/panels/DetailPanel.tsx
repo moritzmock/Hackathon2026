@@ -17,6 +17,9 @@ import { ScoreLegend } from "./ScoreLegend";
 import { AnimatedScore } from "./AnimatedScore";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useWeather } from "../weather/focus";
+import { useRef } from "react";
+
+const SWIPE_PX = 30; // a handle movement this far up or down is a swipe; less is a tap
 
 
 function Content({ b }: { b: ChallengeBuilding }) {
@@ -41,13 +44,21 @@ function Content({ b }: { b: ChallengeBuilding }) {
   const day = useWeather((s) => s.day);
   const setDay = useWeather((s) => s.setDay);
   const f = b.facts;
+  const sheetFolded = useStore((s) => s.sheetFolded);
+  const setSheetFolded = useStore((s) => s.setSheetFolded);
+  // Phones: a tap on the folded bar (not on its close button) opens the card again.
+  const openFolded = (e: React.MouseEvent) => {
+    if (sheetFolded && !(e.target as HTMLElement).closest("button")) setSheetFolded(false, true);
+  };
   return (
     <>
-      <header className="detail__head">
+      <header className="detail__head" onClick={(e) => openFolded(e)}>
         <div>
           <h2>{buildingName(b.id)}</h2>
           <p className="muted small">{String(f.building_typology)} · built {String(f.construction_year)}</p>
         </div>
+        {/* Phones, card folded to a bar: the score stays in view. */}
+        <b className="detail__bar-score" style={{ color: yoursColor }}>{yours.toFixed(2)}</b>
         <button className="icon-btn" onClick={() => select(null)} aria-label="Close"><X size={16} /></button>
       </header>
 
@@ -86,23 +97,63 @@ function Content({ b }: { b: ChallengeBuilding }) {
 /** Building card that slides in over the map when a building is selected. */
 export function DetailPanel() {
   const selected = useStore((s) => s.selected);
+  const folded = useStore((s) => s.sheetFolded);
   const b = selected ? buildingsById[selected] : undefined;
   return (
     <AnimatePresence mode="wait">
       {b && (
         <motion.aside
           key={b.id}
-          className="detail"
+          className={`detail${folded ? " is-folded" : ""}`}
           initial={{ x: 24, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           exit={{ x: 24, opacity: 0 }}
           transition={{ type: "spring", stiffness: 320, damping: 32 }}
         >
+          <SheetHandle />
           <TooltipProvider delayDuration={150}>
             <Content b={b} />
           </TooltipProvider>
         </motion.aside>
       )}
     </AnimatePresence>
+  );
+}
+
+/**
+ * Phones only (styles.css): the handle on top of the card. A tap folds the card to a bar or opens it
+ * again, and so does a swipe down or up; either way the camera frames the building in the free part.
+ * A tap acts on click, the last event of a tap: acting earlier would grow the card under the finger,
+ * and the click would then land on whatever is there (a month in the chart).
+ */
+function SheetHandle() {
+  const folded = useStore((s) => s.sheetFolded);
+  const setSheetFolded = useStore((s) => s.setSheetFolded);
+  const start = useRef<number | undefined>(undefined);
+  const swiped = useRef(false);
+  return (
+    <button
+      className="detail__handle"
+      aria-label={folded ? "Open the card" : "Fold the card"}
+      aria-expanded={!folded}
+      onPointerDown={(e) => {
+        start.current = e.clientY;
+        swiped.current = false;
+        e.currentTarget.setPointerCapture(e.pointerId);
+      }}
+      onPointerUp={(e) => {
+        const dy = start.current === undefined ? 0 : e.clientY - start.current;
+        start.current = undefined;
+        if (Math.abs(dy) < SWIPE_PX) return; // a tap: handled on click
+        swiped.current = true;
+        if (dy > 0 !== folded) setSheetFolded(dy > 0, true);
+      }}
+      onClick={() => {
+        if (swiped.current) swiped.current = false;
+        else setSheetFolded(!folded, true);
+      }}
+    >
+      <span aria-hidden="true" />
+    </button>
   );
 }

@@ -7,6 +7,11 @@ import { onModelErrorDetail, onModelStatus, SETUP_STEPS, simulate, YEARS } from 
 // `?low` in the address starts the map without the costly effects (for slow machines and demos).
 const lowGraphicsRequested = () => typeof location !== "undefined" && new URLSearchParams(location.search).has("low");
 
+// Phones (a touch screen whose short side is at most 760 px) have weaker graphics: they start
+// without the costly effects too; "Detailed lighting" in Map layers turns them on.
+const isPhone = () =>
+  typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches && Math.min(screen.width, screen.height) <= 760;
+
 // People who ask their system for less motion start with the moving things off.
 const prefersReducedMotion = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -89,6 +94,10 @@ interface State {
   revealed: boolean;
   /** Photos of each challenge building taken from the 3D scene (data URLs). */
   snapshots: Record<string, string[]> | undefined;
+  /** Phones: the open building's card is folded to a bar, leaving the map free. */
+  sheetFolded: boolean;
+  /** Counts requests to frame the view again (the open building, or the overview); the camera follows each one. */
+  reframes: number;
   select: (id: string | null) => void;
   hover: (id: string | null) => void;
   setParam: (id: string, name: string, value: number) => void;
@@ -100,6 +109,10 @@ interface State {
   toggleLayer: (layer: keyof Layers) => void;
   setLayersOpen: (open: boolean) => void;
   setLayer: (layer: keyof Layers, on: boolean) => void;
+  /** Fold or open the phone card; `reframe` also moves the camera to frame the building in the free part. */
+  setSheetFolded: (folded: boolean, reframe?: boolean) => void;
+  /** Close the open building and fly back to the overview. */
+  showOverview: () => void;
 }
 
 export const useStore = create<State>((set, get) => ({
@@ -115,11 +128,13 @@ export const useStore = create<State>((set, get) => ({
   modelLog: [],
   readyAt: undefined,
   lastWarmSeconds: undefined,
-  layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true, motion: !prefersReducedMotion(), effects: !lowGraphicsRequested() },
+  layers: { city: true, streets: true, trees: true, cars: true, pins: true, miniature: true, motion: !prefersReducedMotion(), effects: !lowGraphicsRequested() && !isPhone() },
   layersOpen: false,
   revealed: false,
   snapshots: undefined,
-  select: (selected) => set({ selected }),
+  sheetFolded: false,
+  reframes: 0,
+  select: (selected) => set({ selected, sheetFolded: false }),
   hover: (hovered) => set({ hovered }),
   setParam: (id, name, value) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], [name]: value } } })),
   setParams: (id, values) => set((s) => ({ params: { ...s.params, [id]: { ...s.params[id], ...values } } })),
@@ -152,6 +167,8 @@ export const useStore = create<State>((set, get) => ({
   toggleLayer: (layer) => set((s) => ({ layers: { ...s.layers, [layer]: !s.layers[layer] } })),
   setLayersOpen: (layersOpen) => set({ layersOpen }),
   setLayer: (layer, on) => set((s) => ({ layers: { ...s.layers, [layer]: on } })),
+  setSheetFolded: (sheetFolded, reframe = false) => set((s) => ({ sheetFolded, reframes: s.reframes + (reframe ? 1 : 0) })),
+  showOverview: () => set((s) => ({ selected: null, sheetFolded: false, reframes: s.reframes + 1 })),
 }));
 
 onModelStatus((modelStatus) =>

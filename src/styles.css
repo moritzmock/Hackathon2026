@@ -65,7 +65,7 @@ kbd, .kbd {
 .icon-btn--boxed { border: 1px solid var(--line); background: var(--surface); box-shadow: var(--shadow-sm); color: var(--ink); }
 
 /* Layout: building list + map */
-.app { position: fixed; inset: 0; display: flex; }
+.app { position: fixed; inset: 0; display: flex; touch-action: none; } /* touch moves the map, never the page (main.tsx) */
 .workspace {
   position: relative; flex: 1; min-width: 0; display: flex; gap: 10px; padding: 10px;
   background: var(--app); /* fills the window: no outer frame */
@@ -592,7 +592,7 @@ body { background: #fff; }
 /* Phones (≤ 760 px, where the building list hides): the buildings as a strip along the bottom
    of the map, and the open building's card as a sheet over its lower part. Kept last so it wins
    over the panel rules above. The sheet's height matches SHEET in src/world/framing.ts. */
-.strip { display: none; }
+.strip, .detail__handle, .detail__bar-score { display: none; }
 @media (max-width: 760px) {
   .strip {
     position: absolute; left: 0; right: 0; bottom: 0; z-index: 25; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px;
@@ -618,4 +618,16 @@ body { background: #fff; }
     padding: 14px 12px calc(20px + env(safe-area-inset-bottom));
   }
   .map-top-controls { top: 10px; left: 10px; max-width: calc(100% - 20px); }
+
+  /* The card's handle: tap or swipe to fold the card to a bar (name and score) and open it again. */
+  .detail { touch-action: pan-y; transition: height 0.3s var(--spring); }
+  .detail__handle {
+    position: sticky; top: -14px; z-index: 3; display: grid; place-items: center; width: calc(100% + 24px);
+    margin: -14px -12px 2px; padding: 10px 0 8px; border: 0; background: var(--side); cursor: pointer; touch-action: none;
+  }
+  .detail__handle span { width: 40px; height: 5px; border-radius: 999px; background: #d5d9df; }
+  .detail.is-folded { height: auto; overflow: hidden; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+  .detail.is-folded > :not(.detail__handle):not(.detail__head) { display: none; }
+  .detail.is-folded .detail__head { margin-bottom: 0; cursor: pointer; }
+  .detail.is-folded .detail__bar-score { display: block; font-family: var(--display); font-size: 1.125rem; font-weight: 600; font-variant-numeric: tabular-nums; }
 }

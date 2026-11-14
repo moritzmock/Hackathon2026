@@ -16,6 +16,7 @@ import { same } from "../panels/WhatIf";
 import { useStore } from "../store";
 import { buildingAnchor } from "../world/focus";
 import { NARROW } from "../world/framing";
+import { TAP_PX } from "../world/groundDrag";
 import { currentScore, scoreColor, textOn } from "../world/scoreColor";
 import { theme } from "../world/theme";
 import { useNear } from "./useNear";
@@ -124,9 +125,9 @@ function Label3D({ b }: { b: ChallengeBuilding }) {
   if (selected) return <ScoreLabel b={b} />;
   const showName = hovered || near;
   const events = {
-    onClick: (e: { stopPropagation: () => void }) => {
+    onClick: (e: { stopPropagation: () => void; delta: number }) => {
       e.stopPropagation();
-      select(b.id);
+      if (e.delta <= TAP_PX) select(b.id); // not at the end of a drag that started on it
     },
     onPointerOver: (e: { stopPropagation: () => void }) => {
       e.stopPropagation();
