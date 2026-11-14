@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, TriangleAlert } from "lucide-react";
 import { useStore } from "../store";
-import { CalibraMark } from "./CalibraLogo";
+import { CalibraMark } from "../brand/CalibraLogo";
 import { ModelErrorReport } from "./ModelErrorReport";
 import { SETUP_LABELS } from "./setupLabels";
 

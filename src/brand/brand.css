@@ -1,0 +1,6 @@
+/* The Calibra searching animation (SearchAnimation.tsx). The mark and wordmark styles are in styles.css. */
+.search-animation { display: block; width: 100%; height: auto; overflow: visible; }
+.search-animation__band { fill: var(--brand-violet); fill-opacity: 0.16; }
+.search-animation__mean { fill: none; stroke: var(--brand-violet); stroke-width: 4.4; stroke-linecap: round; stroke-linejoin: round; }
+.search-animation__dots { fill: var(--brand-violet); }
+.search-animation__flame { fill: var(--accent); stroke: var(--accent); stroke-width: 1; stroke-linejoin: round; }

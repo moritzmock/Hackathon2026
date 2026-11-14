@@ -336,7 +336,7 @@ kbd, .kbd {
 .wsign.is-muted { color: var(--muted); }
 .wsign.is-past { background: var(--paper); }
 .wsign__live { width: 6px; height: 6px; border-radius: 50%; background: #2fa36b; box-shadow: 0 0 0 2px color-mix(in srgb, #2fa36b 25%, transparent); }
-.wsign__season { padding: 1px 7px; border-radius: 999px; background: var(--paper); color: var(--muted); font-size: 0.6875rem; }
+.wsign__season { display: grid; place-items: center; padding: 3px 6px; border-radius: 999px; background: var(--paper); color: var(--muted); font-size: 0.6875rem; }
 .wsign button { display: grid; place-items: center; width: 20px; height: 20px; margin-right: -4px; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
 .wsign button:hover { background: var(--paper); color: var(--ink); }
 @media (max-width: 540px) { .map-top-controls .wsign > span, .map-top-controls .wsign__season, .map-top-controls .wsign__live { display: none; } }

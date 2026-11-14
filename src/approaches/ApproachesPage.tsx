@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowUpRight, FlaskConical } from "lucide-react";
-import { CalibraLogo } from "../panels/CalibraLogo";
+import { CalibraLogo } from "../brand/CalibraLogo";
 import { describeApproach } from "./describeApproach";
 import results from "./results.json";
 

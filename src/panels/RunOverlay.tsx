@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Check } from "lucide-react";
 import { YEARS } from "../sim/client";
 import { useStore } from "../store";
-import { CalibraMark } from "./CalibraLogo";
+import { CalibraMark } from "../brand/CalibraLogo";
 import { runEstimate } from "./runEstimate";
 import { SETUP_LABELS } from "./setupLabels";
 

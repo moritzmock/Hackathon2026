@@ -5,7 +5,7 @@ import { challenge } from "../data/challenge";
 import type { ChallengeBuilding } from "../data/types";
 import { useStore } from "../store";
 import { buildingName, buildingNumber } from "./buildingName";
-import { CalibraMark, CalibraWordmark } from "./CalibraLogo";
+import { CalibraMark, CalibraWordmark } from "../brand/CalibraLogo";
 
 const ids = challenge.buildings.map((b) => b.id);
 

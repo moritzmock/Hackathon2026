@@ -1,7 +1,7 @@
 import { Thermometer, X } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { monthSummary } from "./conditions";
-import { MONTHS, SKY_ICON } from "./labels";
+import { MONTHS, SEASON_ICON, SKY_ICON } from "./labels";
 import { startLiveWeather, useConditions, useWeather } from "./focus";
 
 /**
@@ -38,6 +38,7 @@ export function WeatherSign() {
     return <div className="wsign is-muted">{liveStatus === "loading" ? "Loading weather…" : "Live weather unavailable"}</div>;
   }
   const Icon = SKY_ICON[c.sky];
+  const SeasonIcon = SEASON_ICON[c.season];
   const when = day ? `${day.day} ${MONTHS[day.month - 1]} ${day.year}` : focus ? `${MONTHS[focus.month - 1]} ${focus.year}` : "Bolzano now";
   const time = live?.at.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Rome" });
   return (
@@ -46,7 +47,9 @@ export function WeatherSign() {
       <b>{c.temp.toFixed(0)}°</b>
       <span>{when}</span>
       {!focus && <i className="wsign__live" aria-hidden="true" />}
-      <span className="wsign__season">{c.season}</span>
+      <span className="wsign__season" title={c.season} aria-label={c.season} role="img">
+        <SeasonIcon size={12} aria-hidden="true" />
+      </span>
       {focus && (
         <button onClick={() => setFocus(null)} aria-label="Back to the weather now" title="Back to now">
           <X size={13} />
